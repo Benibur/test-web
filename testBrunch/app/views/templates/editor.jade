@@ -1,0 +1,36 @@
+
+
+#main.table-ly-wrpr
+  // boutons for the editor
+  #divMainBtn.table-ly-hder
+    #generalBtnBar.btn-group
+      button#EmptyTextBtn.btn.btn-small.btn-primary Init texte vide  
+      button#SimpleTextBtn.btn.btn-small.btn-primary Init texte simple
+      button#FullTextBtn.btn.btn-small.btn-primary Init texte long
+      button#logKeysBtn.btn.btn-small.btn-primary Log keystrokes
+      button#logRangeBtn.btn.btn-small.btn-primary Log range
+      button#printRangeBtn.btn.btn-small.btn-primary Print Range
+  #main-div.table-ly-ctnt
+    #col-wrap
+      #editor-col
+        #well-editor.monWell
+          #editorDiv.table-ly-wrpr
+            // boutons for the editor
+            .table-ly-hder
+              #editorBtnBar.btn-group
+                button.btn.btn-small.btn-primary test
+                button.btn.btn-small.btn-primary test
+            // text for the editor
+            #editorContent.table-ly-ctnt
+              div#editorTextContent(contenteditable="true") to 2 to
+      #result-col
+        #well-result.monWell
+          #resultDiv.table-ly-wrpr
+            .table-ly-hder
+              #resultBtnBar.btn-group
+                button#resultBtnBar_coller.btn.btn-small.btn-primary Coller
+                button.btn.btn-small.btn-primary -
+                button.btn.btn-small.btn-primary -
+            // text for the resulting html
+            #resultContent.table-ly-ctnt
+              textarea#resultText

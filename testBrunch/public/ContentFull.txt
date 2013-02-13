@@ -1,0 +1,72 @@
+<ul>
+    <li>
+        <p class="TitrePu_02">Un paragraphe avec juste un titre.</p>
+    </li>
+    <li>
+        <p class="TitrePu_02">Un second paragraphe contenant un titre et une ligne.</p>
+        <p class="Ligne_02">La ligne du paragraphe</p>
+    </li>
+    <li>
+        <p class="TitrePu_02">Un second paragraphe contenant un titre, une ligne puis une liste de paragraphe
+            à puces.</p>
+        <p class="Ligne_02">La ligne avant la liste ordonnée :</p>
+        <ul>
+            <li>
+                <p class="TitrePu_03">Premier paragraphe de la liste,</p>
+            </li>
+            <li>
+                <p class="TitrePu_03">constitué uniquement d'un titre : par contre le retour à
+                    la ligne inséré en milieu de ligne ne pose pas de pb pour
+                    les titres à puces : une nouvelle balise li est créée
+                    avec à l'intérieur un nouveau &lt;p&gt; qui a la meme classe
+                    que son "père" : bilan top, rien à faire.</p>
+            </li>
+            <li>
+                Secondzz paragraphe de la liste, constitué d'un titre et de deux
+                    lignes.
+                <p class="Ligne_03">Première</p>
+                <p class="Ligne_03">ligne</p>
+                <p class="Ligne_03">Seconde ligne</p>
+            </li>
+            <li>
+                <p class="TitrePu_03">Troisième paragraphe avec 1 titre à puce et une liste de
+                    3 paragraphes à puces dedans.</p>
+                <ul>
+                    <li>
+                        <p class="TitrePu_04">premier</p>
+                    </li>
+                    <li>
+                        <p class="TitrePu_04">Second paragraphe</p>
+                    </li>
+                    <li>
+                        <p class="TitrePu_04">Troisième paragraphe contenant un titre à puce et deux lignes</p>
+                        <p
+                        class="Ligne_04">Première ligne</p>
+                            <p class="Ligne_04">Seconde ligne</p>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <p class="TitrePu_03">Quatrième paragraphe</p>
+            </li>
+            <li>
+                <p class="TitrePu_03">Cinquième paragraphe</p>
+            </li>
+            <li>
+                <p class="TitrePu_03">Sixième paragraphe contenant à nouveau avec 1 titre à
+                    puce et une liste de 2 paragraphes dedans :</p>
+                <ul>
+                    <li>
+                        <p class="TitrePu_04">un paragraphe</p>
+                    </li>
+                    <li>
+                        <p class="TitrePu_04">un second paragraphe</p>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p class="TitrePu_02">Un dernier paragraphe avec juste un titre.</p>
+    </li>
+</ul>

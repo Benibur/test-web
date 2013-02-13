@@ -1,0 +1,14 @@
+<ul class="Lu-01">
+    <li class="Pu-01">
+        <p class="Tu-01">Un paragraphe avec juste un titre.<br /></p>
+    </li>
+    <li class="Pu-01">
+        <p class="Tu-01"><br /></p>
+    </li>
+    <li class="Pu-01">
+        <p class="Tu-01"><br /></p>
+    </li>
+    <li class="Pu-01">
+        <p class="Tu-01">Un second paragraphe.<br /></p>
+    </li>
+</ul>

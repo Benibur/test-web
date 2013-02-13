@@ -1,0 +1,68 @@
+#main-div(contenteditable='true')
+    div#div1
+        span#span1 Content of text node
+        br#br1
+
+    div#div2
+        span#span2 span2 text node
+        span#span3 span3 text node
+        br#br2
+
+    div#div3
+        span#span4
+        br#br3
+#tools
+    br
+    select#startContainerSelect
+        option #main-div
+        option #div1
+        option #div2
+        option #span1
+        option #span2
+        option #span3
+        option #span4
+        option #text1
+        option #text2
+        option #text3
+        option #text4
+        option #br1
+        option #br2
+    input#startOffSetInput(type='text' )
+    button#setStartContainerBtn set startcontainer
+    br
+
+    select#endContainerSelect
+        option #main-div
+        option #div1
+        option #div2
+        option #span1
+        option #span2
+        option #span3
+        option #span4
+        option #text1
+        option #text2
+        option #text3
+        option #text4
+        option #br1
+        option #br2
+    input#endOffSetInput(type='text')
+    button#setEndContainerBtn set endcontainer
+    br
+    br
+        
+    button#setRange     selection => range
+    button#setSelection range => selection
+    br
+    button#printRange   print range
+    button#printSel     print selection
+    br
+    button#normBtn      normalize selection
+    br
+    button#getLineDivBtn Get line div and isStart isEnd
+    br
+    button#testChromeBtn Test the chrome selection bug
+
+
+
+
+#logs

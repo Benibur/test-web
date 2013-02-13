@@ -1,0 +1,114 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Test jsTree</title>
+    <script type="text/javascript" src="./_lib/jquery-1.7.1.js"></script>
+    <script type="text/javascript" src="./_lib/jquery.cookie.js"></script>
+    <script type="text/javascript" src="./_lib/jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="./jquery.jstree.js"></script>
+    <script type="text/javascript" src="./arboreal.js"></script>
+    <style type="text/css">
+        
+
+        /*COMMON STYLES*/
+        .tree-pane {
+            border-width:1px;
+            border-style: solid;
+            border-color: blue;
+            display: inline-block;
+            width: 500px;    
+        } 
+        .tree-buttons {
+            display : none;
+            right: 0px;
+            top:0;
+            position : absolute;
+        }
+        .tree-buttons div {
+            display: inline;
+        }
+
+        
+        /*HTML TREE*/
+        #html-tree li {
+            padding :0;
+            position :relative;
+        }
+        #html-tree a {
+            right: 2px;
+            position : absolute;
+            right: 0px;
+            left: 0px;
+        }
+
+        /*JSON TREE*/
+        #json-tree li {
+            padding :0;
+            position :relative;
+        }
+        #json-tree a {
+            right: 2px;
+            position : absolute;
+            right: 0px;
+            left: 0px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="html-tree-buttons" class="tree-buttons">
+        <div id="create-btn-html-tree">Create</div>
+        <div id="rename-btn-html-tree">Rename</div>
+        <div id="delete-btn-html-tree">Delete</div>
+    </div>
+
+    <div id="json-tree-buttons"  class="tree-buttons">
+        <div id="create-btn-json-tree">Create</div>
+        <div id="rename-btn-json-tree">Rename</div>
+        <div id="delete-btn-json-tree">Delete</div>
+    </div>
+
+    <!-- TREE BUILT FROM A STATIC HTML -->
+    <div class="tree-pane">
+        <div style="font-weight:bold">HTML jsTree</div>
+        <div id="html-tree">
+            <ul>
+                <li id="rhtml_1" class="jstree-open">
+                    <a href="#">Root node 1</a>
+                    <ul>
+                        <li id="rhtml_2">
+                            <a href="#">Child node 1</a>
+                        </li>
+                        <li id="rhtml_3">
+                            <a href="#">Child node 2</a>
+                            <ul>
+                                <li id="rhtml_4">
+                                    <a href="#">Child node 1</a>
+                                </li>
+                                <li id="rhtml_5">
+                                    <a href="#">Child node 2</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li id="rhtml_6">
+                    <a href="#">Root node 2</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- TREE BUILT FROM A JSON STRING -->
+    <div class="tree-pane">
+        <div style="font-weight:bold">JSON jsTree</div>
+        <div id="json-tree">
+        </div>
+    </div>
+
+    <script type="text/javascript" src="./html-jstree-init.js"></script>
+    <script type="text/javascript" src="./json-jstree-init.js"></script>
+
+</body>
+</html>
