@@ -80,7 +80,7 @@ window.require.define({"body": function(exports, require, module) {
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div id="main-div"><p>Type in the texteArea below in order to print the properties of the corresponding "keydown" up and press events.</p><textarea id="txtArea"></textarea><div id="tableContainer"></div></div>');
+  buf.push('<div id="main-div"><p>Type in the texteArea below in order to print the properties of the corresponding "keydown" up and press events.</p><textarea id="txtArea">Un textarea</textarea><div id="editableDiv" contentEditable="true"><span>Une span editable</span></div></br><div id="tableContainer"></div></div>');
   }
   return buf.join("");
   };
@@ -89,9 +89,10 @@ window.require.define({"body": function(exports, require, module) {
 window.require.define({"initialize": function(exports, require, module) {
   
   $(document).on('ready', function() {
-    var addCell, addRowForEvent, lable, lableList, row, rowIndex, table, tbody, thead, txtArea, _i, _len;
+    var addCell, addRowForEvent, editableDiv, lable, lableList, row, rowIndex, table, tbody, thead, txtArea, _i, _len;
     $('body').html(require('body')());
     txtArea = document.getElementById("txtArea");
+    editableDiv = document.getElementById("editableDiv");
     addCell = function(row, text) {
       var cell;
       cell = row.insertCell(-1);
@@ -133,7 +134,19 @@ window.require.define({"initialize": function(exports, require, module) {
       addRowForEvent(e);
       return console.log('keydown, value="' + this.value + '"');
     });
-    return txtArea.addEventListener("keypress", function(e) {
+    txtArea.addEventListener("keypress", function(e) {
+      addRowForEvent(e);
+      return console.log('keypress, value="' + this.value + '"');
+    });
+    editableDiv.addEventListener("keyup", function(e) {
+      addRowForEvent(e);
+      return console.log('keyup, value="' + this.value + '"');
+    });
+    editableDiv.addEventListener("keydown", function(e) {
+      addRowForEvent(e);
+      return console.log('keydown, value="' + this.value + '"');
+    });
+    return editableDiv.addEventListener("keypress", function(e) {
       addRowForEvent(e);
       return console.log('keypress, value="' + this.value + '"');
     });

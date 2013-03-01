@@ -3,6 +3,7 @@
 $(document).on 'ready', ->
     $('body').html( require('body')() )
     txtArea = document.getElementById("txtArea")
+    editableDiv = document.getElementById("editableDiv")
 
     addCell = (row, text) ->
         cell = row.insertCell(-1)
@@ -39,9 +40,19 @@ $(document).on 'ready', ->
     txtArea.addEventListener "keydown", (e)->
         addRowForEvent(e)
         console.log('keydown, value="' + this.value + '"')
-        # showEventProperties(e)
 
     txtArea.addEventListener "keypress", (e)->
         addRowForEvent(e)
         console.log('keypress, value="' + this.value + '"')
 
+    editableDiv.addEventListener "keyup", (e)->
+        addRowForEvent(e)
+        console.log('keyup, value="' + this.value + '"')
+
+    editableDiv.addEventListener "keydown", (e)->
+        addRowForEvent(e)
+        console.log('keydown, value="' + this.value + '"')
+
+    editableDiv.addEventListener "keypress", (e)->
+        addRowForEvent(e)
+        console.log('keypress, value="' + this.value + '"')
