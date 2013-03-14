@@ -160,7 +160,6 @@ $(document).on 'ready', ->
         return res
             
 
-
     normBtn.on 'click', (e) ->
         console.log "normalize :"
         txt    = 'selection before normalize :</br>'
@@ -176,7 +175,17 @@ $(document).on 'ready', ->
     printRange = () ->
         console.log "range :"
         console.log getRange()
-        newHtml = 'range = </br>' + logifyRange(getRange())
+
+        newHtml  = 'range = </br>' + logifyRange(getRange())
+        
+        newHtml += '</br>Rangy serialized range : ' 
+        root = document.getElementById('main-div')
+        newHtml += rangy.serializeRange(getRange(), true, root )
+
+        newHtml += '</br>Home serialized range : ' 
+        root = document.getElementById('main-div')
+        newHtml += serializeRange(getRange(), root )
+        
         logs.html( newHtml )
         $('#main-div').focus()
         return newHtml
@@ -185,16 +194,103 @@ $(document).on 'ready', ->
         console.log "selection :"
         console.log getRange()
         range = window.getSelection().getRangeAt(0)
-        newHtml = 'selection = </br>' + logifyRange(range)
+
+        newHtml  = 'selection = </br>' + logifyRange(range)
+        
+        newHtml += '</br>Rangy serialized selection : ' 
+        root = document.getElementById('main-div')
+        sel = rangy.getSelection()
+        newHtml += rangy.serializeSelection(sel, true, root)
+
+        newHtml += '</br>Home serialized selection : ' 
+        root = document.getElementById('main-div')
+        rg = (document.getSelection()).getRangeAt(0)
+        newHtml += serializeRange(rg , root )
+
         logs.html(newHtml)
         $('#main-div').focus()
         return newHtml
+
+
 
     printRangeBtn.on 'click', (e) ->
         printRange()
 
     printSelBtn.on 'click', (e) ->
         printSelection()
+
+    $('#getSeriSelectionBtn').on 'click', (e)->
+        root = document.getElementById('main-div')
+        rg = (document.getSelection()).getRangeAt(0)
+        serial = serializeRange(rg , root )
+        $("#serializeInput").val(serial)
+
+    $('#deserializeBtn').on 'click', (e)->
+        root = document.getElementById('main-div')
+        serial = $("#serializeInput").val()
+
+        range = deSerializeRange(serial , root )
+
+        rg  = getRange()
+        rg.setStart(range.startContainer,range.startOffset)
+        rg.setEnd(range.endContainer,range.endOffset)
+        setSelection()
+
+    deSerializeRange = (serial, rootNode) ->
+        if !rootNode
+            rootNode = document.body
+        range = rootNode.ownerDocument.createRange()
+        serials = serial.split(',')
+        startPath = serials[0].split('/')
+        endPath   = serials[1].split('/')
+
+        startCont = rootNode
+        i = startPath.length
+        while --i
+            startCont = startCont.childNodes[ startPath[i] ]
+        range.setStart(startCont,startPath[i])
+
+        endCont = rootNode
+        i = endPath.length
+        while --i
+            endCont = endCont.childNodes[ endPath[i] ]
+        range.setEnd(endCont,endPath[i])
+
+        return range
+
+    # the breakpoint are strings separated by a comma.
+    # Structure of a serialized bp : {offset}{/index}*
+    # Global struct : {startOffset}{/index}*,{endOffset}{/index}*
+    serializeRange = (range, rootNode) ->
+        if !rootNode
+            rootNode = range.startContainer.ownerDocument.body
+
+        # serialise start breakpoint
+        res  = range.startOffset
+        node = range.startContainer
+        while node != rootNode
+            i = 0
+            sib = node.previousSibling
+            while sib != null
+                i++
+                sib = sib.previousSibling
+            res += '/' + i
+            node = node.parentNode
+            
+        # serialise end breakpoint
+        res += ',' + range.endOffset
+        node = range.endContainer
+        while node != rootNode
+            i = 0
+            sib = node.previousSibling
+            while sib != null
+                i++
+                sib = sib.previousSibling
+            res += '/' + i
+            node = node.parentNode
+            
+        return res
+
 
     ###*
      * return the div corresponding to an element inside a line and tells wheter

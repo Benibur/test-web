@@ -80,7 +80,7 @@ window.require.define({"body": function(exports, require, module) {
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div id="main-div" contenteditable="true"><div id="div1"><span id="span1">Content of text node</span><br id="br1"/></div><div id="div2"><span id="span2">span2 text node</span><span id="span3">span3 text node</span><br id="br2"/></div><div id="div3"><span id="span4"></span><br id="br3"/></div></div><div id="tools"><br/><select id="startContainerSelect"><option>#main-div</option><option>#div1</option><option>#div2</option><option>#span1</option><option>#span2</option><option>#span3</option><option>#span4</option><option>#text1</option><option>#text2</option><option>#text3</option><option>#text4</option><option>#br1</option><option>#br2</option></select><input id="startOffSetInput" type="text"/><button id="setStartContainerBtn">set startcontainer</button><br/><select id="endContainerSelect"><option>#main-div</option><option>#div1</option><option>#div2</option><option>#span1</option><option>#span2</option><option>#span3</option><option>#span4</option><option>#text1</option><option>#text2</option><option>#text3</option><option>#text4</option><option>#br1</option><option>#br2</option></select><input id="endOffSetInput" type="text"/><button id="setEndContainerBtn">set endcontainer</button><br/><br/><button id="setRange">    selection => range</button><button id="setSelection">range => selection</button><br/><button id="printRange">  print range</button><button id="printSel">    print selection</button><br/><button id="normBtn">     normalize selection</button><br/><button id="getLineDivBtn">Get line div and isStart isEnd</button><br/><button id="testChromeBtn">Test the chrome selection bug</button></div><div id="logs"></div>');
+  buf.push('<div id="main-div" contenteditable="true"><div id="div1"><span id="span1">Content of text node</span><br id="br1"/></div><div id="div2"><span id="span2">span2 text node</span><span id="span3">span3 text node</span><br id="br2"/></div><div id="div3"><span id="span4"></span><br id="br3"/></div></div><div id="tools"><br/><select id="startContainerSelect"><option>#main-div</option><option>#div1</option><option>#div2</option><option>#span1</option><option>#span2</option><option>#span3</option><option>#span4</option><option>#text1</option><option>#text2</option><option>#text3</option><option>#text4</option><option>#br1</option><option>#br2</option></select><input id="startOffSetInput" type="text"/><button id="setStartContainerBtn">set startcontainer</button><br/><select id="endContainerSelect"><option>#main-div</option><option>#div1</option><option>#div2</option><option>#span1</option><option>#span2</option><option>#span3</option><option>#span4</option><option>#text1</option><option>#text2</option><option>#text3</option><option>#text4</option><option>#br1</option><option>#br2</option></select><input id="endOffSetInput" type="text"/><button id="setEndContainerBtn">set endcontainer</button><br/><br/><button id="setRange">    selection => range</button><button id="setSelection">range => selection</button><br/><button id="printRange">  print range</button><button id="printSel">    print selection</button><br/><button id="normBtn">     normalize selection</button><br/><button id="getLineDivBtn">Get line div and isStart isEnd</button><br/><button id="testChromeBtn">Test the chrome selection bug</button><br/><br/><button id="getSeriSelectionBtn">Get serialized selection</button><div><input id="serializeInput"/><button id="deserializeBtn">Deserialize()</button></div></div><div id="logs"></div>');
   }
   return buf.join("");
   };
@@ -89,7 +89,7 @@ window.require.define({"body": function(exports, require, module) {
 window.require.define({"initialize": function(exports, require, module) {
   
   $(document).on('ready', function() {
-    var endContainerSelect, endOffSetInput, getLineDivBtn, getLineDivIsStartIsEnd, getRange, getSelection, logifyRange, logs, normBtn, normalize, normalizeBP, printRange, printRangeBtn, printSelBtn, printSelection, selection, setEndContainerBtn, setRange, setSelection, setSelectionBtn, setStartContainerBtn, startContainerSelect, startOffSetInput, testChromeBtn, _getNodeFromSelector;
+    var deSerializeRange, endContainerSelect, endOffSetInput, getLineDivBtn, getLineDivIsStartIsEnd, getRange, getSelection, logifyRange, logs, normBtn, normalize, normalizeBP, printRange, printRangeBtn, printSelBtn, printSelection, selection, serializeRange, setEndContainerBtn, setRange, setSelection, setSelectionBtn, setStartContainerBtn, startContainerSelect, startOffSetInput, testChromeBtn, _getNodeFromSelector;
     $('body').html(require('body')());
     startContainerSelect = $('#startContainerSelect');
     endContainerSelect = $('#endContainerSelect');
@@ -258,20 +258,34 @@ window.require.define({"initialize": function(exports, require, module) {
       return $('#main-div').focus();
     });
     printRange = function() {
-      var newHtml;
+      var newHtml, root;
       console.log("range :");
       console.log(getRange());
       newHtml = 'range = </br>' + logifyRange(getRange());
+      newHtml += '</br>Rangy serialized range : ';
+      root = document.getElementById('main-div');
+      newHtml += rangy.serializeRange(getRange(), true, root);
+      newHtml += '</br>Home serialized range : ';
+      root = document.getElementById('main-div');
+      newHtml += serializeRange(getRange(), root);
       logs.html(newHtml);
       $('#main-div').focus();
       return newHtml;
     };
     printSelection = function() {
-      var newHtml, range;
+      var newHtml, range, rg, root, sel;
       console.log("selection :");
       console.log(getRange());
       range = window.getSelection().getRangeAt(0);
       newHtml = 'selection = </br>' + logifyRange(range);
+      newHtml += '</br>Rangy serialized selection : ';
+      root = document.getElementById('main-div');
+      sel = rangy.getSelection();
+      newHtml += rangy.serializeSelection(sel, true, root);
+      newHtml += '</br>Home serialized selection : ';
+      root = document.getElementById('main-div');
+      rg = (document.getSelection()).getRangeAt(0);
+      newHtml += serializeRange(rg, root);
       logs.html(newHtml);
       $('#main-div').focus();
       return newHtml;
@@ -282,6 +296,77 @@ window.require.define({"initialize": function(exports, require, module) {
     printSelBtn.on('click', function(e) {
       return printSelection();
     });
+    $('#getSeriSelectionBtn').on('click', function(e) {
+      var rg, root, serial;
+      root = document.getElementById('main-div');
+      rg = (document.getSelection()).getRangeAt(0);
+      serial = serializeRange(rg, root);
+      return $("#serializeInput").val(serial);
+    });
+    $('#deserializeBtn').on('click', function(e) {
+      var range, rg, root, serial;
+      root = document.getElementById('main-div');
+      serial = $("#serializeInput").val();
+      range = deSerializeRange(serial, root);
+      rg = getRange();
+      rg.setStart(range.startContainer, range.startOffset);
+      rg.setEnd(range.endContainer, range.endOffset);
+      return setSelection();
+    });
+    deSerializeRange = function(serial, rootNode) {
+      var endCont, endPath, i, range, serials, startCont, startPath;
+      if (!rootNode) {
+        rootNode = document.body;
+      }
+      range = rootNode.ownerDocument.createRange();
+      serials = serial.split(',');
+      startPath = serials[0].split('/');
+      endPath = serials[1].split('/');
+      startCont = rootNode;
+      i = startPath.length;
+      while (--i) {
+        startCont = startCont.childNodes[startPath[i]];
+      }
+      range.setStart(startCont, startPath[i]);
+      endCont = rootNode;
+      i = endPath.length;
+      while (--i) {
+        endCont = endCont.childNodes[endPath[i]];
+      }
+      range.setEnd(endCont, endPath[i]);
+      return range;
+    };
+    serializeRange = function(range, rootNode) {
+      var i, node, res, sib;
+      if (!rootNode) {
+        rootNode = range.startContainer.ownerDocument.body;
+      }
+      res = range.startOffset;
+      node = range.startContainer;
+      while (node !== rootNode) {
+        i = 0;
+        sib = node.previousSibling;
+        while (sib !== null) {
+          i++;
+          sib = sib.previousSibling;
+        }
+        res += '/' + i;
+        node = node.parentNode;
+      }
+      res += ',' + range.endOffset;
+      node = range.endContainer;
+      while (node !== rootNode) {
+        i = 0;
+        sib = node.previousSibling;
+        while (sib !== null) {
+          i++;
+          sib = sib.previousSibling;
+        }
+        res += '/' + i;
+        node = node.parentNode;
+      }
+      return res;
+    };
     /**
      * return the div corresponding to an element inside a line and tells wheter
      * the breabk point is at the end or at the beginning of the line
