@@ -80,7 +80,7 @@ window.require.define({"body": function(exports, require, module) {
   var buf = [];
   with (locals || {}) {
   var interp;
-  buf.push('<div id="main-div"><p>Type in the texteArea below in order to print the properties of the corresponding "keydown" up and press events.</p><textarea id="txtArea">Un textarea</textarea><div id="editableDiv" contentEditable="true"><span>Une span editable</span></div></br><div id="tableContainer"></div></div>');
+  buf.push('<div id="main-div"><p>Type in the texteArea below in order to print the properties of the corresponding "keydown" up and press events.</p><textarea id="txtArea">Un textarea</textarea><div id="editableDiv" contentEditable="true"><div><span>Une span editable</span></div></div></br><div id="tableContainer"></div></div>');
   }
   return buf.join("");
   };
@@ -101,7 +101,7 @@ window.require.define({"initialize": function(exports, require, module) {
     table = document.createElement('table');
     thead = table.createTHead();
     row = thead.insertRow(-1);
-    lableList = ['#', 'type', 'which', 'keyCode', 'charCode'];
+    lableList = ['#', 'type', 'which', 'keyCode', 'charCode', 'line value', 'e.altKey', 'e.ctrlKey', 'e.shiftKey', 'e.meta'];
     for (_i = 0, _len = lableList.length; _i < _len; _i++) {
       lable = lableList[_i];
       addCell(row, lable);
@@ -111,7 +111,6 @@ window.require.define({"initialize": function(exports, require, module) {
     table.appendChild(tbody);
     rowIndex = 1;
     addRowForEvent = function(e) {
-      var i, _j, _ref;
       console.log('ttot');
       row = tbody.insertRow(0);
       row.className = (rowIndex % 2) === 0 ? 'odd' : 'even';
@@ -121,9 +120,10 @@ window.require.define({"initialize": function(exports, require, module) {
       addCell(row, e.keyCode + ' (' + String.fromCharCode(e.keyCode) + ')');
       addCell(row, e.charCode + ' (' + String.fromCharCode(e.charCode) + ')');
       addCell(row, txtArea.value);
-      for (i = _j = 5, _ref = lableList.length - 1; _j <= _ref; i = _j += 1) {
-        addCell(row, e[lableList[i]]);
-      }
+      addCell(row, e.altKey);
+      addCell(row, e.ctrlKey);
+      addCell(row, e.shiftKey);
+      addCell(row, e.metaKey);
       return rowIndex += 1;
     };
     txtArea.addEventListener("keyup", function(e) {

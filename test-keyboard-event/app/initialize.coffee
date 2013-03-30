@@ -12,7 +12,7 @@ $(document).on 'ready', ->
     table     = document.createElement('table')
     thead     = table.createTHead()
     row       = thead.insertRow(-1)
-    lableList = ['#', 'type', 'which', 'keyCode', 'charCode']
+    lableList = ['#', 'type', 'which', 'keyCode', 'charCode', 'line value', 'e.altKey', 'e.ctrlKey', 'e.shiftKey', 'e.meta']
     addCell(row, lable) for lable in lableList
     document.getElementById('tableContainer').appendChild(table)
     tbody = document.createElement('tbody')
@@ -29,8 +29,10 @@ $(document).on 'ready', ->
         addCell(row, e.keyCode  + ' (' + String.fromCharCode(e.keyCode ) + ')' )
         addCell(row, e.charCode + ' (' + String.fromCharCode(e.charCode) + ')' )
         addCell(row, txtArea.value )
-        for i in [5..(lableList.length - 1)] by 1
-            addCell(row, e[ lableList[i] ])
+        addCell(row, e.altKey )
+        addCell(row, e.ctrlKey )
+        addCell(row, e.shiftKey )
+        addCell(row, e.metaKey )
         rowIndex += 1
 
     txtArea.addEventListener "keyup", (e)->
