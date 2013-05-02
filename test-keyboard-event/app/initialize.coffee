@@ -35,10 +35,8 @@ $(document).on 'ready', ->
         addCell(row, e.metaKey )
         rowIndex += 1
 
-    txtArea.addEventListener "keyup", (e)->
-        addRowForEvent(e)
-        console.log('keyup, value="' + this.value + '"')
 
+    # TXTAREA EVENTS
     txtArea.addEventListener "keydown", (e)->
         addRowForEvent(e)
         console.log('keydown, value="' + this.value + '"')
@@ -47,10 +45,12 @@ $(document).on 'ready', ->
         addRowForEvent(e)
         console.log('keypress, value="' + this.value + '"')
 
-    editableDiv.addEventListener "keyup", (e)->
+    txtArea.addEventListener "keyup", (e)->
         addRowForEvent(e)
         console.log('keyup, value="' + this.value + '"')
 
+
+    # EDITABLEDIV EVENTS
     editableDiv.addEventListener "keydown", (e)->
         addRowForEvent(e)
         console.log('keydown, value="' + this.value + '"')
@@ -58,3 +58,23 @@ $(document).on 'ready', ->
     editableDiv.addEventListener "keypress", (e)->
         addRowForEvent(e)
         console.log('keypress, value="' + this.value + '"')
+
+    editableDiv.addEventListener "keyup", (e)->
+        addRowForEvent(e)
+        console.log('keyup, value="' + this.value + '"')
+
+
+    # MOUSE EVENTS
+    editableDiv.addEventListener "mousedown", (e)->
+        console.log('mousedown')
+
+    editableDiv.addEventListener "mouseup", (e)->
+        console.log('mouseup')
+
+    editableDiv.addEventListener "click", (e)->
+        console.log('click')
+
+    editableDiv.addEventListener "drop", (e)->
+        e.preventDefault()
+        console.log('drop')
+

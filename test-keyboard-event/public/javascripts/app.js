@@ -126,10 +126,6 @@ window.require.define({"initialize": function(exports, require, module) {
       addCell(row, e.metaKey);
       return rowIndex += 1;
     };
-    txtArea.addEventListener("keyup", function(e) {
-      addRowForEvent(e);
-      return console.log('keyup, value="' + this.value + '"');
-    });
     txtArea.addEventListener("keydown", function(e) {
       addRowForEvent(e);
       return console.log('keydown, value="' + this.value + '"');
@@ -138,7 +134,7 @@ window.require.define({"initialize": function(exports, require, module) {
       addRowForEvent(e);
       return console.log('keypress, value="' + this.value + '"');
     });
-    editableDiv.addEventListener("keyup", function(e) {
+    txtArea.addEventListener("keyup", function(e) {
       addRowForEvent(e);
       return console.log('keyup, value="' + this.value + '"');
     });
@@ -146,9 +142,26 @@ window.require.define({"initialize": function(exports, require, module) {
       addRowForEvent(e);
       return console.log('keydown, value="' + this.value + '"');
     });
-    return editableDiv.addEventListener("keypress", function(e) {
+    editableDiv.addEventListener("keypress", function(e) {
       addRowForEvent(e);
       return console.log('keypress, value="' + this.value + '"');
+    });
+    editableDiv.addEventListener("keyup", function(e) {
+      addRowForEvent(e);
+      return console.log('keyup, value="' + this.value + '"');
+    });
+    editableDiv.addEventListener("mousedown", function(e) {
+      return console.log('mousedown');
+    });
+    editableDiv.addEventListener("mouseup", function(e) {
+      return console.log('mouseup');
+    });
+    editableDiv.addEventListener("click", function(e) {
+      return console.log('click');
+    });
+    return editableDiv.addEventListener("drop", function(e) {
+      e.preventDefault();
+      return console.log('drop');
     });
   });
   
