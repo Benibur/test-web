@@ -1,0 +1,17 @@
+#main-div
+    //- button#loadMahtJaxBtn load MathJax
+
+    //- the div where the user inputs the math formula  -->
+    p Formula input
+    div#mathInput.mathDivInput(contentEditable='true') 2^3
+
+    //- the div where the formated result is displayed
+    p Output (press return)
+    div#mathDiv.mathDivOutput $${}$$
+
+    //- The extracted content to insert anywhere
+    p The extracted content to insert anywhere
+    div
+        span Start of a line wiht an inline text
+        span#mathRes
+        span end of the line.

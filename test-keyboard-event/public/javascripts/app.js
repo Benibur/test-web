@@ -61,109 +61,125 @@
     throw new Error('Cannot find module "' + name + '"');
   };
 
-  var define = function(bundle) {
-    for (var key in bundle) {
-      if (has(bundle, key)) {
-        modules[key] = bundle[key];
+  var define = function(bundle, fn) {
+    if (typeof bundle === 'object') {
+      for (var key in bundle) {
+        if (has(bundle, key)) {
+          modules[key] = bundle[key];
+        }
+      }
+    } else {
+      modules[bundle] = fn;
+    }
+  };
+
+  var list = function() {
+    var result = [];
+    for (var item in modules) {
+      if (has(modules, item)) {
+        result.push(item);
       }
     }
-  }
+    return result;
+  };
 
   globals.require = require;
   globals.require.define = define;
+  globals.require.register = define;
+  globals.require.list = list;
   globals.require.brunch = true;
 })();
+require.register("body", function(exports, require, module) {
+module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
+attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
+var buf = [];
+with (locals || {}) {
+var interp;
+buf.push('<div id="main-div"><p>Type in the texteArea below in order to print the properties of the corresponding "keydown" up and press events.</p><textarea id="txtArea">Un textarea</textarea><div id="editableDiv" contentEditable="true"><div><span>Une span editable</span></div></div></br><div id="tableContainer"></div></div>');
+}
+return buf.join("");
+};
+});
 
-window.require.define({"body": function(exports, require, module) {
-  module.exports = function anonymous(locals, attrs, escape, rethrow, merge) {
-  attrs = attrs || jade.attrs; escape = escape || jade.escape; rethrow = rethrow || jade.rethrow; merge = merge || jade.merge;
-  var buf = [];
-  with (locals || {}) {
-  var interp;
-  buf.push('<div id="main-div"><p>Type in the texteArea below in order to print the properties of the corresponding "keydown" up and press events.</p><textarea id="txtArea">Un textarea</textarea><div id="editableDiv" contentEditable="true"><div><span>Une span editable</span></div></div></br><div id="tableContainer"></div></div>');
-  }
-  return buf.join("");
+require.register("initialize", function(exports, require, module) {
+$(document).on('ready', function() {
+  var addCell, addRowForEvent, editableDiv, lable, lableList, row, rowIndex, table, tbody, thead, txtArea, _i, _len;
+  $('body').html(require('body')());
+  txtArea = document.getElementById("txtArea");
+  editableDiv = document.getElementById("editableDiv");
+  addCell = function(row, text) {
+    var cell;
+    cell = row.insertCell(-1);
+    return cell.appendChild(document.createTextNode(text));
   };
-}});
-
-window.require.define({"initialize": function(exports, require, module) {
-  
-  $(document).on('ready', function() {
-    var addCell, addRowForEvent, editableDiv, lable, lableList, row, rowIndex, table, tbody, thead, txtArea, _i, _len;
-    $('body').html(require('body')());
-    txtArea = document.getElementById("txtArea");
-    editableDiv = document.getElementById("editableDiv");
-    addCell = function(row, text) {
-      var cell;
-      cell = row.insertCell(-1);
-      return cell.appendChild(document.createTextNode(text));
-    };
-    table = document.createElement('table');
-    thead = table.createTHead();
-    row = thead.insertRow(-1);
-    lableList = ['#', 'type', 'which', 'keyCode', 'charCode', 'line value', 'e.altKey', 'e.ctrlKey', 'e.shiftKey', 'e.meta'];
-    for (_i = 0, _len = lableList.length; _i < _len; _i++) {
-      lable = lableList[_i];
-      addCell(row, lable);
-    }
-    document.getElementById('tableContainer').appendChild(table);
-    tbody = document.createElement('tbody');
-    table.appendChild(tbody);
-    rowIndex = 1;
-    addRowForEvent = function(e) {
-      console.log('ttot');
-      row = tbody.insertRow(0);
-      row.className = (rowIndex % 2) === 0 ? 'odd' : 'even';
-      addCell(row, rowIndex);
-      addCell(row, e.type);
-      addCell(row, e.which + ' (' + String.fromCharCode(e.which) + ')');
-      addCell(row, e.keyCode + ' (' + String.fromCharCode(e.keyCode) + ')');
-      addCell(row, e.charCode + ' (' + String.fromCharCode(e.charCode) + ')');
-      addCell(row, txtArea.value);
-      addCell(row, e.altKey);
-      addCell(row, e.ctrlKey);
-      addCell(row, e.shiftKey);
-      addCell(row, e.metaKey);
-      return rowIndex += 1;
-    };
-    txtArea.addEventListener("keydown", function(e) {
-      addRowForEvent(e);
-      return console.log('keydown, value="' + this.value + '"');
-    });
-    txtArea.addEventListener("keypress", function(e) {
-      addRowForEvent(e);
-      return console.log('keypress, value="' + this.value + '"');
-    });
-    txtArea.addEventListener("keyup", function(e) {
-      addRowForEvent(e);
-      return console.log('keyup, value="' + this.value + '"');
-    });
-    editableDiv.addEventListener("keydown", function(e) {
-      addRowForEvent(e);
-      return console.log('keydown, value="' + this.value + '"');
-    });
-    editableDiv.addEventListener("keypress", function(e) {
-      addRowForEvent(e);
-      return console.log('keypress, value="' + this.value + '"');
-    });
-    editableDiv.addEventListener("keyup", function(e) {
-      addRowForEvent(e);
-      return console.log('keyup, value="' + this.value + '"');
-    });
-    editableDiv.addEventListener("mousedown", function(e) {
-      return console.log('mousedown');
-    });
-    editableDiv.addEventListener("mouseup", function(e) {
-      return console.log('mouseup');
-    });
-    editableDiv.addEventListener("click", function(e) {
-      return console.log('click');
-    });
-    return editableDiv.addEventListener("drop", function(e) {
-      e.preventDefault();
-      return console.log('drop');
-    });
+  table = document.createElement('table');
+  thead = table.createTHead();
+  row = thead.insertRow(-1);
+  lableList = ['#', 'type', 'which', 'keyCode', 'charCode', 'line value', 'e.altKey', 'e.ctrlKey', 'e.shiftKey', 'e.meta'];
+  for (_i = 0, _len = lableList.length; _i < _len; _i++) {
+    lable = lableList[_i];
+    addCell(row, lable);
+  }
+  document.getElementById('tableContainer').appendChild(table);
+  tbody = document.createElement('tbody');
+  table.appendChild(tbody);
+  rowIndex = 1;
+  addRowForEvent = function(e) {
+    console.log('ttot');
+    row = tbody.insertRow(0);
+    row.className = (rowIndex % 2) === 0 ? 'odd' : 'even';
+    addCell(row, rowIndex);
+    addCell(row, e.type);
+    addCell(row, e.which + ' (' + String.fromCharCode(e.which) + ')');
+    addCell(row, e.keyCode + ' (' + String.fromCharCode(e.keyCode) + ')');
+    addCell(row, e.charCode + ' (' + String.fromCharCode(e.charCode) + ')');
+    addCell(row, txtArea.value);
+    addCell(row, e.altKey);
+    addCell(row, e.ctrlKey);
+    addCell(row, e.shiftKey);
+    addCell(row, e.metaKey);
+    return rowIndex += 1;
+  };
+  txtArea.addEventListener("keydown", function(e) {
+    addRowForEvent(e);
+    return console.log('keydown, value="' + this.value + '"');
   });
-  
-}});
+  txtArea.addEventListener("keypress", function(e) {
+    addRowForEvent(e);
+    return console.log('keypress, value="' + this.value + '"');
+  });
+  txtArea.addEventListener("keyup", function(e) {
+    addRowForEvent(e);
+    return console.log('keyup, value="' + this.value + '"');
+  });
+  editableDiv.addEventListener("keydown", function(e) {
+    addRowForEvent(e);
+    return console.log('keydown, value="' + this.value + '"');
+  });
+  editableDiv.addEventListener("keypress", function(e) {
+    addRowForEvent(e);
+    return console.log('keypress, value="' + this.value + '"');
+  });
+  editableDiv.addEventListener("keyup", function(e) {
+    addRowForEvent(e);
+    return console.log('keyup, value="' + this.value + '"');
+  });
+  editableDiv.addEventListener("mousedown", function(e) {
+    return console.log('mousedown');
+  });
+  editableDiv.addEventListener("mouseup", function(e) {
+    return console.log('mouseup');
+  });
+  editableDiv.addEventListener("click", function(e) {
+    return console.log('click');
+  });
+  return editableDiv.addEventListener("drop", function(e) {
+    e.preventDefault();
+    return console.log('drop');
+  });
+});
 
+});
+
+
+//@ sourceMappingURL=app.js.map
