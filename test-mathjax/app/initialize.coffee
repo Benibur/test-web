@@ -3,6 +3,11 @@
 $(document).on 'ready', ->
     $('body').html( require('body')() )
 
+    script      = document.createElement("script")
+    script.type = "text/javascript"
+    script.src  = "http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    document.getElementsByTagName("head")[0].appendChild(script)
+
     mathIn  = document.getElementById('mathInput' )
     mathOut = document.getElementById('mathDiv')
     mathRes = document.getElementById('mathRes')
@@ -19,7 +24,12 @@ $(document).on 'ready', ->
     MATH = null
 
     MathJax.Hub.queue.Push ()->
-        MATH = MathJax.Hub.getAllJax("mathDivOutput")[0]
+        mathOut.textContent = '$${}$$'
+        MathJax.Hub.Typeset(mathOut)
+
+    MathJax.Hub.queue.Push ()->
+        # MATH = MathJax.Hub.getAllJax("mathDivOutput")[0]
+        MATH = MathJax.Hub.getJaxFor(mathOut)
 
     mathIn.addEventListener 'keyup', (e) ->
         # if e.which == 13
