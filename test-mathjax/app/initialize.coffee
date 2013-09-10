@@ -13,7 +13,7 @@ $(document).on 'ready', ->
     mathRes = document.getElementById('mathRes')
 
     HIDEBOX = () ->
-        mathOut.style.visibility = "hidden"
+        # mathOut.style.visibility = "hidden"
 
     SHOWBOX = () ->
         mathOut.style.visibility = "visible"
@@ -23,21 +23,43 @@ $(document).on 'ready', ->
 
     MATH = null
 
-    MathJax.Hub.queue.Push ()->
+    initMath = ()->
+
+        # MathJax.Hub.queue.Push ()->
         mathOut.textContent = '$${}$$'
         MathJax.Hub.Typeset(mathOut)
+        # fonctionne mais si plusieurs jax sur la page, pb
+        # MATH = MathJax.Hub.getAllJax()[0]
+        MATH = MathJax.Hub.getJaxFor(mathOut.children[2])
+        window.MATH = MATH
 
-    MathJax.Hub.queue.Push ()->
-        # MATH = MathJax.Hub.getAllJax("mathDivOutput")[0]
-        MATH = MathJax.Hub.getJaxFor(mathOut)
+        # MathJax.Hub.queue.Push ()->
+            # MATH = MathJax.Hub.getAllJax("mathDivOutput")[0]
+
+        null
 
     mathIn.addEventListener 'keyup', (e) ->
         # if e.which == 13
-        MathJax.Hub.queue.Push(
-            HIDEBOX,
-            ["Text",MATH,"\\displaystyle{"+mathIn.textContent+"}"],
-            SHOWBOX,
-            EXTRACTFORMULA)
+        if !MATH
+            initMath()
+
+        # MathJax.Hub.queue.Push( ["Text",MATH,"\\displaystyle{"+mathIn.textContent+"}"] )
+        MATH.Text( "\\displaystyle{"+mathIn.textContent+"}" )
+        EXTRACTFORMULA()
+
+        # Rq : si MathJax est chargé dynamiquement, la queue ne s'exécute plus
+        # (seulement pour le premier ds initMath, pourquoi ?)
+        # et mettre des actions dedans est sans effet. Il doit y avoir une
+        # solution pour traiter la queue, mais pas trouver.
+        # Contournement : ne pas passer par le queue et traiter en direct,
+        # semble fonctionner dans notre cas de figure (pas de conflit avec le
+        # démarrage ni avec d'autres actions qui seraient en cours)
+        # MathJax.Hub.queue.Push(
+        #     HIDEBOX,
+        #     ["Text",MATH,"\\displaystyle{"+mathIn.textContent+"}"],
+        #     SHOWBOX,
+        #     EXTRACTFORMULA)
+
         if e.which == 13
             e.preventDefault()
 
