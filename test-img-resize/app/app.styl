@@ -12,7 +12,11 @@
 
 .cont4
     top: 210px
-    left: 390px
+    left: 30px
+
+.cont5
+    top: 210px
+    left: 210px
 
 .resizedContainer
     background-color :yellow
@@ -100,6 +104,51 @@
 
 // fonctionne bien comme souhaité
 .resizedContainer4
+    background-color :yellow
+    position         :absolute
+    top              :15px
+    bottom           :15px
+    right            :15px
+    left             :15px
+    display         :flex
+    flex-direction  :column
+    justify-content :stretch
+    align-items     :stretch
+
+    div.img-container
+        display         :flex
+        justify-content :center
+        align-items     :center
+        flex-grow   :1
+        flex-shrink :0
+        background-color:#FF00DF
+        margin :4px
+        position:relative
+
+    .img-container > .img
+        position  :absolute
+        top       :50%
+        left      :50%
+        transform : translateX(-50%) translateY(-50%)
+        background-image    :url('../images/img.png')
+        background-size     :contain
+        background-repeat   :no-repeat
+        background-position :center
+        background-color    :red
+        width      :100%
+        height     :100%
+        max-width  :146px
+        max-height :100px
+
+    div.bottom-bar
+        flex-shrink:0
+        height:10px
+        background-color:green
+        margin-right:4px
+        margin-left :4px
+
+// fonctionne bien comme souhaité
+.resizedContainer5
     background-color :yellow
     position         :absolute
     top              :15px

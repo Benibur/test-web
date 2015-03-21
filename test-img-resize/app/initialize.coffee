@@ -16,3 +16,6 @@ $(document).on 'ready', ->
     container4 = body.querySelector('.resizedContainer4')
     container4.innerHTML = require('resized-content3')()
 
+    container5 = body.querySelector('.resizedContainer5')
+    container5.innerHTML = require('resized-content5')()
+
