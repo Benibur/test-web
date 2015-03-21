@@ -1,7 +1,31 @@
 .resizedContainer
-    background-color:blue
+    background-color:yellow
     position:absolute
     top:15px
     bottom:15px
     right:15px
     left:15px
+    display:flex
+    flex-direction:row
+    justify-content:stretch
+
+
+    .vert-tab-bar
+        background-color:blue
+        width:20px
+        height:90%
+        flex-shrink:0
+        flex-grow:0
+
+    .vert-tab-pannel-1
+        background-color:green
+        height:85%
+        flex-shrink:1
+        flex-grow:1
+        overflow:auto
+
+    .content
+        background-color:red
+        height:500px
+        width:40px
+        margin:10px
