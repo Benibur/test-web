@@ -42,6 +42,7 @@ test =
                         d = new Date(doc.date)
                         emit([d.getFullYear(),d.getMonth()+1,d.getDate()], doc._id)
                     reduce: '_count'
+
         test.db.insert  design_doc  ,
                     '_design/photo' ,
                     (err, body) ->
