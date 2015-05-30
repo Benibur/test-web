@@ -1,3 +1,5 @@
+img-cont-color = #694564
+
 .cont1
     top: 30px
     left: 30px
@@ -14,9 +16,17 @@
     top: 210px
     left: 30px
 
-.cont5
+#resizable-container.cont5
     top: 210px
     left: 210px
+    width:330px
+    height:200px
+
+#resizable-container.cont6
+    top: 440px
+    left: 210px
+    width:330px
+    height:200px
 
 .resizedContainer
     background-color :yellow
@@ -78,7 +88,7 @@
         align-items     :center
         flex-grow   :1
         flex-shrink :0
-        background-color:#FF00DF
+        background-color:img-cont-color
         margin :4px
         position:relative
 
@@ -121,7 +131,7 @@
         align-items     :center
         flex-grow   :1
         flex-shrink :0
-        background-color:#FF00DF
+        background-color:img-cont-color
         margin :4px
         position:relative
 
@@ -147,7 +157,7 @@
         margin-right:4px
         margin-left :4px
 
-// fonctionne bien comme souhaité
+// fonctionne bien, mais l'image n'est pas centrée, optimisable
 .resizedContainer5
     background-color :yellow
     position         :absolute
@@ -160,21 +170,23 @@
     justify-content :stretch
     align-items     :stretch
 
+
     div.img-container
         display         :flex
         justify-content :center
         align-items     :center
         flex-grow   :1
         flex-shrink :0
-        background-color:#FF00DF
+        background-color:img-cont-color
         margin :4px
         position:relative
+        flex:2
 
     .img-container > .img
         position  :absolute
-        top       :50%
+        bottom    :0%
         left      :50%
-        transform : translateX(-50%) translateY(-50%)
+        transform : translateX(-50%) translateY(-0%)
         background-image    :url('../images/img.png')
         background-size     :contain
         background-repeat   :no-repeat
@@ -186,8 +198,67 @@
         max-height :100px
 
     div.bottom-bar
-        flex-shrink:0
-        height:10px
+        flex-shrink:1
+        flex:1
+        flex-grow:1
+        // height:10px
+        min-height:30px
+        background-color:green
+        margin-right:4px
+        margin-left :4px
+
+
+.resizedContainer6
+    background-color :yellow
+    position         :absolute
+    top              :15px
+    bottom           :15px
+    right            :15px
+    left             :15px
+    display         :flex
+    justify-content :center
+    align-items     :stretch
+    flex-direction  :column
+    // justify-content :stretch
+
+    .bloc-container
+        display         :flex
+        flex-direction  :column
+        justify-content :stretch
+        align-items     :stretch
+        height: 130px
+        background-color:black
+
+
+    div.img-container
+        display         :flex
+        justify-content :center
+        align-items     :center
+        flex-grow   :1
+        flex-shrink :0
+        background-color:img-cont-color
+        margin :4px
+        position:relative
+        flex:1
+
+    .img
+        position  :absolute
+        bottom    :0%
+        left      :50%
+        transform : translateX(-50%) translateY(-0%)
+        background-image    :url('../images/img.png')
+        background-size     :contain
+        background-repeat   :no-repeat
+        background-position :center
+        background-color    :red
+        width      :100%
+        height     :100%
+        max-width  :146px
+        max-height :100px
+
+    div.bottom-bar
+        flex-grow :0
+        height  :30px
         background-color:green
         margin-right:4px
         margin-left :4px
