@@ -1,4 +1,4 @@
-LongListItems = require('long-list-rows')
+LongListRows = require('long-list-rows')
 
 
 # Initialize the application on DOM ready event.
@@ -6,9 +6,17 @@ $(document).on 'ready', ->
     body = document.querySelector('body')
     body.innerHTML = require('body')()
     container = body.querySelector('.resizedContainer')
-    # container.innerHTML = require('resized-content')()
 
 
+
+    ###* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+     * initialization of the long list
+    ###
+
+    ###*
+     * the call back in charge of decorating the rows when they are moved in the
+     * long list.
+    ###
     onLinesMovedCB = (rowsToDecorate)->
       # nMoved    : number of lines moved (==rows.length)
       # firstRank : integer, lowest rank of the moved rows ( note that
@@ -22,8 +30,16 @@ $(document).on 'ready', ->
           row.el.textContent = "row #{row.rank}"
       return true
 
+    ###*
+     * the element in the dom in which the long list will be.
+     * This element must be sized (here the element has a position:absolute and
+     * its top, bottom, right and left are fixed in the css)
+    ###
     viewPortElement = $('.longListViewPort')[0] # the viewport element
 
+    ###*
+     * Options for the long list
+    ###
     options =
         # unit used for the dimensions (px,em or rem)
         DIMENSIONS_UNIT : 'em'
@@ -48,10 +64,16 @@ $(document).on 'ready', ->
         # refresh is delayed to the nex throttle
         MAX_SPEED       : 1.5
 
-    longList = new LongListItems(viewPortElement, options, onLinesMovedCB)
+    ###*
+     * longList creation and initialization
+    ###
+    longList = new LongListRows(viewPortElement, options, onLinesMovedCB)
     longList.initRows(500000)
 
-    ###*
+
+
+
+    ###* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
      * helpers for tests and debug
     ###
 
