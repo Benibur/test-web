@@ -349,6 +349,7 @@ module.exports = class LongListRows
             current_scrollTop = @viewPort$.scrollTop
             speed = Math.abs(current_scrollTop - lastOnScroll_Y) / viewPortHeight
             if speed > MAX_SPEED
+                console.log "SPEED TO HIGH :-)"
                 _scrollHandler()
                 return
 
@@ -424,7 +425,7 @@ module.exports = class LongListRows
                 # nToMove = number of rows to move by reusing rows from the
                 # bottom of the buffer in order to fill its top
                 nToMove  = Math.min(bufr.firstRk - newBfr_firstRk, nRowsInBufr)
-                targetRk = Math.min(bufr.firstRk - 1, newBfr_firstRk)
+                targetRk = Math.min(bufr.firstRk - 1, newBfr_lastRk)
 
                 # console.log 'direction: UO',           \
                 #             'nToMove:'   + nToMove,    \
@@ -637,7 +638,7 @@ module.exports = class LongListRows
             bufr = buffer
             elemtsToDecorate = []
             row  = bufr.last
-            firstEl = row.el
+            firstEl = bufr.first.el
             for rk in [newRk..newRk-nToMove+1] by -1
                 row.rank = rk
                 @rows$.appendChild(row.el)
@@ -655,9 +656,6 @@ module.exports = class LongListRows
         ####
         # Get the dimensions
         _getStaticDimensions()    # get the dimensions (rowHeight)
-
-        # _constructBuffer()        # construct the buffer
-
 
         # construct the buffer
         buffer =

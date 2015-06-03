@@ -19,9 +19,7 @@ $(document).on 'ready', ->
       for row in rowsToDecorate
         if row.el
           row.el.textContent = "row #{row.rank}"
-          span = document.createElement('span')
-          span.textContent = 'toto'
-          row.el.appendChild(span)
+      return true
 
     viewPortElement = $('.longListViewPort')[0] # the viewport element
 
@@ -50,19 +48,19 @@ $(document).on 'ready', ->
         MAX_SPEED       : 1.5
 
     longList = new LongListItems(viewPortElement, options, onLinesMovedCB)
-    longList.initRows(550000)
+    longList.initRows(500000)
 
     ###*
      * helpers for tests and debug
     ###
 
-    # setTimeout( () ->
-    #     longList._test.goDownHalfBuffer(0.7)
-    # , 20  )
+    setTimeout( () ->
+        longList._test.goDownHalfBuffer(0.7)
+    , 20  )
 
-    # setTimeout( () ->
-    #     longList._test.goDownHalfBuffer(0.7)
-    # , 1000  )
+    setTimeout( () ->
+        longList._test.goUpHalfBuffer(0.7)
+    , 1000  )
 
     # setTimeout( () ->
     #     longList._test.goDownHalfBuffer(0.7)
