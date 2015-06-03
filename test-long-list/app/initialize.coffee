@@ -1,4 +1,4 @@
-LongListItems = require('long-list-items')
+LongListItems = require('long-list-rows')
 
 
 # Initialize the application on DOM ready event.
@@ -16,6 +16,7 @@ $(document).on 'ready', ->
       # rows      : Array of rows elements in the DOM, sorted in order for
       #             refresh (the most usefull to refresh is the first one)
       # console.log ' rows: ', rowsToDecorate
+      # rowsToDecorate : Arrray[{el:element, rank:rank},...]
       for row in rowsToDecorate
         if row.el
           row.el.textContent = "row #{row.rank}"
