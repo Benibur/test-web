@@ -21,12 +21,12 @@
 #
 #           # number of "screens" before and after the viewport in the buffer.
 #           # (ex : 1.5 => 1+2*1.5=4 screens always ready)
-#           COEF_SECURITY   : 3
+#           BUFFER_COEF    : 3
 #
 #           # number of "screens" before and after the viewport corresponding to
 #           # the safe zone. The Safe Zone is the rows where viewport can go
 #           # without trigering the movement of the buffer.
-#           # Must be smaller than COEF_SECURITY
+#           # Must be smaller than BUFFER_COEF
 #           SAFE_ZONE_COEF  : 2
 #
 #           # minimum duration between two refresh after scroll (ms)
@@ -164,11 +164,11 @@ module.exports = class LongListRows
         ROW_HEIGHT     = @options.ROW_HEIGHT
         # number of "screens" before and after the viewport in the buffer.
         # (ex: 1.5 => 1+2*1.5=4 screens always ready)
-        COEF_SECURITY   = @options.COEF_SECURITY
+        BUFFER_COEF   = @options.BUFFER_COEF
         # number of "screens" before and after the viewport corresponding to
         # the safe zone. The Safe Zone is the lines where viewport can go
         # without trigering the movement of the buffer.
-        # Must be smaller than COEF_SECURITY
+        # Must be smaller than BUFFER_COEF
         SAFE_ZONE_COEF  = @options.SAFE_ZONE_COEF
         # minimum duration between two refresh after scroll (ms)
         THROTTLE        = @options.THROTTLE
@@ -311,7 +311,7 @@ module.exports = class LongListRows
             # compute the theorical buffer (theorical because there might not
             # need of such a buffer if there is not many rows added)
             nRowsInViewPort   = Math.ceil(viewPortHeight/rowHeight)
-            nRowsInBufrMargin = Math.round(COEF_SECURITY * nRowsInViewPort)
+            nRowsInBufrMargin = Math.round(BUFFER_COEF * nRowsInViewPort)
             nRowsInBufr       = nRowsInViewPort + nRowsInBufrMargin*2
 
             # compute the safe zone

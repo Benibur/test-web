@@ -49,12 +49,12 @@ $(document).on 'ready', ->
 
         # number of "screens" before and after the viewport
         # (ex : 1.5 => 1+2*1.5=4 screens always ready)
-        COEF_SECURITY   : 3
+        BUFFER_COEF   : 3
 
         # number of "screens" before and after the viewport corresponding to
         # the safe zone. The Safe Zone is the rows where viewport can go
         # without trigering the movement of the buffer.
-        # Must be smaller than COEF_SECURITY
+        # Must be smaller than BUFFER_COEF
         SAFE_ZONE_COEF  : 2
 
         # minimum duration between two refresh after scroll (ms)
@@ -68,7 +68,7 @@ $(document).on 'ready', ->
      * longList creation and initialization
     ###
     longList = new LongListRows(viewPortElement, options, onLinesMovedCB)
-    longList.initRows(500000)
+    longList.initRows(99110)
 
 
 
