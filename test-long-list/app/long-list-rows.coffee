@@ -321,13 +321,6 @@ module.exports = class LongListRows
             # check there are enough rows to fill the buffer
             if nRows <= nRowsInBufr
                 isDynamic = false
-            #     nRowsInSafeZone
-            #     if nRows < nRowsInViewPort
-            #         nRowsInSafeZoneMargin = 0
-            #     else
-            #         nRowsInSafeZoneMargin = \
-            #             Math.round((nRowsInSafeZone - nRows)/2)
-            #         nRowsInSafeZone = nRows
             else
                 isDynamic = true
 
@@ -476,7 +469,8 @@ module.exports = class LongListRows
             rowsToDecorate = []
             for n in [1..nToCreate] by 1
                 row$ = document.createElement('li')
-                row$.setAttribute('class', 'long-list-rows')
+                row$.setAttribute('class', 'long-list-row')
+                row$.dataset.rk = n-1
                 row$.style.height = rowHeight + 'px'
                 @rows$.appendChild(row$)
                 row =
@@ -617,6 +611,7 @@ module.exports = class LongListRows
             row  = bufr.first
             for rk in [newRk..newRk+nToMove-1] by 1
                 row.rank = rk
+                row.el.dataset.rk = rk
                 @rows$.appendChild(row.el)
                 elemtsToDecorate.push({el:row.el,rank:rk})
                 row = row.prev
@@ -641,6 +636,7 @@ module.exports = class LongListRows
             firstEl = bufr.first.el
             for rk in [newRk..newRk-nToMove+1] by -1
                 row.rank = rk
+                row.el.dataset.rk = rk
                 @rows$.appendChild(row.el)
                 @rows$.insertBefore(row.el, firstEl)
                 elemtsToDecorate.push({el:row.el,rank:rk})

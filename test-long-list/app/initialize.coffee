@@ -1,6 +1,5 @@
 LongListRows = require('long-list-rows')
 
-
 # Initialize the application on DOM ready event.
 $(document).on 'ready', ->
     body = document.querySelector('body')
@@ -27,7 +26,8 @@ $(document).on 'ready', ->
       # rowsToDecorate : Arrray[{el:element, rank:rank},...]
       for row in rowsToDecorate
         if row.el
-          row.el.textContent = "row #{row.rank}"
+          # row.el.textContent = "row #{row.rank}"
+          row.el.innerHTML = """<div class="largest-col">#{row.rank} suivi d'un text long, long, très très, très très très très très très très très très très très très très très très très très très très très très très très très très très très très très très long...</div><div class="constant-col">div2</div>"""
       return true
 
     ###*
@@ -77,13 +77,13 @@ $(document).on 'ready', ->
      * helpers for tests and debug
     ###
 
-    setTimeout( () ->
-        longList._test.goDownHalfBuffer(0.7)
-    , 20  )
+    # setTimeout( () ->
+    #     longList._test.goDownHalfBuffer(0.7)
+    # , 20  )
 
-    setTimeout( () ->
-        longList._test.goUpHalfBuffer(0.7)
-    , 1000  )
+    # setTimeout( () ->
+    #     longList._test.goUpHalfBuffer(0.7)
+    # , 1000  )
 
     # setTimeout( () ->
     #     longList._test.goDownHalfBuffer(0.7)
