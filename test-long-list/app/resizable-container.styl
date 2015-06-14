@@ -1,10 +1,25 @@
+
+.controls
+    margin: 1em
+    button
+        margin-top:0.5em
+
+
+.long-list-block
+    position:relative
+    height:700px
+    resize:both
+    overflow: auto
+    margin: 1em
+    overflow:scroll
+
+
 #resizable-container
     width      : 20em
     height     : 30em
     background : #ccc
-    border     : 1px solid #aaa
-    top        : 30px
-    left       : 30px
+    top        : 0px
+    left       : 0em
     position   : absolute
     >div
         width:15px
@@ -12,8 +27,20 @@
         background-color:blue
         border:0
 
-li.long-list-row
-    display:flex
+    .resizedContainer
+        background-color :#41B5E8
+        position         :absolute
+        top              :15px
+        bottom           :15px
+        right            :15px
+        left             :15px
+
+
+.long-list-row
+    display     :flex
+    align-items : center
+    padding-right:5px
+    padding-left:5px
     .largest-col
         flex-grow:1
         flex-shrink:1
@@ -24,6 +51,22 @@ li.long-list-row
         flex-grow:0
         flex-shrink:0
         color:red
-        width: 3em
+    :hover
+        cursor:pointer
+
+
+.seleted
+    background-color:#FFAE45
+
+
+.tests
+    margin: 1em
+    border: 1px solid #ccc
+    padding:1em
+
+    #mocha
+        margin: 0em
+        #mocha-stats
+            position:static
 
 

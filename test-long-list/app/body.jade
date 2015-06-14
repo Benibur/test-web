@@ -1,8 +1,22 @@
-button.goDownBtn Go Down Half buffer
-button.goUpBtn Go Up Half buffer
-#resizable-container.dynDiv_moveDiv
-    section.resizedContainer.longListViewPort
-    .dynDiv_resizeDiv_tl
-    .dynDiv_resizeDiv_tr
-    .dynDiv_resizeDiv_bl
-    .dynDiv_resizeDiv_br
+.controls
+    button.initBtn Initialise rows
+    input.nbRowsToIni(type='number', value='100000')
+    br
+    button.goDownBtn Go Down Half buffer
+    button.goUpBtn Go Up Half buffer
+    br
+    button.addBtn Add n rows
+    input.nbRowsToAdd(type='number', value='2')
+    br
+    button.deleteBtn Delete selected rows
+    br
+    button.unActivateBtn un-activate scroll listener
+
+
+.long-list-block.dynDiv_setLimit
+    #resizable-container.dynDiv_moveDiv.dynDiv_hideMove
+        section.resizedContainer.longListViewPort
+        .dynDiv_resizeDiv_br
+
+.tests TESTS
+    #mocha

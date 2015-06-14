@@ -23,11 +23,13 @@
     "uglify-js-brunch": ">= 1.0 < 1.5",
     "clean-css-brunch": ">= 1.0 < 1.5",
 
+    "mocha": "mocha & chai : not used by node, just here to get the latest version of the libs to add them in the vendor folder for the client",
+    "mocha": "latest",
+    "chai" : "latest",
+
     "browser-sync-brunch": ">= 0.0 < 1.8"
 
   },
   "devDependencies": {
-    "mocha": "0.14.0",
-    "chai": "1.2.0"
   }
 }

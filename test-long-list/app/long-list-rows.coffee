@@ -3,40 +3,44 @@
 #
 #   # creation :
 #
-#       onRowsMovedCB = (nMoved, firstRank, rows)->
-#           # nMoved    : number of rows moved (==rows.length)
-#           # firstRank : integer, lowest rank of the moved rows ( note that
-#           #             lastRank == firstRank + nMoved - 1)
-#           # rows      : Array of rows elements in the DOM, sorted in order for
-#           #             refresh (the most usefull to refresh is the first one)
+#       onRowsMovedCB = (rows)->
+#           # rows      : [ {rank:Integer, el:Element} , ... ]
+#           Array of objects giving the rank and a reference to the element of
+#           the moved row.
+#           The array is sorted in order to optimize refresh (the most usefull
+#           to refresh is the first one)
 #
 #       viewPortElement = $('.longListViewPort')[0] # the viewport element
 #
 #       options =
 #           # unit used for the dimensions (px,em or rem)
-#           DIMENSIONS_UNIT : 'em'
+#           DIMENSIONS_UNIT   : 'em'
 #
 #           # Height reserved for each row (unit defined by DIMENSIONS_UNIT)
-#           ROW_HEIGHT     : 2
+#           ROW_HEIGHT        : 2
 #
 #           # number of "screens" before and after the viewport in the buffer.
 #           # (ex : 1.5 => 1+2*1.5=4 screens always ready)
-#           BUFFER_COEF    : 3
+#           BUFFER_COEF       : 3
 #
 #           # number of "screens" before and after the viewport corresponding to
 #           # the safe zone. The Safe Zone is the rows where viewport can go
 #           # without trigering the movement of the buffer.
 #           # Must be smaller than BUFFER_COEF
-#           SAFE_ZONE_COEF  : 2
+#           SAFE_ZONE_COEF    : 2
 #
 #           # minimum duration between two refresh after scroll (ms)
-#           THROTTLE        : 450
+#           THROTTLE          : 450
 #
 #           # max number of viewport height by seconds : beyond this speed the
 #           # refresh is delayed to the next throttle
-#           MAX_SPEED       : 1.5
+#           MAX_SPEED         : 1.5
 #
-#       longList = new LongListRows(viewPortElement, options, onRowsMovedCB)
+#           # call back when a row of the buffer is moved and must be completly
+#           # redecorated
+#           onRowsMovedCB     : (rowsToDecorate)->
+#
+#       longList = new LongListRows(viewPortElement, options)
 #       doActions() ...
 #
 #
@@ -61,6 +65,14 @@
 #
 #   # to remove all rows
 #       longList.removeAllRows()
+#
+#   # to get the element corresponding to a rank (null if the rank is not in the
+#   # DOM)
+#       longList.getRowElementAt(rank)
+#
+#   # To get elements of rows of the buffer after a certain rank.
+#   # Returns an empty array if the rank is after the buffer.
+#       getRowsAfter(rank)
 
 
 module.exports = class LongListRows
@@ -69,9 +81,9 @@ module.exports = class LongListRows
 ## PUBLIC SECTION ##
 #
 
-    constructor: (@externalViewPort$, @options, @onRowsMovedCB) ->
+    constructor: (@externalViewPort$, @options ) ->
         @options.MAX_SPEED = @options.MAX_SPEED  * @options.THROTTLE / 1000
-
+        @onRowsMovedCB     = @options.onRowsMovedCB
         ####
         # get elements (name ends with '$')
         @viewPort$ = document.createElement('div')
@@ -93,29 +105,61 @@ module.exports = class LongListRows
         @_DOM_controlerInit()
 
 
-    # if some are already in, they will be removed
+    # if some are already in, they will be removed. Will call onRowsMovedCB.
+    # ! note : your data describing rows state must be updated before calling
+    # this method, because onRowsMovedCB might be called => the data must be
+    # up to date when redecoration will occur.
     initRows: (nToAdd) ->
         ##
-        # remove all rows TODO
-
-        ##
-        # populate the new buffer
-        @_addRows(0, nToAdd) # will add rows but buffer will remain empty
-        # the buffer is empty, initialise it
+        # remove all rows of the buffer
         @_initBuffer()
+        # the buffer is empty, initialise it
+        @_firstPopulateBuffer(nToAdd)
 
 
-    # to add new lines
+    # to add new lines. Might call onRowsMovedCB.
+    # ! note : your data describing rows state must be updated before calling
+    # this method, because onRowsMovedCB might be called => the data must be
+    # up to date when redecoration will occur.
     addRows: (fromRank, nToAdd) ->
-        # will be defined by _DOM_controlerInit
+        @_addRows(fromRank, nToAdd)
 
 
-    # to remove some lines
+    # to remove some lines. Might call onRowsMovedCB.
+    # ! note : your data describing rows state must be updated before calling
+    # this method, because onRowsMovedCB might be called => the data must be
+    # up to date when redecoration will occur.
     removeRows: (fromRank, nToRemove) ->
+        @_removeRows(fromRank, nToRemove)
 
-
-    # to remove all lines
+    # to remove all lines. Might call onRowsMovedCB.
+    # ! note : your data describing rows state must be updated before calling
+    # this method, because onRowsMovedCB might be called => the data must be
+    # up to date when redecoration will occur.
     removeAllRows: () ->
+
+
+    # retuns the element corresponding to the row of the given rank or null
+    # if this row is outside the buffer.
+    getRowElementAt: (rank) ->
+        return @_getRowAt(rank).el
+
+    ###*
+         * return the current number of rows
+     * @return {Number} Number of rows
+    ###
+    getLength: () ->
+
+
+    ###*
+     * get elements of rows of the buffer after a certain rank. Returns an empty
+     * array if the rank is after the buffer.
+     * @return {Array} [{rank:Integer, el:Element}, ...]
+    ###
+    getRowsAfter: () ->
+
+
+
 
     # for tests
     _test:
@@ -147,6 +191,7 @@ module.exports = class LongListRows
         nRowsInBufrMargin     = null
         nRowsInSafeZoneMargin = null
         nRowsInSafeZone       = null
+        nRowsInViewPort       = null
         VP_firstRk            = null
         VP_lastRk             = null
         isDynamic             = false # true if more rows than elemts in buffer
@@ -334,14 +379,14 @@ module.exports = class LongListRows
          * Adapt the buffer when the viewport has moved out of the safe zone.
          * Launched by initRows and _scrollHandler
         ###
-        _adaptBuffer = () =>
+        _adaptBuffer = (force) =>
             noScrollScheduled  = true
 
             ##
             # 1/ test speed, if too high, relaunch a _scrollHandler
             current_scrollTop = @viewPort$.scrollTop
             speed = Math.abs(current_scrollTop - lastOnScroll_Y) / viewPortHeight
-            if speed > MAX_SPEED
+            if speed > MAX_SPEED and not force
                 console.log "SPEED TO HIGH :-)"
                 _scrollHandler()
                 return
@@ -364,10 +409,12 @@ module.exports = class LongListRows
 
             ##
             # 3/ detect how the viewport is moving and how to adapt the buffer
-            # console.log '\n======_adaptBuffer==beginning======='
-            # console.log 'viewPort firstRk', VP_firstRk, 'lastRk:', VP_lastRk
-            # console.log 'safeZone firstRk', SZ_firstRk, 'lastRk:', SZ_lastRk
-            # console.log 'buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
+            console.log '\n======_adaptBuffer, nRows=', nRows
+            console.log 'viewPort firstRk', VP_firstRk, 'lastRk:', VP_lastRk
+            console.log 'safeZone firstRk', SZ_firstRk, 'lastRk:', SZ_lastRk
+            console.log 'initial buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
+
+            nToMove = 0
 
             if bufr.lastRk < SZ_lastRk
                 ##
@@ -437,31 +484,32 @@ module.exports = class LongListRows
                 #                 "rows to move down after targetRk=", targetRk
 
 
-
-            console.log '======_adaptBuffer==ending='
-            console.log 'bufr', bufr
-            console.log '======_adaptBuffer==ended======='
+            console.log 'moved rows', nToMove
+            console.log 'final buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
 
         @_adaptBuffer = _adaptBuffer
 
 
         ###*
-         * Initialize the buffer when the first rows have been added by initRows
+         * The buffer has been initialized, now we will create its rows elements
          * The buffer lists all the created rows, keep a reference on the first
-         * (top most) and the last (bottom most) line.
+         * (top most) and the last (bottom most) row.
          * The buffer is a closed double linked chain.
-         * Each element of the chain is a "line" with a previous (prev) and next
+         * Each element of the chain is a "row" with a previous (prev) and next
            (next) element.
          * "closed" means that buffer.last.prev == buffer.first
          * data structure :
-             first   : {line}    # top most line
-             firstRk : {integer} # y of the first line of the buffer
-             last    : {line}    # bottom most line
-             lastRk  : {integer} # y of the last line of the buffer
+             first   : {row}    # top most row
+             firstRk : {integer} # y of the first row of the buffer
+             last    : {row}    # bottom most row
+             lastRk  : {integer} # y of the last row of the buffer
              nRows   : {integer} # number of rows in the buffer
         ###
-        _initBuffer  = () ->
-
+        _firstPopulateBuffer  = (nToAdd) =>
+            # set nRows and init the height of the rows element
+            nRows = nToAdd
+            @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+            # create the rows elements of the buffer
             bufr = buffer
             nToCreate = Math.min(nRows, nRowsInBufr)
             firstCreatedRow = {}
@@ -470,7 +518,7 @@ module.exports = class LongListRows
             for n in [1..nToCreate] by 1
                 row$ = document.createElement('li')
                 row$.setAttribute('class', 'long-list-row')
-                row$.dataset.rk = n-1
+                row$.dataset.rank = n-1
                 row$.style.height = rowHeight + 'px'
                 @rows$.appendChild(row$)
                 row =
@@ -491,7 +539,7 @@ module.exports = class LongListRows
             bufr.nRows   = nToCreate
             @onRowsMovedCB(rowsToDecorate)
 
-        @_initBuffer = _initBuffer
+        @_firstPopulateBuffer = _firstPopulateBuffer
 
 
         ###*
@@ -503,6 +551,7 @@ module.exports = class LongListRows
          * @param {integer} nToAdd number of rows to add
         ###
         _addRows = (fromRank, nToAdd)->
+            console.log 'LongList._addRows', fromRank, nToAdd
             nRows += nToAdd
 
             # check there are enough rows to fill the buffer
@@ -519,14 +568,17 @@ module.exports = class LongListRows
                 # adapt ranks of the rows of the buffer
                 first = buffer.first
                 row   = first
+                currentRk = first.rank + 1
                 loop
-                    row.rank += nToAdd
+                    row.rank = currentRk
+                    row.el.dataset.rank = currentRk
                     row = row.prev
+                    currentRk += 1
                     break if row = first
-                return
                 # adapt first & last rank of the buffer
                 buffer.firstRk += nToAdd
                 buffer.lastRk  += nToAdd
+                return
 
             ##
             # case 2 : The insertion is into the buffer
@@ -538,8 +590,6 @@ module.exports = class LongListRows
                 # case 2.1 : The insertion is into the buffer but before
                 # the viewport
                 if fromRank < viewport_startRk
-                    # remove margin of the first element of the buffer
-                    buffer.first.el.style.topMargin = 0
                     # increase rows$ height
                     @rows$.style.setProperty('height', nRows*rowHeight + 'px')
                     # move viewPort
@@ -547,7 +597,7 @@ module.exports = class LongListRows
                     # compute the reusable rows
                     nReusableRows = Math.min(nToAdd, fromRank - buffer.firstRk)
                     nRowsToReuse = Math.min(nReusableRows, nToAdd)
-                    # reuse the top rows elements
+                    # reuse the top rows elements
                     rowOfInsertion = buffer.getRow(fromRank)
                     for n in [1..nRowsToReuse] by 1
                         elToMove = buffer.first.el
@@ -589,6 +639,186 @@ module.exports = class LongListRows
 
 
         ###*
+         * Remove rows
+         * @param  {Integer|Element} fromRank  Rank  of the first row to delete,
+         *                           or reference to the element of the row.
+         * @param  {Integer} nToRemove Number of rows to delete from fromRank
+        ###
+        _removeRows = (fromRank, nToRemove) ->
+            if typeof fromRank != "number"
+                fromRank = parseInt(fromRank.dataset.rank)
+            toRank = fromRank + nToRemove - 1
+            nRows -= nToRemove
+            # check there are enough rows to fill the buffer
+            if nRows <= nRowsInBufr
+                isDynamic = false
+            else
+                isDynamic = true
+            # delete rows one by one
+            scrollTopDelta = 0
+            for rk in [fromRank..toRank] by 1
+                scrollTopDelta += _removeRow(rk)
+            @viewPort$.scrollTop += scrollTopDelta
+
+
+        ###*
+         * prerequisite : nRows and isDynamic must have been updated before
+         * _removeRow is called
+         * @return  {number} scrollTopDelta : delta in px that the scrollTop of
+         *                   the viewport should vary.
+        ###
+        _removeRow = (fromRank) =>
+
+            ##
+            # case 1 : The deletion is before the buffer
+            if fromRank < buffer.firstRk
+                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                # adapt ranks of the rows of the buffer
+                first     = buffer.first
+                row       = first
+                currentRk = first.rank - 1
+                buffer.firstRk = currentRk
+                loop
+                    row.rank = currentRk
+                    row.el.dataset.rank = currentRk
+                    row = row.prev
+                    currentRk += 1
+                    break if row == first
+                # adapt last rank of the buffer
+                buffer.lastRk  = currentRk - 1
+                @rows$.style.paddingTop = (buffer.firstRk*rowHeight)+'px'
+                # return the scrollTopDelta
+                return - rowHeight
+
+            ##
+            # case 2 : The deletion is into the buffer
+            else if fromRank <= buffer.lastRk
+                scrollTop = @viewPort$.scrollTop
+                viewport_startRk = Math.floor(scrollTop / rowHeight)
+                viewport_endRk = viewport_startRk + nRowsInViewPort - 1
+
+                ##
+                # deletion is into the buffer but before the viewport
+                # => adjust scrollTop in order not to move visible rows
+                if fromRank < viewport_startRk
+                    scrollTopDelta = - rowHeight
+                # => otherwise don't change the scrollTop
+                else
+                    scrollTopDelta = 0
+
+                # get row element
+                row = _getRowAt(fromRank)
+                # decrease rows$ height
+                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+
+                ##
+                # case 2.1
+                # test if the row element can be reused on top of the buffer (ie
+                # if there are rows above the buffer)
+                # If yes, the element will be moved on top of the buffer and
+                # redecorated
+                if 0 < buffer.firstRk
+                    first = buffer.first
+                    last  = buffer.last
+                    if row == last
+                        buffer.first = last
+                        buffer.last = last.next
+                        @rows$.insertBefore(row.el, first.el)
+                    else if row != first
+                        prev         = row.prev
+                        next         = row.next
+                        prev.next    = next
+                        next.prev    = prev
+                        row.prev     = first
+                        row.next     = last
+                        first.next   = row
+                        last.prev    = row
+                        buffer.first = row
+                        @rows$.insertBefore(row.el, first.el)
+                    # adapt ranks of the rows of the buffer
+                    first      = row
+                    currentRow = row
+                    currentRk  = buffer.firstRk - 1
+                    buffer.firstRk = currentRk
+                    loop
+                        currentRow.rank = currentRk
+                        currentRow.el.dataset.rank = currentRk
+                        currentRow = currentRow.prev
+                        currentRk += 1
+                        break if currentRow == first
+                    # adapt last rank of the buffer
+                    buffer.lastRk  = currentRk - 1
+                    @rows$.style.paddingTop = (buffer.firstRk*rowHeight)+'px'
+                    # redecorate the only element really modified
+                    @onRowsMovedCB([{el:row.el,rank:row.rank}])
+                    return scrollTopDelta
+
+                ##
+                # case 2.2
+                # the row element can be reused on the bottom of the
+                # buffer (ie there are rows under the buffer)
+                # The element will be moved at the bottom of the buffer and
+                # redecorated
+                else if buffer.lastRk < nRows - 1
+                    first = buffer.first
+                    last  = buffer.last
+                    if row == first
+                        buffer.last  = first
+                        buffer.first = first.prev
+                        @rows$.appendChild(row.el)
+                        firstImpactedRow = buffer.first
+                    else if row != last
+                        prev        = row.prev
+                        next        = row.next
+                        prev.next   = next
+                        next.prev   = prev
+                        row.prev    = first
+                        row.next    = last
+                        first.next  = row
+                        last.prev   = row
+                        buffer.last = row
+                        @rows$.appendChild(row.el)
+                        firstImpactedRow = prev
+                    else # row == buffer.last
+                        firstImpactedRow = row
+                    # adapt ranks of the rows of the buffer
+                    first      = buffer.first
+                    currentRow = firstImpactedRow
+                    currentRk  = fromRank
+                    loop
+                        currentRow.rank = currentRk
+                        currentRow.el.dataset.rank = currentRk
+                        currentRow = currentRow.prev
+                        currentRk += 1
+                        break if currentRow == first
+                    # redecorate the only element really modified
+                    @onRowsMovedCB([{el:row.el,rank:row.rank}])
+                    return scrollTopDelta
+
+                ##
+                # case 2.3
+                # There are no rows nor above nor under the buffer,
+                # just destrop the row from the buffer.
+                else
+                    # the buffer is now smaller than the number of rows
+                    # TODO
+                    isDynamic = false
+                    isReusable = false
+                    return scrollTopDelta
+
+
+            ##
+            # case 3 : The insertion is after the buffer
+            else if buffer.lastRk < fromRank
+                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+
+
+
+
+        @_removeRows = _removeRows
+
+
+        ###*
          * move `nToMove` rows from top of the buffer to its bottom and will
          * have their rank starting at `newRk`
          * @param  {Integer} nToMove Nomber of rows to move
@@ -611,7 +841,7 @@ module.exports = class LongListRows
             row  = bufr.first
             for rk in [newRk..newRk+nToMove-1] by 1
                 row.rank = rk
-                row.el.dataset.rk = rk
+                row.el.dataset.rank = rk
                 @rows$.appendChild(row.el)
                 elemtsToDecorate.push({el:row.el,rank:rk})
                 row = row.prev
@@ -636,7 +866,7 @@ module.exports = class LongListRows
             firstEl = bufr.first.el
             for rk in [newRk..newRk-nToMove+1] by -1
                 row.rank = rk
-                row.el.dataset.rk = rk
+                row.el.dataset.rank = rk
                 @rows$.appendChild(row.el)
                 @rows$.insertBefore(row.el, firstEl)
                 elemtsToDecorate.push({el:row.el,rank:rk})
@@ -649,31 +879,36 @@ module.exports = class LongListRows
             return elemtsToDecorate
 
 
-        ####
-        # Get the dimensions
-        _getStaticDimensions()    # get the dimensions (rowHeight)
-
         # construct the buffer
-        buffer =
-            first   : null   # top most row
-            firstRk : -1     # rank of the first row of the buffer
-            last    : null   # bottom most row
-            lastRk  : -1     # rank of the last row of the buffer
-            nRows   : null   # number of rows in the buffer
-            getRow  : (rank)->
-                first = this.first
-                row   = first
-                loop
-                    if rank == row.rank
-                        return row
-                    row = row.prev
-                    break if row == first
-                return null
+        @_initBuffer = () ->
+            # if the buffer is not empty, remove all elements of rows$
+            if buffer
+                @rows$.innerHTML = ''
+                @rows$.style.height = '0px'
+                @rows$.style.paddingTop = '0px'
+                @viewPort$.scrollTop = 0
 
-        # compute the geomatrie
+            buffer =
+                first   : null   # top most row
+                firstRk : -1     # rank of the first row of the buffer
+                last    : null   # bottom most row
+                lastRk  : -1     # rank of the last row of the buffer
+                nRows   : null   # number of rows in the buffer
+                getRow  : (rank)->
+                    first = this.first
+                    row   = first
+                    loop
+                        if rank == row.rank
+                            return row
+                        row = row.prev
+                        break if row == first
+                    return null
+        ####
+        # Get the dimensions (rowHeight)
+        _getStaticDimensions()
+        ####
+        # compute the geometry
         _resizeHandler()
-
-
         ####
         # bind events
         # @rows$.addEventListener(   'click'      , @_clickHandler    )
@@ -683,17 +918,71 @@ module.exports = class LongListRows
         # @index$.addEventListener(    'mouseenter' , _indexMouseEnter  )
         # @index$.addEventListener(    'mouseleave' , _indexMouseLeave  )
 
+        ###*
+         * retuns the element corresponding to the row of the given rank or null
+         * if this row is outside the buffer.
+        ###
+        _getRowAt = (rank)->
+            if rank < buffer.firstRk
+                return null
+            else if rank <= buffer.lastRk
+                row = buffer.first
+                i   = rank - buffer.firstRk
+                while i--
+                    row = row.prev
+                return row
+            else
+                return null
+        @_getRowAt = _getRowAt
+
+
+        @getLength = () ->
+            return nRows
 
         ###*
-         * functions for tests and debug
+         * get an array of the rows elements in the buffer after rank (included)
+         * @param  {Integer} rank Rank of the first row
+         * @return {Array}      [{rank:Integer, el:Element}, ...], [] if the
+         *                      rank is not in the buffer.
         ###
+        _getRowsAfter = (rank)->
+            res = []
+            # the row is after the buffer, return empty array.
+            if rank > buffer.lastRk
+                return res
+            # get the row
+            first = buffer.first
+            row = _getRowAt(rank)
+            # the row is above the buffer : return all buffer
+            if row == null
+                row = buffer.first
+            # fetch all the rows after and return
+            loop
+                res.push({el:row.el, rank:row.rank})
+                row = row.prev
+                break if row == first
+            return res
+
+        @getRowsAfter = _getRowsAfter
+
+
+
+
+################################################################################
+## FUNCTIONS FOR TESTS AND DEBUG ##
+#
+
         _goDownHalfBuffer = (ratio) =>
             if typeof(ratio) != 'number'
                 ratio = 0.5
             scrollTop = @viewPort$.scrollTop
             bufferHeight = buffer.nRows * rowHeight
             @viewPort$.scrollTop = scrollTop + Math.round(bufferHeight*ratio)
+            # force _adaptBuffer in order to remain sync (otherwise you have to
+            # wait for the scroll event so that the buffer gets adapted)
+            _adaptBuffer(true)
         @_test.goDownHalfBuffer = _goDownHalfBuffer
+
 
         _goUpHalfBuffer = (ratio) =>
             if typeof(ratio) != 'number'
@@ -702,4 +991,34 @@ module.exports = class LongListRows
             bufferHeight = buffer.nRows * rowHeight
             @viewPort$.scrollTop = scrollTop - Math.round(bufferHeight*ratio)
         @_test.goUpHalfBuffer = _goUpHalfBuffer
+
+
+        _getState = () =>
+            current_scrollTop = @viewPort$.scrollTop
+            bufr = buffer
+            VP_firstY  = current_scrollTop
+            VP_firstRk = Math.floor(VP_firstY / rowHeight)
+            VP_lastY   = current_scrollTop + viewPortHeight
+            VP_lastRk  = Math.floor(VP_lastY / rowHeight)
+            SZ_firstRk = Math.max(VP_firstRk - nRowsInSafeZoneMargin , 0)
+            SZ_lastRk  = SZ_firstRk + nRowsInSafeZone - 1
+            state =
+                buffer:
+                    firstRk : buffer.firstRk
+                    lastRk  : buffer.lastRk
+                viewport :
+                    firstRk : VP_firstRk
+                    lastRk  : VP_lastRk
+                safeZone :
+                    firstRk : SZ_firstRk
+                    lastRk  : SZ_lastRk
+                nRows    : nRows
+                rowHeight: rowHeight
+                height : parseInt(@rows$.style.height)
+            return state
+        @_test.getState = _getState
+
+        @_test.unActivateScrollListener = () =>
+            @viewPort$.removeEventListener( 'scroll', _scrollHandler )
+
 
