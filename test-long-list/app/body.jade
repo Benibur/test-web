@@ -1,6 +1,6 @@
 .controls
     button.initBtn Initialise rows
-    input.nbRowsToIni(type='number', value='100000')
+    input.nbRowsToIni(type='number', value='100')
     br
     button.goDownBtn Go Down Half buffer
     button.goUpBtn Go Up Half buffer
@@ -11,11 +11,14 @@
     button.deleteBtn Delete selected rows
     br
     button.unActivateBtn un-activate scroll listener
+    br
+    button.testLongListBtn Test consistency
+    span.consistencyResult
 
 
 .long-list-block.dynDiv_setLimit
     #resizable-container.dynDiv_moveDiv.dynDiv_hideMove
-        section.resizedContainer.longListViewPort
+        section.resizedContainer.longListViewport
         .dynDiv_resizeDiv_br
 
 .tests TESTS

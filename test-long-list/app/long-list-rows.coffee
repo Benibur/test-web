@@ -10,7 +10,7 @@
 #           The array is sorted in order to optimize refresh (the most usefull
 #           to refresh is the first one)
 #
-#       viewPortElement = $('.longListViewPort')[0] # the viewport element
+#       viewportElement = $('.longListViewport')[0] # the viewport element
 #
 #       options =
 #           # unit used for the dimensions (px,em or rem)
@@ -40,12 +40,12 @@
 #           # redecorated
 #           onRowsMovedCB     : (rowsToDecorate)->
 #
-#       longList = new LongListRows(viewPortElement, options)
+#       longList = new LongListRows(viewportElement, options)
 #       doActions() ...
 #
 #
-#   # if the the viewPortElement is not initialy attached in the DOM, then call
-#   resizeHandler when the viewPortElement is attached :
+#   # if the the viewportElement is not initialy attached in the DOM, then call
+#   resizeHandler when the viewportElement is attached :
 #       longList.resizeHandler()
 #
 #   # to add initial new rows
@@ -54,7 +54,7 @@
 #
 #   # USELESS SO FAR : if geometry changes : longList.removeAll() and then
 #   # create a new LongList()
-#   # when the geometry of the parent changes (height of viewPortElement) :
+#   # when the geometry of the parent changes (height of viewportElement) :
 #       longList.resizeHandler()
 #
 #   # to add rows
@@ -81,22 +81,22 @@ module.exports = class LongListRows
 ## PUBLIC SECTION ##
 #
 
-    constructor: (@externalViewPort$, @options ) ->
+    constructor: (@externalViewport$, @options ) ->
         @options.MAX_SPEED = @options.MAX_SPEED  * @options.THROTTLE / 1000
         @onRowsMovedCB     = @options.onRowsMovedCB
         ####
         # get elements (name ends with '$')
-        @viewPort$ = document.createElement('div')
-        @viewPort$.classList.add('viewport')
-        @externalViewPort$.appendChild(@viewPort$)
+        @viewport$ = document.createElement('div')
+        @viewport$.classList.add('viewport')
+        @externalViewport$.appendChild(@viewport$)
         @rows$ = document.createElement('div')
         @rows$.classList.add('rows')
         @rows$.style.cssText = "padding-top: 0px; box-sizing: border-box;"
-        @viewPort$.appendChild(@rows$)
+        @viewport$.appendChild(@rows$)
         ####
         # set viewport style
-        @externalViewPort$.style.display = 'flex'
-        @viewPort$.style.cssText = "flex: 1 1 0%;
+        @externalViewport$.style.display = 'flex'
+        @viewport$.style.cssText = "flex: 1 1 0%;
             position: relative;
             overflow-x: hidden;
             overflow-y: auto;"
@@ -191,11 +191,11 @@ module.exports = class LongListRows
         nRowsInBufrMargin     = null
         nRowsInSafeZoneMargin = null
         nRowsInSafeZone       = null
-        nRowsInViewPort       = null
+        nRowsInViewport       = null
         VP_firstRk            = null
         VP_lastRk             = null
         isDynamic             = false # true if more rows than elemts in buffer
-        viewPortHeight        = null
+        viewportHeight        = null
         lastOnScroll_Y        = null
         current_scrollTop     = null
         nRows                 = 0    # number of rows of the long list
@@ -224,7 +224,7 @@ module.exports = class LongListRows
 
         _scrollHandler = (e) =>
             if noScrollScheduled and isDynamic
-                lastOnScroll_Y = @viewPort$.scrollTop
+                lastOnScroll_Y = @viewport$.scrollTop
                 setTimeout(_adaptBuffer,THROTTLE)
                 noScrollScheduled = false
 
@@ -260,7 +260,7 @@ module.exports = class LongListRows
                 when 'px'
                     return value
                 when 'em'
-                    return _emToPixels(value, @viewPort$)
+                    return _emToPixels(value, @viewport$)
                 when 'rem'
                     return _remToPixels(value)
 
@@ -329,39 +329,39 @@ module.exports = class LongListRows
         ###*
          * Compute all the geometry after a resize or when the list in inserted
          * in the DOM.
-         * _adaptBuffer will be executed at the end except if the viewPort has
+         * _adaptBuffer will be executed at the end except if the viewport has
          * no height (if not inserted in the dom for instance) or there is no
          * row
         ###
         _resizeHandler= ()=>
 
             # get dimensions.
-            viewPortHeight = @viewPort$.clientHeight
+            viewportHeight = @viewport$.clientHeight
 
-            # the viewPort has no height : geometry can not be computed
+            # the viewport has no height : geometry can not be computed
             # except if some initial width and height has been given
-            if viewPortHeight <= 0
+            if viewportHeight <= 0
                 if @initialHeight
-                    viewPortHeight = @initialHeight
+                    viewportHeight = @initialHeight
                 else
                     return false
 
             # if the height of viewport has not change, we can directly adapt
             # buffer
-            if viewPortHeight == previousHeight and nRows != 0
+            if viewportHeight == previousHeight and nRows != 0
                 _adaptBuffer()
                 return
-            previousHeight  = viewPortHeight
+            previousHeight  = viewportHeight
 
             # compute the theorical buffer (theorical because there might not
             # need of such a buffer if there is not many rows added)
-            nRowsInViewPort   = Math.ceil(viewPortHeight/rowHeight)
-            nRowsInBufrMargin = Math.round(BUFFER_COEF * nRowsInViewPort)
-            nRowsInBufr       = nRowsInViewPort + nRowsInBufrMargin*2
+            nRowsInViewport   = Math.ceil(viewportHeight/rowHeight)
+            nRowsInBufrMargin = Math.round(BUFFER_COEF * nRowsInViewport)
+            nRowsInBufr       = nRowsInViewport + nRowsInBufrMargin*2
 
             # compute the safe zone
-            nRowsInSafeZoneMargin = Math.round(SAFE_ZONE_COEF * nRowsInViewPort)
-            nRowsInSafeZone       = nRowsInViewPort + nRowsInSafeZoneMargin*2
+            nRowsInSafeZoneMargin = Math.round(SAFE_ZONE_COEF * nRowsInViewport)
+            nRowsInSafeZone       = nRowsInViewport + nRowsInSafeZoneMargin*2
 
             # check there are enough rows to fill the buffer
             if nRows <= nRowsInBufr
@@ -384,8 +384,8 @@ module.exports = class LongListRows
 
             ##
             # 1/ test speed, if too high, relaunch a _scrollHandler
-            current_scrollTop = @viewPort$.scrollTop
-            speed = Math.abs(current_scrollTop - lastOnScroll_Y) / viewPortHeight
+            current_scrollTop = @viewport$.scrollTop
+            speed = Math.abs(current_scrollTop - lastOnScroll_Y) / viewportHeight
             if speed > MAX_SPEED and not force
                 console.log "SPEED TO HIGH :-)"
                 _scrollHandler()
@@ -396,7 +396,7 @@ module.exports = class LongListRows
             bufr = buffer
             VP_firstY  = current_scrollTop
             VP_firstRk = Math.floor(VP_firstY / rowHeight)
-            VP_lastY   = current_scrollTop + viewPortHeight
+            VP_lastY   = current_scrollTop + viewportHeight
             VP_lastRk  = Math.floor(VP_lastY / rowHeight)
             SZ_firstRk = Math.max(VP_firstRk - nRowsInSafeZoneMargin , 0)
             SZ_lastRk  = SZ_firstRk + nRowsInSafeZone - 1
@@ -410,7 +410,7 @@ module.exports = class LongListRows
             ##
             # 3/ detect how the viewport is moving and how to adapt the buffer
             console.log '\n======_adaptBuffer, nRows=', nRows
-            console.log 'viewPort firstRk', VP_firstRk, 'lastRk:', VP_lastRk
+            console.log 'viewport firstRk', VP_firstRk, 'lastRk:', VP_lastRk
             console.log 'safeZone firstRk', SZ_firstRk, 'lastRk:', SZ_lastRk
             console.log 'initial buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
 
@@ -418,7 +418,7 @@ module.exports = class LongListRows
 
             if bufr.lastRk < SZ_lastRk
                 ##
-                # 3.1/ the viewPort is going down and its last line is bellow
+                # 3.1/ the viewport is going down and its last line is bellow
                 # the last line of the safeZone.
                 # => compute new buffer
 
@@ -455,7 +455,7 @@ module.exports = class LongListRows
 
             else if SZ_firstRk < bufr.firstRk
                 ##
-                # 3.2/ the viewPort is going up and its last line is bellow
+                # 3.2/ the viewport is going up and its last line is bellow
                 # the last line of the safeZone.
                 # => compute new buffer
 
@@ -562,9 +562,9 @@ module.exports = class LongListRows
             ##
             # case 1 : The insertion is before the buffer
             if fromRank < buffer.firstRk
-                scrollTop = @viewPort$.scrollTop
+                scrollTop = @viewport$.scrollTop
                 @rows$.style.setProperty('height', nRows*rowHeight + 'px')
-                @viewPort$.scrollTop = scrollTop + nToAdd*rowHeight
+                @viewport$.scrollTop = scrollTop + nToAdd*rowHeight
                 # adapt ranks of the rows of the buffer
                 first = buffer.first
                 row   = first
@@ -583,7 +583,7 @@ module.exports = class LongListRows
             ##
             # case 2 : The insertion is into the buffer
             else if fromRank < buffer.lastRk
-                scrollTop = @viewPort$.scrollTop
+                scrollTop = @viewport$.scrollTop
                 viewport_startRk = Math.floor(scrollTop / rowHeight)
 
                 ##
@@ -592,8 +592,8 @@ module.exports = class LongListRows
                 if fromRank < viewport_startRk
                     # increase rows$ height
                     @rows$.style.setProperty('height', nRows*rowHeight + 'px')
-                    # move viewPort
-                    @viewPort$.scrollTop = scrollTop + nToAdd*rowHeight
+                    # move viewport
+                    @viewport$.scrollTop = scrollTop + nToAdd*rowHeight
                     # compute the reusable rows
                     nReusableRows = Math.min(nToAdd, fromRank - buffer.firstRk)
                     nRowsToReuse = Math.min(nReusableRows, nToAdd)
@@ -658,7 +658,7 @@ module.exports = class LongListRows
             scrollTopDelta = 0
             for rk in [fromRank..toRank] by 1
                 scrollTopDelta += _removeRow(rk)
-            @viewPort$.scrollTop += scrollTopDelta
+            @viewport$.scrollTop += scrollTopDelta
 
 
         ###*
@@ -693,9 +693,9 @@ module.exports = class LongListRows
             ##
             # case 2 : The deletion is into the buffer
             else if fromRank <= buffer.lastRk
-                scrollTop = @viewPort$.scrollTop
+                scrollTop = @viewport$.scrollTop
                 viewport_startRk = Math.floor(scrollTop / rowHeight)
-                viewport_endRk = viewport_startRk + nRowsInViewPort - 1
+                viewport_endRk = viewport_startRk + nRowsInViewport - 1
 
                 ##
                 # deletion is into the buffer but before the viewport
@@ -798,12 +798,45 @@ module.exports = class LongListRows
                 ##
                 # case 2.3
                 # There are no rows nor above nor under the buffer,
-                # just destrop the row from the buffer.
+                # just destroy the row from the buffer.
                 else
                     # the buffer is now smaller than the number of rows
                     # TODO
-                    isDynamic = false
+                    isDynamic  = false
                     isReusable = false
+                    first = buffer.first
+                    last  = buffer.last
+                    if row == first
+                        last.prev  = row.prev
+                        buffer.first = row.prev
+                        buffer.first.next = last
+                        @rows$.removeChild(row.el)
+                        firstImpactedRow = buffer.first
+                    else if row != last
+                        prev        = row.prev
+                        next        = row.next
+                        prev.next   = next
+                        next.prev   = prev
+                        @rows$.removeChild(row.el)
+                        firstImpactedRow = prev
+                    else # row == buffer.last ie it is the last row
+                        buffer.last = last.next
+                        buffer.last.prev = first
+                        first.next = buffer.last
+                        @rows$.removeChild(row.el)
+                        firstImpactedRow = null
+                    # adapt ranks of the rows of the buffer
+                    if firstImpactedRow
+                        first      = buffer.first
+                        currentRow = firstImpactedRow
+                        currentRk  = fromRank
+                        loop
+                            currentRow.rank = currentRk
+                            currentRow.el.dataset.rank = currentRk
+                            currentRow = currentRow.prev
+                            currentRk += 1
+                            break if currentRow == first
+                    buffer.lastRk -= 1
                     return scrollTopDelta
 
 
@@ -886,7 +919,7 @@ module.exports = class LongListRows
                 @rows$.innerHTML = ''
                 @rows$.style.height = '0px'
                 @rows$.style.paddingTop = '0px'
-                @viewPort$.scrollTop = 0
+                @viewport$.scrollTop = 0
 
             buffer =
                 first   : null   # top most row
@@ -913,7 +946,7 @@ module.exports = class LongListRows
         # bind events
         # @rows$.addEventListener(   'click'      , @_clickHandler    )
         # @rows$.addEventListener(   'dblclick'   , @_dblclickHandler )
-        @viewPort$.addEventListener( 'scroll'     , _scrollHandler    )
+        @viewport$.addEventListener( 'scroll'     , _scrollHandler    )
         # @index$.addEventListener(    'click'      , _indexClickHandler)
         # @index$.addEventListener(    'mouseenter' , _indexMouseEnter  )
         # @index$.addEventListener(    'mouseleave' , _indexMouseLeave  )
@@ -975,9 +1008,9 @@ module.exports = class LongListRows
         _goDownHalfBuffer = (ratio) =>
             if typeof(ratio) != 'number'
                 ratio = 0.5
-            scrollTop = @viewPort$.scrollTop
+            scrollTop = @viewport$.scrollTop
             bufferHeight = buffer.nRows * rowHeight
-            @viewPort$.scrollTop = scrollTop + Math.round(bufferHeight*ratio)
+            @viewport$.scrollTop = scrollTop + Math.round(bufferHeight*ratio)
             # force _adaptBuffer in order to remain sync (otherwise you have to
             # wait for the scroll event so that the buffer gets adapted)
             _adaptBuffer(true)
@@ -987,38 +1020,45 @@ module.exports = class LongListRows
         _goUpHalfBuffer = (ratio) =>
             if typeof(ratio) != 'number'
                 ratio = 0.5
-            scrollTop = @viewPort$.scrollTop
+            scrollTop = @viewport$.scrollTop
             bufferHeight = buffer.nRows * rowHeight
-            @viewPort$.scrollTop = scrollTop - Math.round(bufferHeight*ratio)
+            @viewport$.scrollTop = scrollTop - Math.round(bufferHeight*ratio)
         @_test.goUpHalfBuffer = _goUpHalfBuffer
 
 
         _getState = () =>
-            current_scrollTop = @viewPort$.scrollTop
+            current_scrollTop = @viewport$.scrollTop
             bufr = buffer
             VP_firstY  = current_scrollTop
             VP_firstRk = Math.floor(VP_firstY / rowHeight)
-            VP_lastY   = current_scrollTop + viewPortHeight
+            VP_lastY   = current_scrollTop + viewportHeight
             VP_lastRk  = Math.floor(VP_lastY / rowHeight)
             SZ_firstRk = Math.max(VP_firstRk - nRowsInSafeZoneMargin , 0)
             SZ_lastRk  = SZ_firstRk + nRowsInSafeZone - 1
             state =
-                buffer:
+                buffer        :
                     firstRk : buffer.firstRk
                     lastRk  : buffer.lastRk
-                viewport :
+                viewport      :
                     firstRk : VP_firstRk
                     lastRk  : VP_lastRk
                 safeZone :
                     firstRk : SZ_firstRk
                     lastRk  : SZ_lastRk
-                nRows    : nRows
-                rowHeight: rowHeight
-                height : parseInt(@rows$.style.height)
+                nRows         : nRows
+                rowHeight     : rowHeight
+                height        : parseInt(@rows$.style.height)
+                nRowsInBufr   : nRowsInBufr
             return state
         @_test.getState = _getState
 
+
+        _getInternals = () =>
+            return {buffer, @rows$, @viewport$}
+        @_test.getInternals = _getInternals
+
+
         @_test.unActivateScrollListener = () =>
-            @viewPort$.removeEventListener( 'scroll', _scrollHandler )
+            @viewport$.removeEventListener( 'scroll', _scrollHandler )
 
 

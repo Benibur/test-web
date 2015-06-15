@@ -8,8 +8,6 @@ tail  node
 
 ###
 
-_counter = 0
-
 module.exports = class DoublyLinkedList
 
 
@@ -23,17 +21,19 @@ module.exports = class DoublyLinkedList
     @_tail = null
     # length of list
     @_length = 0
+    # counter for nodes' ids
+    @_counter = 0
     return
 
 
   # Wraps data in a node object.
   _createNewNode : (data) ->
-    _counter++
     node =
       data: data
       next: null
       prev: null
-      id  : _counter
+      id  : @_counter
+    @_counter++
     return node
 
 
@@ -77,6 +77,7 @@ module.exports = class DoublyLinkedList
 
   ###
   # Returns the node at the specified index. The index starts at 0.
+  # Undefined if index out of range.
   ###
   at : (index) ->
     if index >= 0 and index < @_length
@@ -84,11 +85,11 @@ module.exports = class DoublyLinkedList
       while index--
         node = node.next
       return node
-    return
+    return undefined
 
 
   ###
-  # Returns the node at the specified index, undefined if wrong id.
+  # Returns the node with the specified id, undefined if wrong id.
   ###
   id : (id) ->
     id = parseInt(id)
@@ -100,6 +101,23 @@ module.exports = class DoublyLinkedList
       return node
     else
       return undefined
+
+
+  ###
+  # Returns the rank of a node, undefined if node not found
+  ###
+  rank : (node) ->
+    rank = 0
+    id = parseInt(id)
+    index = @_length
+    currentNode = @_head
+    loop
+      if node == currentNode
+        return rank
+      rank++
+      currentNode = currentNode.next
+      break if currentNode == null
+    return undefined
 
 
   ###
@@ -128,7 +146,9 @@ module.exports = class DoublyLinkedList
   ###
   remove : (index) ->
     node = @at(index)
-    @_removeNode(node)
+    if node == undefined
+      return false
+    return @_removeNode(node)
 
 
   ###
@@ -136,26 +156,52 @@ module.exports = class DoublyLinkedList
   ###
   removeID : (id) ->
     node = @id(parseInt(id))
-    @_removeNode(node)
-
+    if node == undefined
+      return false
+    return @_removeNode(node)
 
 
   _removeNode : (node) ->
     prev = node.prev
     next = node.next
-    if prev == null
-      if next == null
-        return undefined
-      @_head = next
-      @_head.prev = null
+    if prev == null     # head
+      if next == null   # and tail (only one node)
+        @_head    = null
+        @_tail    = null
+        @_length  = 0
+        return node
+      @_head       = next
+      @_head.prev  = null
+      node.next    = null
+      @_length    -= 1
       return node
-    if next == null
-      @_tail = prev
-      @_tail.next = null
+    if next == null     # tail
+      @_tail       = prev
+      @_tail.next  = null
+      @_length    -= 1
+      node.prev    = null
       return node
-    next.prev = prev
-    prev.next = next
+    next.prev  = prev
+    prev.next  = next
+    node.next  = null
+    node.prev  = null
+    @_length  -= 1
     return node
+
+
+  printIdChain : () ->
+    node = @_head
+    if node == null
+      console.log 'empty chain'
+      return
+    txt = ''
+    loop
+      txt += node.id
+      node = node.next
+      break if node == null
+      txt += '<=>'
+    console.log txt
+
 
 
 
