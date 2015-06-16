@@ -60,8 +60,11 @@
 #   # to add rows
 #       longList.addRows(fromRank, nToAdd)
 #
-#   # to remove some rows
-#       longList.removeRows(fromRank, nToRemove)
+#   # to remove a block of rows
+#       longList.removeRows(rankOrElement, nToRemove)
+#
+#   # to remove one row
+#       longList.removeRow(rankOrElement)
 #
 #   # to remove all rows
 #       longList.removeAllRows()
@@ -117,7 +120,7 @@ module.exports = class LongListRows
         @_firstPopulateBuffer(nToAdd)
 
 
-    # to add new lines. Might call onRowsMovedCB.
+    # to add new rows. Might call onRowsMovedCB.
     # ! note : your data describing rows state must be updated before calling
     # this method, because onRowsMovedCB might be called => the data must be
     # up to date when redecoration will occur.
@@ -125,19 +128,31 @@ module.exports = class LongListRows
         @_addRows(fromRank, nToAdd)
 
 
-    # to remove some lines. Might call onRowsMovedCB.
+    # to remove one row. Might call onRowsMovedCB.
+    # rankOrElement can be an integer or the element of the row to delete.
     # ! note : your data describing rows state must be updated before calling
     # this method, because onRowsMovedCB might be called => the data must be
     # up to date when redecoration will occur.
-    removeRows: (fromRank, nToRemove) ->
-        @_removeRows(fromRank, nToRemove)
+    removeRow: (rankOrElement) ->
+        @_removeRows(rankOrElement, 1)
+
+
+    # to remove some lines. Might call onRowsMovedCB.
+    # rankOrElement can be an integer or the element of the first row to delete.
+    # ! note : your data describing rows state must be updated before calling
+    # this method, because onRowsMovedCB might be called => the data must be
+    # up to date when redecoration will occur.
+    removeRows: (rankOrElement, nToRemove) ->
+        @_removeRows(rankOrElement, nToRemove)
 
     # to remove all lines. Might call onRowsMovedCB.
     # ! note : your data describing rows state must be updated before calling
     # this method, because onRowsMovedCB might be called => the data must be
     # up to date when redecoration will occur.
     removeAllRows: () ->
-
+        ##
+        # remove all rows of the buffer
+        @_initBuffer()
 
     # retuns the element corresponding to the row of the given rank or null
     # if this row is outside the buffer.
@@ -187,7 +202,7 @@ module.exports = class LongListRows
         noScrollScheduled     = true
         previousHeight        = null
         rowHeight             = null
-        nRowsInBufr           = null
+        nMaxRowsInBufr        = null # theorical, buffer.nRows is the actual
         nRowsInBufrMargin     = null
         nRowsInSafeZoneMargin = null
         nRowsInSafeZone       = null
@@ -357,14 +372,14 @@ module.exports = class LongListRows
             # need of such a buffer if there is not many rows added)
             nRowsInViewport   = Math.ceil(viewportHeight/rowHeight)
             nRowsInBufrMargin = Math.round(BUFFER_COEF * nRowsInViewport)
-            nRowsInBufr       = nRowsInViewport + nRowsInBufrMargin*2
+            nMaxRowsInBufr       = nRowsInViewport + nRowsInBufrMargin*2
 
             # compute the safe zone
             nRowsInSafeZoneMargin = Math.round(SAFE_ZONE_COEF * nRowsInViewport)
             nRowsInSafeZone       = nRowsInViewport + nRowsInSafeZoneMargin*2
 
             # check there are enough rows to fill the buffer
-            if nRows <= nRowsInBufr
+            if nRows <= nMaxRowsInBufr
                 isDynamic = false
             else
                 isDynamic = true
@@ -423,17 +438,17 @@ module.exports = class LongListRows
                 # => compute new buffer
 
                 newBfr_firstRk = Math.max(VP_firstRk - nRowsInBufrMargin, 0)
-                newBfr_lastRk  = newBfr_firstRk + nRowsInBufr - 1
+                newBfr_lastRk  = newBfr_firstRk + nMaxRowsInBufr - 1
                 if nRows <= newBfr_lastRk
                     newBfr_lastRk = nRows - 1
-                    newBfr_firstRk = newBfr_lastRk - nRowsInBufr + 1 # can not be
+                    newBfr_firstRk = newBfr_lastRk - nMaxRowsInBufr + 1 # can not be
                     # lower than 0, because that would meand there are less rows
                     # than in the buffer, and in this case the scroll handler
                     # don't call _adaptBuffer
 
                 # nToMove = number of rows to move by reusing rows from the top
                 # of the buffer in order to fill its bottom
-                nToMove = Math.min(newBfr_lastRk - bufr.lastRk, nRowsInBufr)
+                nToMove = Math.min(newBfr_lastRk - bufr.lastRk, nMaxRowsInBufr)
                 targetRk  = Math.max(bufr.lastRk + 1, newBfr_firstRk)
 
                 # console.log 'direction: DOWN',         \
@@ -460,11 +475,11 @@ module.exports = class LongListRows
                 # => compute new buffer
 
                 newBfr_firstRk = Math.max(VP_firstRk - nRowsInBufrMargin, 0)
-                newBfr_lastRk  = newBfr_firstRk + nRowsInBufr - 1
+                newBfr_lastRk  = newBfr_firstRk + nMaxRowsInBufr - 1
 
                 # nToMove = number of rows to move by reusing rows from the
                 # bottom of the buffer in order to fill its top
-                nToMove  = Math.min(bufr.firstRk - newBfr_firstRk, nRowsInBufr)
+                nToMove  = Math.min(bufr.firstRk - newBfr_firstRk, nMaxRowsInBufr)
                 targetRk = Math.min(bufr.firstRk - 1, newBfr_lastRk)
 
                 # console.log 'direction: UO',           \
@@ -511,7 +526,7 @@ module.exports = class LongListRows
             @rows$.style.setProperty('height', nRows*rowHeight + 'px')
             # create the rows elements of the buffer
             bufr = buffer
-            nToCreate = Math.min(nRows, nRowsInBufr)
+            nToCreate = Math.min(nRows, nMaxRowsInBufr)
             firstCreatedRow = {}
             prevCreatedRow  = firstCreatedRow
             rowsToDecorate = []
@@ -529,7 +544,7 @@ module.exports = class LongListRows
                 prevCreatedRow.prev = row
                 prevCreatedRow = row
                 rowsToDecorate.push({rank:n-1;el:row$})
-
+            # set the buffer
             bufr.first   = firstCreatedRow.prev
             bufr.firstRk = 0
             bufr.last    = row
@@ -537,6 +552,13 @@ module.exports = class LongListRows
             bufr.last.prev  = bufr.first
             bufr.lastRk  = row.rank
             bufr.nRows   = nToCreate
+            # check if the long list is dynamic
+            if nMaxRowsInBufr < nRows
+                isDynamic = true
+            else
+                isDynamic = false
+
+
             @onRowsMovedCB(rowsToDecorate)
 
         @_firstPopulateBuffer = _firstPopulateBuffer
@@ -555,7 +577,7 @@ module.exports = class LongListRows
             nRows += nToAdd
 
             # check there are enough rows to fill the buffer
-            if nRows <= nRowsInBufr
+            if nRows <= nMaxRowsInBufr
                 isDynamic = false
             else
                 isDynamic = true
@@ -644,31 +666,43 @@ module.exports = class LongListRows
          *                           or reference to the element of the row.
          * @param  {Integer} nToRemove Number of rows to delete from fromRank
         ###
-        _removeRows = (fromRank, nToRemove) ->
-            if typeof fromRank != "number"
+        _removeRows = (rankOrElement, nToRemove) ->
+            # if fromRank is an element, get its rank
+            if typeof rankOrElement == "number"
+                fromRank = rankOrElement
+            else
                 fromRank = parseInt(fromRank.dataset.rank)
+            # limit toRank to the highest rank
             toRank = fromRank + nToRemove - 1
+            if toRank > nRows - 1
+                toRank = nRows -1
+                nToRemove = toRank - fromRank + 1
+            # compute the new number of rows, delete all rows if nRows == 0
             nRows -= nToRemove
+            if nRows < 1
+                @removeAllRows()
             # check there are enough rows to fill the buffer
-            if nRows <= nRowsInBufr
+            if nRows <= nMaxRowsInBufr
                 isDynamic = false
             else
                 isDynamic = true
             # delete rows one by one
             scrollTopDelta = 0
             for rk in [fromRank..toRank] by 1
-                scrollTopDelta += _removeRow(rk)
+                # notice that we always delete the row of the same rank rank...
+                scrollTopDelta += _removeRow(fromRank)
             @viewport$.scrollTop += scrollTopDelta
 
 
         ###*
-         * prerequisite : nRows and isDynamic must have been updated before
-         * _removeRow is called
+         * Prerequisites :
+         *    - nRows and isDynamic must have been updated before _removeRow is
+         *    called
+         *    - must NOT be called to remove the last row (dealt by _removeRows)
          * @return  {number} scrollTopDelta : delta in px that the scrollTop of
          *                   the viewport should vary.
         ###
         _removeRow = (fromRank) =>
-
             ##
             # case 1 : The deletion is before the buffer
             if fromRank < buffer.firstRk
@@ -759,7 +793,7 @@ module.exports = class LongListRows
                 # buffer (ie there are rows under the buffer)
                 # The element will be moved at the bottom of the buffer and
                 # redecorated
-                else if buffer.lastRk < nRows - 1
+                else if buffer.lastRk <= nRows - 1
                     first = buffer.first
                     last  = buffer.last
                     if row == first
@@ -801,9 +835,7 @@ module.exports = class LongListRows
                 # just destroy the row from the buffer.
                 else
                     # the buffer is now smaller than the number of rows
-                    # TODO
                     isDynamic  = false
-                    isReusable = false
                     first = buffer.first
                     last  = buffer.last
                     if row == first
@@ -837,6 +869,7 @@ module.exports = class LongListRows
                             currentRk += 1
                             break if currentRow == first
                     buffer.lastRk -= 1
+                    buffer.nRows  -= 1
                     return scrollTopDelta
 
 
@@ -844,9 +877,6 @@ module.exports = class LongListRows
             # case 3 : The insertion is after the buffer
             else if buffer.lastRk < fromRank
                 @rows$.style.setProperty('height', nRows*rowHeight + 'px')
-
-
-
 
         @_removeRows = _removeRows
 
@@ -913,7 +943,7 @@ module.exports = class LongListRows
 
 
         # construct the buffer
-        @_initBuffer = () ->
+        _initBuffer = () ->
             # if the buffer is not empty, remove all elements of rows$
             if buffer
                 @rows$.innerHTML = ''
@@ -926,7 +956,7 @@ module.exports = class LongListRows
                 firstRk : -1     # rank of the first row of the buffer
                 last    : null   # bottom most row
                 lastRk  : -1     # rank of the last row of the buffer
-                nRows   : null   # number of rows in the buffer
+                nRows   : null   # actual number of rows in the buffer
                 getRow  : (rank)->
                     first = this.first
                     row   = first
@@ -936,6 +966,10 @@ module.exports = class LongListRows
                         row = row.prev
                         break if row == first
                     return null
+            nRows     = 0
+            isDynamic = false
+        @_initBuffer = _initBuffer
+
         ####
         # Get the dimensions (rowHeight)
         _getStaticDimensions()
@@ -1036,19 +1070,21 @@ module.exports = class LongListRows
             SZ_firstRk = Math.max(VP_firstRk - nRowsInSafeZoneMargin , 0)
             SZ_lastRk  = SZ_firstRk + nRowsInSafeZone - 1
             state =
-                buffer        :
+                buffer :
                     firstRk : buffer.firstRk
                     lastRk  : buffer.lastRk
-                viewport      :
+                    nRows   : buffer.nRows
+                viewport :
                     firstRk : VP_firstRk
                     lastRk  : VP_lastRk
                 safeZone :
                     firstRk : SZ_firstRk
                     lastRk  : SZ_lastRk
-                nRows         : nRows
-                rowHeight     : rowHeight
-                height        : parseInt(@rows$.style.height)
-                nRowsInBufr   : nRowsInBufr
+                nRows          : nRows
+                rowHeight      : rowHeight
+                height         : parseInt(@rows$.style.height)
+                nMaxRowsInBufr : nMaxRowsInBufr
+                isDynamic      : isDynamic
             return state
         @_test.getState = _getState
 
