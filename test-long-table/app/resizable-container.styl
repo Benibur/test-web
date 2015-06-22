@@ -1,0 +1,28 @@
+#resizable-container
+    width      : 20em
+    height     : 30em
+    background : #ccc
+    top        : 30px
+    left       : 30px
+    position   : absolute
+    >div
+        width:15px
+        height:15px
+        background-color:blue
+        border:0
+
+li.long-list-row
+    display:flex
+    .largest-col
+        flex-grow:1
+        flex-shrink:1
+        text-overflow: ellipsis
+        white-space: nowrap
+        overflow: hidden
+    .constant-col
+        flex-grow:0
+        flex-shrink:0
+        color:red
+        width: 3em
+
+

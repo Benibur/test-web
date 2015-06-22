@@ -609,47 +609,42 @@ module.exports = class LongListRows
                 viewport_startRk = Math.floor(scrollTop / rowHeight)
 
                 ##
-                # case 2.1 : The insertion is into the buffer but before
-                # the viewport
+                # insertion is into the buffer but before the viewport
+                # => adjust scrollTop in order not to move visible rows
                 if fromRank < viewport_startRk
-                    # increase rows$ height
-                    @rows$.style.setProperty('height', nRows*rowHeight + 'px')
-                    # move viewport
-                    @viewport$.scrollTop = scrollTop + nToAdd*rowHeight
-                    # compute the reusable rows
-                    nReusableRows = Math.min(nToAdd, fromRank - buffer.firstRk)
-                    nRowsToReuse = Math.min(nReusableRows, nToAdd)
-                    # reuse the top rows elements
-                    rowOfInsertion = buffer.getRow(fromRank)
-                    for n in [1..nRowsToReuse] by 1
-                        elToMove = buffer.first.el
-                        @rows$.insertBefore(elToMove, rowOfInsertion.el)
-                        row = buffer.first
-                        loop
-                            row.el = row.prev.el
-                            row = row.prev
-                            break if row == rowOfInsertion
-                        row.el = elToMove
-                        row.rank = fromRank + n - 1
-                    # increase the rank of the rows in buffer after the fromRank
-                    # row (included)
-                    first = buffer.first
-                    row = rowOfInsertion
+                    scrollTopDelta = nToAdd * rowHeight
+                # => otherwise don't change the scrollTop
+                else
+                    scrollTopDelta = 0
+
+                # increase rows$ height
+                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                # compute the reusable rows
+                nReusableRows = Math.min(nToAdd, fromRank - buffer.firstRk)
+                nRowsToReuse  = Math.min(nReusableRows, nToAdd)
+                # reuse the top rows elements
+                rowOfInsertion = buffer.getRow(fromRank)
+                for n in [1..nRowsToReuse] by 1
+                    elToMove = buffer.first.el
+                    @rows$.insertBefore(elToMove, rowOfInsertion.el)
+                    row = buffer.first
                     loop
-                        row.rank += nToAdd
+                        row.el = row.prev.el
                         row = row.prev
-                        break if row.prev == buffer.last
-                    buffer.lastRk += nToAdd
-                    # adapt margin of the first element of the buffer
-                    buffer.first.el.style.topMargin = buffer.first.rank * rowHeight
-
-
-                ##
-                # case 2.2 : The insertion is into the buffer but into
-                # the start of the viewport
-                else if fromRank < viewport_endRk
-                    d
-                    # TODO
+                        break if row == rowOfInsertion
+                    row.el = elToMove
+                    row.rank = fromRank + n - 1
+                # increase the rank of the rows in buffer after the fromRank
+                # row (included)
+                first = buffer.first
+                row = rowOfInsertion
+                loop
+                    row.rank += nToAdd
+                    row = row.prev
+                    break if row.prev == buffer.last
+                buffer.lastRk += nToAdd
+                # adapt margin of the first element of the buffer
+                buffer.first.el.style.topMargin = buffer.first.rank * rowHeight
 
             ##
             # case 3 : The insertion is after the buffer

@@ -1,0 +1,25 @@
+{
+  "name": "test-linked-list",
+  "version": "0.0.1",
+  "description": "implementation of a linked list and an circulat linked list",
+  "main": "main.coffee",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "none yet"
+  },
+  "keywords": [
+    "linked",
+    "list",
+    "circular",
+    "base",
+    "types"
+  ],
+  "author": "Benjamin ANDRE",
+  "license": "MIT"
+}

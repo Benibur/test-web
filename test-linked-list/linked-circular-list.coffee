@@ -2,13 +2,13 @@
 
 head  node
          A
-next  |  |  prev
+prev  |  |  next
       V
 tail  node
 
 ###
 
-module.exports = class DoublyLinkedList
+module.exports = class DoublyLinkedListCircular
 
 
   ###
@@ -31,7 +31,7 @@ module.exports = class DoublyLinkedList
     node =
       data: data
       next: null
-      prev: null
+      next: null
       id  : @_counter
     @_counter++
     return node
@@ -46,14 +46,21 @@ module.exports = class DoublyLinkedList
       # first node, so all pointers to this
       @_head = node
       @_tail = node
+      @_tail.next = node
+      @_tail.prev = node
+      @_head.next = node
+      @_head.prev = node
     else
       # put on the tail
-      @_tail.next = node
-      node.prev = @_tail
-      @_tail = node
+      @_tail.prev = node
+      node.next   = @_tail
+      node.prev   = @_head
+      @_head.next = node
+      @_tail      = node
     # update count
     @_length++
     return node
+
 
 
   ###
@@ -61,18 +68,54 @@ module.exports = class DoublyLinkedList
   ###
   prepend : (data) ->
     node = @_createNewNode(data)
-    if @first == null
+    if @_length == 0
       # we are empty, so this is the first node
       # use the same logic as append
       return @append data
     else
       # place before head
-      @_head.prev = node
-      node.next = @_head
-      @_head = node
+      @_head.next = node
+      node.prev   = @_head
+      @_tail.prev = node
+      node.next   = @_tail
+      @_head      = node
     # update count
     @_length++
     return node
+
+
+
+  ###
+  # Insert one node at rank.
+  # if rank = length => will be inserted as tail
+  # Returns null if rank out of range.
+  ###
+  insert : (rank, data) ->
+
+    if @_length == 0
+      return @append(data)
+
+    if rank == 0
+      return @prepend(data)
+
+    if rank == @_length
+      return @append(data)
+
+    if @_length < rank or rank < 0
+      return null
+
+    nodeToAdd = @_createNewNode(data)
+    target = @at(rank)
+    if target == undefined
+      return null
+    next           = target.next
+    target.next    = nodeToAdd
+    nodeToAdd.prev = target
+    nodeToAdd.next = next
+    next.prev      = nodeToAdd
+    @_length++
+    return nodeToAdd
+
 
 
   ###
@@ -83,7 +126,7 @@ module.exports = class DoublyLinkedList
     if index >= 0 and index < @_length
       node = @_head
       while index--
-        node = node.next
+        node = node.prev
       return node
     return undefined
 
@@ -95,12 +138,12 @@ module.exports = class DoublyLinkedList
     id = parseInt(id)
     index = @_length
     node = @_head
-    while node and node.id != id
-      node = node.next
-    if node
-      return node
-    else
-      return undefined
+    _head = @_head
+    while index--
+      if node.id == id
+        return node
+      node = node.prev
+    return undefined
 
 
   ###
@@ -111,12 +154,10 @@ module.exports = class DoublyLinkedList
     id = parseInt(id)
     index = @_length
     currentNode = @_head
-    loop
-      if node == currentNode
-        return rank
-      rank++
-      currentNode = currentNode.next
-      break if currentNode == null
+    while index--
+      if currentNode == node
+        return @_length - index
+      currentNode = currentNode.prev
     return undefined
 
 
@@ -162,29 +203,40 @@ module.exports = class DoublyLinkedList
 
 
   _removeNode : (node) ->
-    prev = node.prev
-    next = node.next
-    if prev == null     # head
-      if next == null   # and tail (only one node)
-        @_head    = null
-        @_tail    = null
-        @_length  = 0
-        return node
-      @_head       = next
-      @_head.prev  = null
+
+    if @_length == 0
+      return null
+
+    if @_length == 1
+      @_head    = null
+      @_tail    = null
+      @_length  = 0
+      return node
+
+    if node == @_head     # head
+      @_head       = node.prev
+      @_head.next  = @_tail
+      @_tail.prev  = @_head
+      node.prev    = null
       node.next    = null
       @_length    -= 1
       return node
-    if next == null     # tail
-      @_tail       = prev
-      @_tail.next  = null
-      @_length    -= 1
+
+    if node == @_tail     # tail
+      @_tail       = node.next
+      @_tail.prev  = @_head
+      @_head.next  = @_tail
+      node.next    = null
       node.prev    = null
+      @_length    -= 1
       return node
-    next.prev  = prev
+
+    prev = node.prev
+    next = node.next
     prev.next  = next
-    node.next  = null
+    next.prev  = prev
     node.prev  = null
+    node.next  = null
     @_length  -= 1
     return node
 
@@ -194,13 +246,26 @@ module.exports = class DoublyLinkedList
     if node == null
       console.log 'empty chain'
       return
-    txt = ''
-    loop
-      txt += node.id
-      node = node.next
-      break if node == null
-      txt += '<=>'
-    console.log txt
+    txt = []
+    index = @_length
+    while index--
+      txt.push(node.id)
+      node = node.prev
+    return txt.join('-')
+
+
+
+  printDataChain : () ->
+    node = @_head
+    if node == null
+      console.log 'empty chain'
+      return
+    txt = []
+    index = @_length
+    while index--
+      txt.push(node.data)
+      node = node.prev
+    return txt.join('-')
 
 
 
