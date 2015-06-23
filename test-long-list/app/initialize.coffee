@@ -320,74 +320,280 @@ $(document).on 'ready', ->
 
     describe '4 - Long list tests (100 000 rows) - addRows()', () ->
 
+        describe '4.1 - there are rows above the buffer', () ->
 
-        describe '4.1 - add a row, in the buffer, in viewport.', () ->
+            describe '4.1.1 - add a row, in the buffer, before the viewport.', () ->
 
-            # variables
-            nRows4Test = nToAdd = stateFinal = stateInitial = initialFirstVisibleRow = null
+                # variables
+                nRows4Test = nToAdd = stateFinal = stateInitial = initialFirstVisibleRow = null
 
-            # actions to test
-            before () ->
-                # 0- init the long list and its data
-                nRows4Test = LONG_LIST_LENGTH
-                initRowsList(nRows4Test)
-                longList.initRows(nRows4Test)
-                selectedRows = {}
-                # 1- goDown but not enought to have rows above the buffer
-                longList._test.goDownHalfBuffer(0)
-                # 2- get initial state
-                stateInitial = longList._test.getState()
-                initialFirstVisibleRow =  rowsList.at(stateInitial.viewport.firstRk).data
-                # 3- set the row to add
-                rankToAdd = 2
-                nToAdd    = 1
-                # 4- add the row(s) from the data
-                # ! note : data must be updated before acting on the long list
-                # because the data must be uptodate when redecoration will occur.
-                row = rowsList.insert(rankToAdd, '')
-                row.data = "row: id_#{row.id}"
-                # 5- delete the row from the long list
-                longList.addRows(rankToAdd, nToAdd)
-                # 6- update the rows rank. In deed, the rows redecorated are not the
-                # only ones to be impacted. All the raws after the first added
-                # have their rank modified. If their state depends on the rank,
-                # it must then be adapted.
-                rowsToReRanked = longList.getRowsAfter(rankToAdd)
-                for row in rowsToReRanked
-                    row.el.lastChild.innerHTML = "current rank: #{row.rank}"
-                # 7- tests
-                stateFinal = longList._test.getState()
+                # actions to test
+                before () ->
+                    # 0- init the long list and its data
+                    nRows4Test = LONG_LIST_LENGTH
+                    initRowsList(nRows4Test)
+                    longList.initRows(nRows4Test)
+                    selectedRows = {}
+                    # 1- goDown enought to have rows above the buffer
+                    longList._test.goDownHalfBuffer(2)
+                    # 2- get initial state
+                    stateInitial = longList._test.getState()
+                    initialFirstVisibleRow =  rowsList.at(stateInitial.viewport.firstRk).data
+                    # 3- set the row to add
+                    rankToAdd = 209
+                    # 4- add the row from the data
+                    # ! note : data must be updated before acting on the long list
+                    # because the data must be uptodate when redecoration will occur.
+                    row = rowsList.insert(rankToAdd, '')
+                    row.data = "row: id_#{row.id}"
+                    # 5- delete the row from the long list
+                    longList.addRow(rankToAdd)
+                    # 6- update the rows rank. In deed, the rows redecorated are not the
+                    # only ones to be impacted. All the raws after the first added
+                    # have their rank modified. If their state depends on the rank,
+                    # it must then be adapted.
+                    rowsToReRanked = longList.getRowsAfter(rankToAdd)
+                    for row in rowsToReRanked
+                        row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+                    # 7- tests
+                    stateFinal = longList._test.getState()
 
-            it 'the initial state should be dynamic', () ->
-                expect(stateInitial.isDynamic).to.be.true
+                it 'the initial state should be dynamic', () ->
+                    expect(stateInitial.isDynamic).to.be.true
 
-            it 'the final state should be dynamic', () ->
-                expect(stateFinal.isDynamic).to.be.true
+                it 'the final state should be dynamic', () ->
+                    expect(stateFinal.isDynamic).to.be.true
 
-            it 'the longList should have one more row', () ->
-                expect(stateFinal.nRows)
-                    .to.eql(nRows4Test + nToAdd)
+                it 'the longList should have one more row', () ->
+                    expect(stateFinal.nRows)
+                        .to.eql(nRows4Test + 1)
 
-            it 'the bufffer should start at rank 0', () ->
-                expect(stateFinal.buffer.firstRk )
-                    .to.eql(0)
+                it 'the bufffer should start one rank further', () ->
+                    expect(stateFinal.buffer.firstRk )
+                        .to.eql(stateInitial.buffer.firstRk+1)
 
-            it 'the bufffer should have the same length', () ->
-                final_nRows = stateFinal.buffer.lastRk - stateFinal.buffer.firstRk + 1
-                expect(final_nRows )
-                    .to.eql(stateInitial.buffer.nRows )
+                it 'the bufffer should have the same length', () ->
+                    final_nRows = stateFinal.buffer.lastRk - stateFinal.buffer.firstRk + 1
+                    expect(final_nRows )
+                        .to.eql(stateInitial.buffer.nRows )
 
-            it 'the first visible row should be the same after deletion
-            (visible rows should remain the same)', () ->
-                finalFirstVisibleRow = rowsList.at(stateFinal.viewport.firstRk).data
-                expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
+                it 'the first visible row should be the same after insertion
+                (visible rows should remain the same)', () ->
+                    finalFirstVisibleRow = rowsList.at(stateFinal.viewport.firstRk).data
+                    expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
-            it 'the height of the list should be 1 row\'s height less', () ->
-                expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(nRows4Test-nToAdd))
+                it 'the height of the list should have more 1 row', () ->
+                    expect(stateFinal.height)
+                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
-            it 'the final state should be consistant', () ->
-                testLongList()
+                it 'the final state should be consistant', () ->
+                    testLongList()
+
+
+            describe '4.1.2 - add a row, in the buffer, on first row of the buffer.', () ->
+
+                # variables
+                nRows4Test = nToAdd = stateFinal = stateInitial = initialFirstVisibleRow = null
+
+                # actions to test
+                before () ->
+                    # 0- init the long list and its data
+                    nRows4Test = LONG_LIST_LENGTH
+                    initRowsList(nRows4Test)
+                    longList.initRows(nRows4Test)
+                    selectedRows = {}
+                    # 1- goDown enought to have rows above the buffer
+                    longList._test.goDownHalfBuffer(2)
+                    # 2- get initial state
+                    stateInitial = longList._test.getState()
+                    initialFirstVisibleRow =  rowsList.at(stateInitial.viewport.firstRk).data
+                    # 3- set the row to add
+                    rankToAdd = stateInitial.buffer.firstRk
+                    # 4- add the row from the data
+                    # ! note : data must be updated before acting on the long list
+                    # because the data must be uptodate when redecoration will occur.
+                    row = rowsList.insert(rankToAdd, '')
+                    row.data = "row: id_#{row.id}"
+                    # 5- delete the row from the long list
+                    longList.addRow(rankToAdd)
+                    # 6- update the rows rank. In deed, the rows redecorated are not the
+                    # only ones to be impacted. All the raws after the first added
+                    # have their rank modified. If their state depends on the rank,
+                    # it must then be adapted.
+                    rowsToReRanked = longList.getRowsAfter(rankToAdd)
+                    for row in rowsToReRanked
+                        row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+                    # 7- tests
+                    stateFinal = longList._test.getState()
+
+                it 'the initial state should be dynamic', () ->
+                    expect(stateInitial.isDynamic).to.be.true
+
+                it 'the final state should be dynamic', () ->
+                    expect(stateFinal.isDynamic).to.be.true
+
+                it 'the longList should have one more row', () ->
+                    expect(stateFinal.nRows)
+                        .to.eql(nRows4Test + 1)
+
+                it 'the bufffer should start at the same rank', () ->
+                    expect(stateFinal.buffer.firstRk )
+                        .to.eql(stateInitial.buffer.firstRk)
+
+                it 'the bufffer should have the same length', () ->
+                    final_nRows = stateFinal.buffer.lastRk - stateFinal.buffer.firstRk + 1
+                    expect(final_nRows )
+                        .to.eql(stateInitial.buffer.nRows )
+
+                it 'the first visible row should be the same    after insertion
+                (visible rows should remain the same)', () ->
+                    finalFirstVisibleRow = rowsList.at(stateFinal.viewport.firstRk).data
+                    expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
+
+                it 'the height of the list should have more 1 row', () ->
+                    expect(stateFinal.height)
+                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+
+                it 'the final state should be consistant', () ->
+                    testLongList()
+
+
+
+            describe '4.1.3 - add a row, in the buffer, in viewport.', () ->
+
+                # variables
+                nRows4Test = nToAdd = stateFinal = stateInitial = initialFirstVisibleRow = null
+
+                # actions to test
+                before () ->
+                    # 0- init the long list and its data
+                    nRows4Test = LONG_LIST_LENGTH
+                    initRowsList(nRows4Test)
+                    longList.initRows(nRows4Test)
+                    selectedRows = {}
+                    # 1- goDown enought to have rows above the buffer
+                    longList._test.goDownHalfBuffer(2)
+                    # 2- get initial state
+                    stateInitial = longList._test.getState()
+                    initialFirstVisibleRow =  rowsList.at(stateInitial.viewport.firstRk).data
+                    # 3- set the row to add
+                    rankToAdd = 212
+                    # 4- add the row from the data
+                    # ! note : data must be updated before acting on the long list
+                    # because the data must be uptodate when redecoration will occur.
+                    row = rowsList.insert(rankToAdd, '')
+                    row.data = "row: id_#{row.id}"
+                    # 5- delete the row from the long list
+                    longList.addRow(rankToAdd)
+                    # 6- update the rows rank. In deed, the rows redecorated are not the
+                    # only ones to be impacted. All the raws after the first added
+                    # have their rank modified. If their state depends on the rank,
+                    # it must then be adapted.
+                    rowsToReRanked = longList.getRowsAfter(rankToAdd)
+                    for row in rowsToReRanked
+                        row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+                    # 7- tests
+                    stateFinal = longList._test.getState()
+
+                it 'the initial state should be dynamic', () ->
+                    expect(stateInitial.isDynamic).to.be.true
+
+                it 'the final state should be dynamic', () ->
+                    expect(stateFinal.isDynamic).to.be.true
+
+                it 'the longList should have one more row', () ->
+                    expect(stateFinal.nRows)
+                        .to.eql(nRows4Test + 1)
+
+                it 'the bufffer should start at the same rank', () ->
+                    expect(stateFinal.buffer.firstRk )
+                        .to.eql(stateInitial.buffer.firstRk)
+
+                it 'the bufffer should have the same length', () ->
+                    final_nRows = stateFinal.buffer.lastRk - stateFinal.buffer.firstRk + 1
+                    expect(final_nRows )
+                        .to.eql(stateInitial.buffer.nRows )
+
+                it 'the first visible row should be the same after insertion
+                (visible rows should remain the same)', () ->
+                    finalFirstVisibleRow = rowsList.at(stateFinal.viewport.firstRk).data
+                    expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
+
+                it 'the height of the list should have more 1 row', () ->
+                    expect(stateFinal.height)
+                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+
+                it 'the final state should be consistant', () ->
+                    testLongList()
+
+
+            describe '4.1.4 - add a row, in the buffer, at its last row.', () ->
+
+                # variables
+                nRows4Test = nToAdd = stateFinal = stateInitial = initialFirstVisibleRow = null
+
+                # actions to test
+                before () ->
+                    # 0- init the long list and its data
+                    nRows4Test = LONG_LIST_LENGTH
+                    initRowsList(nRows4Test)
+                    longList.initRows(nRows4Test)
+                    selectedRows = {}
+                    # 1- goDown enought to have rows above the buffer
+                    longList._test.goDownHalfBuffer(2)
+                    # 2- get initial state
+                    stateInitial = longList._test.getState()
+                    initialFirstVisibleRow =  rowsList.at(stateInitial.viewport.firstRk).data
+                    # 3- set the row to add
+                    rankToAdd = stateInitial.buffer.lastRk
+                    # 4- add the row from the data
+                    # ! note : data must be updated before acting on the long list
+                    # because the data must be uptodate when redecoration will occur.
+                    row = rowsList.insert(rankToAdd, '')
+                    row.data = "row: id_#{row.id}"
+                    # 5- delete the row from the long list
+                    longList.addRow(rankToAdd)
+                    # 6- update the rows rank. In deed, the rows redecorated are not the
+                    # only ones to be impacted. All the raws after the first added
+                    # have their rank modified. If their state depends on the rank,
+                    # it must then be adapted.
+                    rowsToReRanked = longList.getRowsAfter(rankToAdd)
+                    for row in rowsToReRanked
+                        row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+                    # 7- tests
+                    stateFinal = longList._test.getState()
+
+                it 'the initial state should be dynamic', () ->
+                    expect(stateInitial.isDynamic).to.be.true
+
+                it 'the final state should be dynamic', () ->
+                    expect(stateFinal.isDynamic).to.be.true
+
+                it 'the longList should have one more row', () ->
+                    expect(stateFinal.nRows)
+                        .to.eql(nRows4Test + 1)
+
+                it 'the bufffer should start one rank further', () ->
+                    expect(stateFinal.buffer.firstRk )
+                        .to.eql(stateInitial.buffer.firstRk + 1)
+
+                it 'the bufffer should have the same length', () ->
+                    final_nRows = stateFinal.buffer.lastRk - stateFinal.buffer.firstRk + 1
+                    expect(final_nRows )
+                        .to.eql(stateInitial.buffer.nRows )
+
+                it 'the first visible row should be the same after insertion
+                (visible rows should remain the same)', () ->
+                    finalFirstVisibleRow = rowsList.at(stateFinal.viewport.firstRk).data
+                    expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
+
+                it 'the height of the list should have more 1 row', () ->
+                    expect(stateFinal.height)
+                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+
+                it 'the final state should be consistant', () ->
+                    testLongList()
+
 
 
     # describe '1 - Long list tests (100 000 rows) - removeRow()', () ->

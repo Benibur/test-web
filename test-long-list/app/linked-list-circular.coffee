@@ -67,12 +67,12 @@ module.exports = class DoublyLinkedListCircular
   # Prepends a node to the start of the list.
   ###
   prepend : (data) ->
-    node = @_createNewNode(data)
     if @_length == 0
       # we are empty, so this is the first node
       # use the same logic as append
       return @append data
     else
+      node = @_createNewNode(data)
       # place before head
       @_head.next = node
       node.prev   = @_head
@@ -88,11 +88,13 @@ module.exports = class DoublyLinkedListCircular
   ###
   # Insert one node at rank.
   # if rank = length => will be inserted as tail
-  # Returns null if rank out of range.
+  # Returns undefined if rank out of range.
   ###
   insert : (rank, data) ->
 
     if @_length == 0
+      if rank != 0
+        return undefined
       return @append(data)
 
     if rank == 0
@@ -102,12 +104,12 @@ module.exports = class DoublyLinkedListCircular
       return @append(data)
 
     if @_length < rank or rank < 0
-      return null
+      return undefined
 
     nodeToAdd = @_createNewNode(data)
     target = @at(rank)
     if target == undefined
-      return null
+      return undefined
     next           = target.next
     target.next    = nodeToAdd
     nodeToAdd.prev = target
@@ -156,7 +158,7 @@ module.exports = class DoublyLinkedListCircular
     currentNode = @_head
     while index--
       if currentNode == node
-        return @_length - index
+        return @_length - index - 1
       currentNode = currentNode.prev
     return undefined
 
@@ -184,36 +186,41 @@ module.exports = class DoublyLinkedListCircular
 
   ###
   # Removes the item at the index.
+  # Returns undefined if index out of range
   ###
   remove : (index) ->
     node = @at(index)
     if node == undefined
-      return false
+      return undefined
     return @_removeNode(node)
 
 
   ###
   # Removes the item with this id
+  # Returns undefined if index out of range
   ###
   removeID : (id) ->
-    node = @id(parseInt(id))
+    node = @id(id)
     if node == undefined
-      return false
+      return undefined
     return @_removeNode(node)
 
 
   _removeNode : (node) ->
 
     if @_length == 0
-      return null
+      return undefined
 
     if @_length == 1
+      if node != @_head
+        return undefined
       @_head    = null
       @_tail    = null
       @_length  = 0
       return node
 
-    if node == @_head     # head
+    # head and length > 1
+    if node == @_head
       @_head       = node.prev
       @_head.next  = @_tail
       @_tail.prev  = @_head
@@ -222,7 +229,8 @@ module.exports = class DoublyLinkedListCircular
       @_length    -= 1
       return node
 
-    if node == @_tail     # tail
+    # tail and length > 1
+    if node == @_tail
       @_tail       = node.next
       @_tail.prev  = @_head
       @_head.next  = @_tail
@@ -241,11 +249,23 @@ module.exports = class DoublyLinkedListCircular
     return node
 
 
+  printAllChain : () ->
+    node = @_head
+    if node == null
+      return 'empty chain'
+    txt = []
+    index = @_length
+    length = @_length - 1
+    while index--
+      rk = length - index
+      txt.push("#{rk} - id:#{node.id} - data:#{node.data}")
+      node = node.prev
+    return txt.join('\n')
+
   printIdChain : () ->
     node = @_head
     if node == null
-      console.log 'empty chain'
-      return
+      return 'empty chain'
     txt = []
     index = @_length
     while index--
@@ -253,20 +273,16 @@ module.exports = class DoublyLinkedListCircular
       node = node.prev
     return txt.join('-')
 
-
-
   printDataChain : () ->
     node = @_head
     if node == null
-      console.log 'empty chain'
-      return
+      return 'empty chain'
     txt = []
     index = @_length
     while index--
       txt.push(node.data)
       node = node.prev
     return txt.join('-')
-
 
 
 

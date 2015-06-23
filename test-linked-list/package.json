@@ -3,22 +3,28 @@
   "version": "0.0.1",
   "description": "implementation of a linked list and an circulat linked list",
   "main": "main.coffee",
+  "engines": { "node": ">= 0.4.x < 0.8.0" },
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+    "test": "echo \\\"Error: no test specified\\\" && exit 1",
+    "test": "make test"
   },
   "repository": {
     "type": "git",
     "url": "none yet"
   },
+  "dependencies":{
+    "coffee-script": ">= 1.6.0"
+  },
+  "devDependencies": {
+    "mocha": ">= 0.11.0",
+    "chai": ">= 0.5.1"
+  },
   "keywords": [
-    "linked",
-    "list",
-    "circular",
-    "base",
-    "types"
+    "linked list",
+    "circular linked list"
   ],
   "author": "Benjamin ANDRE",
   "license": "MIT"

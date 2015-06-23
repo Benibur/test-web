@@ -124,8 +124,16 @@ module.exports = class LongListRows
     # ! note : your data describing rows state must be updated before calling
     # this method, because onRowsMovedCB might be called => the data must be
     # up to date when redecoration will occur.
-    addRows: (fromRank, nToAdd) ->
-        @_addRows(fromRank, nToAdd)
+    # addRows: (fromRank, nToAdd) ->
+    #     @_addRows(fromRank, nToAdd)
+
+
+    # to add a new row. Might call onRowsMovedCB.
+    # ! note : your data describing rows state must be updated before calling
+    # this method, because onRowsMovedCB might be called => the data must be
+    # up to date when redecoration will occur.
+    addRow: (fromRank) ->
+        @_addRow(fromRank)
 
 
     # to remove one row. Might call onRowsMovedCB.
@@ -513,7 +521,7 @@ module.exports = class LongListRows
          * Each element of the chain is a "row" with a previous (prev) and next
            (next) element.
          * "closed" means that buffer.last.prev == buffer.first
-         * data structure :
+         * Buffer data structure :
              first   : {row}    # top most row
              firstRk : {integer} # y of the first row of the buffer
              last    : {row}    # bottom most row
@@ -570,11 +578,10 @@ module.exports = class LongListRows
          * impacted rows are modified (their rank is increased by nToAdd)
          * If some rows are inserted
          * @param {integer} fromRank first rank where a row will be added
-         * @param {integer} nToAdd number of rows to add
         ###
-        _addRows = (fromRank, nToAdd)->
-            console.log 'LongList._addRows', fromRank, nToAdd
-            nRows += nToAdd
+        _addRow = (fromRank)->
+            console.log 'LongList._addRow', fromRank
+            nRows++
 
             # check there are enough rows to fill the buffer
             if nRows <= nMaxRowsInBufr
@@ -586,7 +593,7 @@ module.exports = class LongListRows
             if fromRank < buffer.firstRk
                 scrollTop = @viewport$.scrollTop
                 @rows$.style.setProperty('height', nRows*rowHeight + 'px')
-                @viewport$.scrollTop = scrollTop + nToAdd*rowHeight
+                @viewport$.scrollTop = scrollTop + rowHeight
                 # adapt ranks of the rows of the buffer
                 first = buffer.first
                 row   = first
@@ -598,8 +605,8 @@ module.exports = class LongListRows
                     currentRk += 1
                     break if row = first
                 # adapt first & last rank of the buffer
-                buffer.firstRk += nToAdd
-                buffer.lastRk  += nToAdd
+                buffer.firstRk += 1
+                buffer.lastRk  += 1
                 return
 
             ##
@@ -609,50 +616,112 @@ module.exports = class LongListRows
                 viewport_startRk = Math.floor(scrollTop / rowHeight)
 
                 ##
-                # insertion is into the buffer but before the viewport
-                # => adjust scrollTop in order not to move visible rows
+                # case 2.1 : insertion is into the buffer but before the
+                # viewport
                 if fromRank < viewport_startRk
-                    scrollTopDelta = nToAdd * rowHeight
-                # => otherwise don't change the scrollTop
-                else
-                    scrollTopDelta = 0
+                    # increase rows$ height
+                    @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                    if fromRank == buffer.firstRk
+                        # => we will reuse rows from the bottom of the buffer
+                        @_insertBottomToRank(fromRank)
+                        # move viewport and adjust buffer top
+                        @viewport$.scrollTop = scrollTop + rowHeight
+                        @rows$.style.paddingTop = (buffer.firstRk*rowHeight)+'px'
+                    else
+                        # => reuse the top row element
+                        @_insertTopToRank(fromRank)
+                        # move viewport and adjust buffer top
+                        @viewport$.scrollTop = scrollTop + rowHeight
+                        @rows$.style.paddingTop = (buffer.firstRk*rowHeight)+'px'
 
-                # increase rows$ height
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
-                # compute the reusable rows
-                nReusableRows = Math.min(nToAdd, fromRank - buffer.firstRk)
-                nRowsToReuse  = Math.min(nReusableRows, nToAdd)
-                # reuse the top rows elements
-                rowOfInsertion = buffer.getRow(fromRank)
-                for n in [1..nRowsToReuse] by 1
-                    elToMove = buffer.first.el
-                    @rows$.insertBefore(elToMove, rowOfInsertion.el)
-                    row = buffer.first
-                    loop
-                        row.el = row.prev.el
-                        row = row.prev
-                        break if row == rowOfInsertion
-                    row.el = elToMove
-                    row.rank = fromRank + n - 1
-                # increase the rank of the rows in buffer after the fromRank
-                # row (included)
-                first = buffer.first
-                row = rowOfInsertion
-                loop
-                    row.rank += nToAdd
-                    row = row.prev
-                    break if row.prev == buffer.last
-                buffer.lastRk += nToAdd
-                # adapt margin of the first element of the buffer
-                buffer.first.el.style.topMargin = buffer.first.rank * rowHeight
+                ##
+                # case 2.2 : insertion is into the buffer but after the
+                # first row of the viewport
+                # => we will reuse rows from the bottom of the buffer
+                else
+                    # increase rows$ height
+                    @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                    # fromRank is not the first row of the buffer
+                    # reuse the bottom row element TODO : if there are any...
+                    if fromRank == buffer.lastRk
+                        @_insertTopToRank(fromRank)
+                    else
+                        @_insertBottomToRank(fromRank)
 
             ##
             # case 3 : The insertion is after the buffer
             else if buffer.lastRk < fromRank
                 @rows$.style.setProperty('height', nRows*rowHeight + 'px')
 
+        @_addRow = _addRow
 
-        @_addRows = _addRows
+
+
+        @_insertTopToRank = (fromRank) ->
+            rowOfInsertion = buffer.getRow(fromRank)
+            elToMove = buffer.first.el
+            @rows$.insertBefore(elToMove, rowOfInsertion.el)
+            # move the first row to the rank fromRank
+            rowToReUse = buffer.first
+            buffer.first = rowToReUse.prev
+            buffer.firstRk++
+            buffer.first.next = buffer.last
+            buffer.last.prev = buffer.first
+            next = rowOfInsertion.next
+            next.prev = rowToReUse
+            rowOfInsertion.next = rowToReUse
+            rowToReUse.next = next
+            rowToReUse.prev = rowOfInsertion
+            # increase the rank of the rows in buffer after the fromRank
+            # row (included)
+            row = rowToReUse
+            last = buffer.last
+            rk = fromRank
+            loop
+                row.rank = rk
+                row.el.dataset.rank = rk
+                rk++
+                break if row == last
+                row = row.prev
+            buffer.lastRk = rk - 1
+            # redecorate moved row
+            @onRowsMovedCB([{el:rowToReUse.el,rank:rowToReUse.rank}])
+
+
+
+        @_insertBottomToRank = (fromRank) ->
+            rowOfInsertion = buffer.getRow(fromRank)
+            elToMove = buffer.last.el
+            @rows$.insertBefore(elToMove, rowOfInsertion.el)
+            if rowOfInsertion == buffer.first
+                rowToReUse = buffer.last
+                buffer.first = buffer.last
+                buffer.last = buffer.last.next
+            else
+                # move the last row to the rank fromRank
+                rowToReUse = buffer.last
+                buffer.last = rowToReUse.next
+                buffer.last.prev = buffer.first
+                buffer.first.next = buffer.last
+                next = rowOfInsertion.next
+                next.prev = rowToReUse
+                rowOfInsertion.next = rowToReUse
+                rowToReUse.next = next
+                rowToReUse.prev = rowOfInsertion
+            # increase the rank of the rows in buffer after the fromRank
+            # row (included)
+            row = rowToReUse
+            last = buffer.last
+            rk = fromRank
+            loop
+                row.rank = rk
+                row.el.dataset.rank = rk
+                rk++
+                break if row == last
+                row = row.prev
+            # redecorate moved row
+            @onRowsMovedCB([{el:rowToReUse.el,rank:rowToReUse.rank}])
+
 
 
         ###*
