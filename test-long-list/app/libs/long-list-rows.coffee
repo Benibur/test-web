@@ -692,6 +692,8 @@ module.exports = class LongListRows
                     @onRowsMovedCB([{el:row$,rank:fromRank}])
                     return
 
+                ##
+                # fromRank is higher than buffer.lastRank + 1 : error
                 else
                     return undefined
 
@@ -1270,5 +1272,9 @@ module.exports = class LongListRows
 
         @_test.unActivateScrollListener = () =>
             @viewport$.removeEventListener( 'scroll', _scrollHandler )
+
+
+        @_test.activateScrollListener = () =>
+            @viewport$.addEventListener( 'scroll', _scrollHandler )
 
 

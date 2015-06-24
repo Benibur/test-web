@@ -78,7 +78,7 @@ module.exports = class DoublyLinkedList
 
   ###
   # Insert one node at rank.
-  # Returns undefined if rank out of range.
+  # Returns the new node, undefined if rank out of range.
   ###
   insert : (rank, data) ->
 
