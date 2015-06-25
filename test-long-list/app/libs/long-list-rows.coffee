@@ -54,11 +54,12 @@
 #
 #   # USELESS SO FAR : if geometry changes : longList.removeAll() and then
 #   # create a new LongList()
+#
 #   # when the geometry of the parent changes (height of viewportElement) :
 #       longList.resizeHandler()
 #
-#   # to add rows
-#       longList.addRows(fromRank, nToAdd)
+#   # to add a row
+#       longList.addRow(fromRank)
 #
 #   # to remove a block of rows
 #       longList.removeRows(rankOrElement, nToRemove)
@@ -252,7 +253,7 @@ module.exports = class LongListRows
         _scrollHandler = (e) =>
             if noScrollScheduled and isDynamic
                 lastOnScroll_Y = @viewport$.scrollTop
-                setTimeout(_adaptBuffer,THROTTLE)
+                setTimeout(_moveBuffer,THROTTLE)
                 noScrollScheduled = false
 
 
@@ -356,12 +357,12 @@ module.exports = class LongListRows
         ###*
          * Compute all the geometry after a resize or when the list in inserted
          * in the DOM.
-         * _adaptBuffer will be executed at the end except if the viewport has
+         * _moveBuffer will be executed at the end except if the viewport has
          * no height (if not inserted in the dom for instance) or there is no
          * row
         ###
         _resizeHandler= ()=>
-
+            console.log "_resizeHandler"
             # get dimensions.
             viewportHeight = @viewport$.clientHeight
 
@@ -376,7 +377,7 @@ module.exports = class LongListRows
             # if the height of viewport has not change, we can directly adapt
             # buffer
             if viewportHeight == previousHeight and nRows != 0
-                _adaptBuffer()
+                _moveBuffer()
                 return
             previousHeight  = viewportHeight
 
@@ -396,17 +397,72 @@ module.exports = class LongListRows
             else
                 isDynamic = true
 
+            # check if there are some rows of the buffer to create or delete
+            if buffer
+                deltaRows = Math.min(nRows,nMaxRowsInBufr) - buffer.nRows
+                if deltaRows < 0
+                    # delete deltaRows (arbitrary at the bottom of the buffer)
+                    _deleteBufferRows(-deltaRows)
+                else if deltaRows > 0
+                    # create deltaRows (arbitrary at the bottom of the buffer)
+                    _addBufferRows(deltaRows)
+
             if nRows != 0
-                _adaptBuffer()
+                _moveBuffer()
 
         @resizeHandler = _resizeHandler
+
+
+        _deleteBufferRows = (nToDelete)=>
+            currentRow = buffer.last
+            index = nToDelete - 1
+            nDeleted = 1
+            loop
+                console.log nDeleted
+                @rows$.removeChild(currentRow.el)
+                nDeleted++
+                currentRow = currentRow.next
+                break unless index--
+            buffer.last = currentRow
+            buffer.lastRk -= nToDelete
+            buffer.first.next = currentRow
+            currentRow.prev = buffer.first
+            buffer.nRows  -= nToDelete
+
+
+        _addBufferRows = (nToAdd)=>
+            rowsToDecorate = []
+            startRk = buffer.lastRk
+            prevCreatedRow = buffer.last
+            for n in [1..nToAdd] by 1
+                row$ = document.createElement('li')
+                row$.setAttribute('class', 'long-list-row')
+                row$.dataset.rank = startRk + n
+                row$.style.height = rowHeight + 'px'
+                @rows$.appendChild(row$)
+                row =
+                    prev : null
+                    next : prevCreatedRow
+                    el   : row$
+                    rank : startRk + n
+                prevCreatedRow.prev = row
+                prevCreatedRow = row
+                rowsToDecorate.push({rank:startRk+n; el:row$})
+            # set the buffer
+            buffer.last       = row
+            buffer.first.next = row
+            buffer.last.prev  = buffer.first
+            buffer.lastRk     = row.rank
+            buffer.nRows     += nToAdd
+            # decorate the created rows
+            @onRowsMovedCB(rowsToDecorate)
 
 
         ###*
          * Adapt the buffer when the viewport has moved out of the safe zone.
          * Launched by initRows and _scrollHandler
         ###
-        _adaptBuffer = (force) =>
+        _moveBuffer = (force) =>
             noScrollScheduled  = true
 
             ##
@@ -414,7 +470,7 @@ module.exports = class LongListRows
             current_scrollTop = @viewport$.scrollTop
             speed = Math.abs(current_scrollTop - lastOnScroll_Y) / viewportHeight
             if speed > MAX_SPEED and not force
-                console.log "SPEED TO HIGH :-)"
+                # console.log "SPEED TO HIGH :-)"
                 _scrollHandler()
                 return
 
@@ -432,14 +488,14 @@ module.exports = class LongListRows
             #     SZ_firstRk = SZ_lastRk - nRowsInSafeZone + 1 # can not be lower
             #     # than 0, because that would meand there are less rows than in
             #     # the buffer, and in this case the scroll handler don't call
-            #     # _adaptBuffer
+            #     # _moveBuffer
 
             ##
             # 3/ detect how the viewport is moving and how to adapt the buffer
-            console.log '\n======_adaptBuffer, nRows=', nRows
-            console.log 'viewport firstRk', VP_firstRk, 'lastRk:', VP_lastRk
-            console.log 'safeZone firstRk', SZ_firstRk, 'lastRk:', SZ_lastRk
-            console.log 'initial buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
+            # console.log '\n======_moveBuffer, nRows=', nRows
+            # console.log 'viewport firstRk', VP_firstRk, 'lastRk:', VP_lastRk
+            # console.log 'safeZone firstRk', SZ_firstRk, 'lastRk:', SZ_lastRk
+            # console.log 'initial buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
 
             nToMove = 0
 
@@ -456,7 +512,7 @@ module.exports = class LongListRows
                     newBfr_firstRk = newBfr_lastRk - nMaxRowsInBufr + 1 # can not be
                     # lower than 0, because that would meand there are less rows
                     # than in the buffer, and in this case the scroll handler
-                    # don't call _adaptBuffer
+                    # don't call _moveBuffer
 
                 # nToMove = number of rows to move by reusing rows from the top
                 # of the buffer in order to fill its bottom
@@ -511,10 +567,10 @@ module.exports = class LongListRows
                 #                 "rows to move down after targetRk=", targetRk
 
 
-            console.log 'moved rows', nToMove
-            console.log 'final buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
+            # console.log 'moved rows', nToMove
+            # console.log 'final buffer   firstRk', bufr.firstRk, 'lastRk:', bufr.lastRk
 
-        @_adaptBuffer = _adaptBuffer
+        @_moveBuffer = _moveBuffer
 
 
         ###*
@@ -585,7 +641,7 @@ module.exports = class LongListRows
          * @param {integer} fromRank first rank where a row will be added
         ###
         _addRow = (fromRank)->
-            console.log 'LongList._addRow', fromRank
+            # console.log 'LongList._addRow', fromRank
 
             ##
             # update nRows
@@ -1155,12 +1211,7 @@ module.exports = class LongListRows
         _resizeHandler()
         ####
         # bind events
-        # @rows$.addEventListener(   'click'      , @_clickHandler    )
-        # @rows$.addEventListener(   'dblclick'   , @_dblclickHandler )
         @viewport$.addEventListener( 'scroll'     , _scrollHandler    )
-        # @index$.addEventListener(    'click'      , _indexClickHandler)
-        # @index$.addEventListener(    'mouseenter' , _indexMouseEnter  )
-        # @index$.addEventListener(    'mouseleave' , _indexMouseLeave  )
 
         ###*
          * retuns the element corresponding to the row of the given rank or null
@@ -1222,9 +1273,9 @@ module.exports = class LongListRows
             scrollTop = @viewport$.scrollTop
             bufferHeight = buffer.nRows * rowHeight
             @viewport$.scrollTop = scrollTop + Math.round(bufferHeight*ratio)
-            # force _adaptBuffer in order to remain sync (otherwise you have to
+            # force _moveBuffer in order to remain sync (otherwise you have to
             # wait for the scroll event so that the buffer gets adapted)
-            _adaptBuffer(true)
+            _moveBuffer(true)
         @_test.goDownHalfBuffer = _goDownHalfBuffer
 
 

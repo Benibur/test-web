@@ -96,6 +96,18 @@ $(document).on 'ready', ->
             consistencyResult$.classList.add('alert')
 
 
+    previousHeight = null
+    onMouseUp = () ->
+        newHeight = viewportElement.clientHeight
+        if newHeight != previousHeight
+            rowControler.resize()
+            previousHeight = newHeight
+    onMouseUp()
+    document.querySelector('#resizable-container')
+        .addEventListener 'mouseup', (e) ->
+            onMouseUp()
+
+
 
     ###*
      * compute SHORT_LIST_LENGTH and BUFFER_LIST_LENGTH

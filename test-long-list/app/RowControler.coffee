@@ -114,6 +114,10 @@ module.exports = class RowControler
         @rowsList = rowsList
 
 
+    resize: () ->
+        @longList.resizeHandler()
+
+
     goDownHalfBuffer: (coef)->
         @longList._test.goDownHalfBuffer(coef)
 
