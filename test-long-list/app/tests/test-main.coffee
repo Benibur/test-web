@@ -52,8 +52,9 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-1)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-1))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
@@ -100,9 +101,10 @@ module.exports = (options) ->
                 finalFirstVisibleRow =  rowControler.getDataAtRank(stateFinal.viewport.firstRk)
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
-            it 'the height of the list should be 2 rows\' height less', () ->
+            it 'the height of the list should be 2 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
@@ -150,8 +152,9 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
@@ -199,15 +202,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.4.1 - Single row deletion in the buffer, first row of the viewport.', () ->
+        describe '1.5 - Single row deletion in the buffer, first row of the viewport.', () ->
 
             # variables
             nToDelete = stateFinal = stateInitial = initialFirstVisibleRow = null
@@ -248,15 +252,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).not.to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.5 - Single row deletion in the buffer, last row of the buffer.', () ->
+        describe '1.6 - Single row deletion in the buffer, last row of the buffer.', () ->
 
             # variables
             nToDelete = stateFinal = stateInitial = initialFirstVisibleRow = null
@@ -297,15 +302,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.6 - Single row deletion in the buffer, but with no row before the buffer, but some after it.', () ->
+        describe '1.7 - Single row deletion in the buffer, but with no row before the buffer, but some after it.', () ->
 
             # variables
             nToDelete = stateFinal = stateInitial = initialFirstVisibleRow = null
@@ -346,15 +352,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.7 - Deletion of the first row, with no row before the buffer
+        describe '1.8 - Deletion of the first row, with no row before the buffer
         , but some after it.', () ->
 
             # variables
@@ -396,15 +403,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.8 - Deletion of the last row of the buffer, with no row
+        describe '1.9 - Deletion of the last row of the buffer, with no row
          before the buffer, but some after it.', () ->
 
             # variables
@@ -446,15 +454,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.9 - Single row deletion in the buffer, in the viewport.', () ->
+        describe '1.10 - Single row deletion in the buffer, in the viewport.', () ->
 
             # variables
             nToDelete = stateFinal = stateInitial = initialFirstVisibleRow = null
@@ -495,15 +504,16 @@ module.exports = (options) ->
                 expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
             it 'the height of the list should be 1 row\'s height less', () ->
+                theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete)
                 expect(stateFinal.height)
-                    .to.eql(stateFinal.rowHeight*(LONG_LIST_LENGTH-nToDelete))
+                    .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongList()
 
 
 
-        describe '1.10 - Deletion of all rows.', () ->
+        describe '1.11 - Deletion of all rows.', () ->
 
             # variables
             nToDelete = stateFinal = stateInitial = initialFirstVisibleRow = null
@@ -884,8 +894,9 @@ module.exports = (options) ->
                     expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -942,8 +953,9 @@ module.exports = (options) ->
                     rowControler.testDecorationOfRow(rankToAdd)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -997,8 +1009,9 @@ module.exports = (options) ->
                     expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1055,8 +1068,9 @@ module.exports = (options) ->
                     rowControler.testDecorationOfRow(rankToAdd)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1114,8 +1128,9 @@ module.exports = (options) ->
                     rowControler.testDecorationOfRow(rankToAdd)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1172,8 +1187,9 @@ module.exports = (options) ->
                     rowControler.testDecorationOfRow(stateInitial.buffer.lastRk)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1227,8 +1243,9 @@ module.exports = (options) ->
                     expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1288,8 +1305,9 @@ module.exports = (options) ->
                     rowControler.testDecorationOfRow(rankToAdd)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1343,8 +1361,9 @@ module.exports = (options) ->
                     expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()
@@ -1402,8 +1421,9 @@ module.exports = (options) ->
                     rowControler.testDecorationOfRow(rankToAdd)
 
                 it 'the height of the list should have more 1 row', () ->
+                    theoricalHeight = stateFinal.rowHeight*(nRows4Test+1)
                     expect(stateFinal.height)
-                        .to.eql(stateFinal.rowHeight*(nRows4Test+1))
+                        .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
                     rowControler.testLongList()

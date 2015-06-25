@@ -535,7 +535,8 @@ module.exports = class LongListRows
         _firstPopulateBuffer  = (nToAdd) =>
             # set nRows and init the height of the rows element
             nRows = nToAdd
-            @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+            @rows$.style.height = nRows*rowHeight + 'px'
+            @viewport$.scrollTop = 0
             # create the rows elements of the buffer
             bufr = buffer
             nToCreate = Math.min(nRows, nMaxRowsInBufr)
@@ -628,7 +629,7 @@ module.exports = class LongListRows
                         row = row.prev
                         currentRk += 1
                     # redecorate created row
-                    @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                    @rows$.style.height = nRows*rowHeight + 'px'
                     @onRowsMovedCB([{el:row$,rank:0}])
                     return
 
@@ -663,7 +664,7 @@ module.exports = class LongListRows
                         row = row.prev
                         currentRk += 1
                     # redecorate created row
-                    @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                    @rows$.style.height = nRows*rowHeight + 'px'
                     @onRowsMovedCB([{el:row$,rank:fromRank}])
                     return
 
@@ -688,7 +689,7 @@ module.exports = class LongListRows
                     buffer.lastRk++
                     buffer.nRows++
                     # redecorate created row
-                    @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                    @rows$.style.height = nRows*rowHeight + 'px'
                     @onRowsMovedCB([{el:row$,rank:fromRank}])
                     return
 
@@ -705,7 +706,7 @@ module.exports = class LongListRows
             # case B.1 : The insertion is before the buffer, first row included
             if fromRank <= buffer.firstRk
                 scrollTop = @viewport$.scrollTop
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                @rows$.style.height = nRows*rowHeight + 'px'
                 @viewport$.scrollTop = scrollTop + rowHeight
                 # adapt ranks of the rows of the buffer
                 last = buffer.last
@@ -730,7 +731,7 @@ module.exports = class LongListRows
                 scrollTop = @viewport$.scrollTop
                 viewport_startRk = Math.floor(scrollTop / rowHeight)
                 # increase rows$ height
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                @rows$.style.height = nRows*rowHeight + 'px'
 
                 ##
                 # case B.2.1 : insertion is into the buffer but before the
@@ -758,7 +759,7 @@ module.exports = class LongListRows
             ##
             # case B.3 : The insertion is after the buffer
             else if buffer.lastRk < fromRank
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                @rows$.style.height = nRows*rowHeight + 'px'
                 return
 
         @_addRow = _addRow
@@ -882,7 +883,7 @@ module.exports = class LongListRows
             ##
             # case 1 : The deletion is before the buffer
             if fromRank < buffer.firstRk
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                @rows$.style.height = nRows*rowHeight + 'px'
                 # adapt ranks of the rows of the buffer
                 first     = buffer.first
                 row       = first
@@ -919,7 +920,7 @@ module.exports = class LongListRows
                 # get row element
                 row = _getRowAt(fromRank)
                 # decrease rows$ height
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                @rows$.style.height = nRows*rowHeight + 'px'
 
                 ##
                 # case 2.1
@@ -969,7 +970,7 @@ module.exports = class LongListRows
                 # buffer (ie there are rows under the buffer)
                 # The element will be moved at the bottom of the buffer and
                 # redecorated
-                else if buffer.lastRk <= nRows - 1
+                else if buffer.lastRk < nRows
                     first = buffer.first
                     last  = buffer.last
                     if row == first
@@ -1052,7 +1053,8 @@ module.exports = class LongListRows
             ##
             # case 3 : The insertion is after the buffer
             else if buffer.lastRk < fromRank
-                @rows$.style.setProperty('height', nRows*rowHeight + 'px')
+                @rows$.style.height = nRows*rowHeight + 'px'
+                return 0
 
         @_removeRows = _removeRows
 
@@ -1125,7 +1127,6 @@ module.exports = class LongListRows
                 @rows$.innerHTML = ''
                 @rows$.style.height = '0px'
                 @rows$.style.paddingTop = '0px'
-                @viewport$.scrollTop = 0
 
             buffer =
                 first   : null   # top most row
