@@ -140,12 +140,3 @@ $(document).on 'ready', ->
     mocha.run()
 
 
-    # init long list for manual tests
-    # nRows = 10
-    # initRowsList(nRows)
-    # longList.initRows(nRows)
-    # selectedRows = {}
-
-
-
-

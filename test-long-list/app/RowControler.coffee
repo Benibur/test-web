@@ -3,6 +3,7 @@ LinkedList   = require('./libs/linked-list')
 expect       = chai.expect
 
 
+
 module.exports = class RowControler
 
     constructor : (viewportElement) ->
@@ -38,14 +39,40 @@ module.exports = class RowControler
             # refresh is delayed to the nex throttle
             MAX_SPEED         : 1.5
 
+            # call back in charge of the creation of the content of a row. 
+            # You can keep some references on the element to some of its 
+            # children in order to have a direct access to them when onRowsMovedCB
+            # will be called on the element.
+            onRowsCreatedCB   : (rowsToCreate)=>
+                rowsList = @rowsList
+                for row in rowsToCreate
+                    rowTxt = rowsList.at(row.rank).data
+                    row.el.innerHTML = """<div class="largest-col">#{rowTxt}</div><div class="constant-col">current rank: #{row.rank}</div>"""
+                    row.el.components =
+                        rowTxt : row.el.firstChild
+                        rowRk  : row.el.lastChild
+                    checkIfSelected(row.el)
+                return true
+
             # the call back in charge of decorating the rows when they are moved
             # in the long list.
             # rowsToDecorate = [{rank:Integer,el:Element}...]
             onRowsMovedCB     : (rowsToDecorate)=>
                 rowsList = @rowsList
                 for row in rowsToDecorate
-                    rowTxt = rowsList.at(row.rank).data
-                    row.el.innerHTML = """<div class="largest-col">#{rowTxt}</div><div class="constant-col">current rank: #{row.rank}</div>"""
+                    rowTxt = rowsList.at(row.rank).data # expensive
+                    # 
+                    # option 1 : recreate the full content of the row :
+                    # row.el.innerHTML = """<div class="largest-col">#{rowTxt}</div><div class="constant-col">current rank: #{row.rank}</div>"""
+                    # 
+                    # option 2 : use the references to its children to modify what
+                    # must be redecorated. The more complex is your row, the more 
+                    # usefull it will be. Here the gain of speed is around 3%, not 
+                    # huge.
+                    components = row.el.components
+                    components.rowTxt.textContent = rowTxt
+                    components.rowRk.textContent  = "current rank: #{row.rank}"
+
                     checkIfSelected(row.el)
                 return true
 
@@ -263,7 +290,11 @@ module.exports = class RowControler
      * helpers for tests and debug
     ###
 
-    testLongList : () ->
+    ###*
+        Will check that the state of the longList (buffer, nRows,
+        positions...) is consistent.
+    ###
+    testLongListConsistency : () ->
         longList     = @longList
         rowsList     = @rowsList
         selectedRows = @selectedRows
@@ -351,6 +382,9 @@ module.exports = class RowControler
         expect(buffer.lastRk - buffer.firstRk + 1)
             .to.eql(buffer.nRows)
 
+    ###*
+        Test that the element of a row displays what it should
+    ###
     testDecorationOfRow : (rank)->
         row$ = @longList.getRowElementAt(rank)
         idDecoration = row$.firstChild.textContent

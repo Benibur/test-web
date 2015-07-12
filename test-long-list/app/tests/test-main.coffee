@@ -57,7 +57,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -107,7 +107,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -157,7 +157,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -207,7 +207,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -257,7 +257,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -307,7 +307,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -357,7 +357,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -408,7 +408,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -459,7 +459,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-3,theoricalHeight+3)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -509,7 +509,7 @@ module.exports = (options) ->
                     .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -550,7 +550,7 @@ module.exports = (options) ->
                     .to.eql(0)
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -608,7 +608,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test-nToDelete))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -657,7 +657,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test-nToDelete))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -712,7 +712,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test-nToDelete))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -777,7 +777,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test-nToDelete))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -833,7 +833,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test-nToDelete))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -899,7 +899,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
             describe '4.1.1 - add a row, in the buffer, before the viewport.', () ->
@@ -958,7 +958,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
             describe '4.1.2 - add a row, in the buffer, on first row of the buffer.', () ->
@@ -1014,7 +1014,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
             describe '4.1.3 - add a row, in the buffer, on second row of the buffer.', () ->
@@ -1073,7 +1073,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
 
@@ -1133,7 +1133,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
             describe '4.1.5 - add a row, at the last row of the buffer.', () ->
@@ -1192,7 +1192,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
             describe '4.1.6 - add a row after the buffer.', () ->
@@ -1248,7 +1248,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
 
@@ -1310,7 +1310,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
             describe '4.2.2 - add a row, in the buffer, on first row of the buffer.', () ->
@@ -1366,7 +1366,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
 
@@ -1426,7 +1426,7 @@ module.exports = (options) ->
                         .to.be.within(theoricalHeight-4,theoricalHeight+4)
 
                 it 'the final state should be consistant', () ->
-                    rowControler.testLongList()
+                    rowControler.testLongListConsistency()
 
 
 
@@ -1496,7 +1496,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
         describe '5.2 - add a row in the middle', () ->
 
@@ -1555,7 +1555,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
         describe '5.3 - add a row at rank = buffer.lastRk', () ->
 
@@ -1614,7 +1614,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
         describe '5.4 - add a row at rank = buffer.lastRk + 1', () ->
@@ -1674,7 +1674,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
 
@@ -1739,7 +1739,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
         describe '6.2 - add a row in the buffer, before viewport', () ->
@@ -1799,7 +1799,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
         describe '6.3 - add a row in the viewport', () ->
@@ -1860,7 +1860,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
         describe '6.4 - add a row at rank = buffer.lastRk', () ->
 
@@ -1919,7 +1919,7 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
 
 
         describe '6.4 - add a row at rank = buffer.lastRk + 1', () ->
@@ -1980,4 +1980,4 @@ module.exports = (options) ->
                     .to.eql(stateFinal.rowHeight*(nRows4Test+1))
 
             it 'the final state should be consistant', () ->
-                rowControler.testLongList()
+                rowControler.testLongListConsistency()
