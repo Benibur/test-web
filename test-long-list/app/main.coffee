@@ -1,8 +1,6 @@
 RowControler = require('./RowControler')
 
 
-
-
 # Initialize the application on DOM ready event.
 $(document).on 'ready', ->
     body = document.querySelector('body')
@@ -57,6 +55,12 @@ $(document).on 'ready', ->
     document.querySelector('.addBtn')
     .addEventListener 'click', () ->
         rowControler.addRowAfterSelected()
+
+
+    document.querySelector('.addAtRkBtn')
+    .addEventListener 'click', () ->
+        rk = parseInt(document.querySelector('.insertionRk').value)
+        rowControler.addRowAtRk(rk)
 
 
     document.querySelector('.deleteBtn')
@@ -124,7 +128,7 @@ $(document).on 'ready', ->
         SHORT_LIST_LENGTH = BUFFER_LIST_LENGTH - 2
         console.log 'BUFFER_LIST_LENGTH', BUFFER_LIST_LENGTH
         console.log 'SHORT_LIST_LENGTH',  SHORT_LIST_LENGTH
-    initVars()
+    # initVars()
 
     testOptions =
         rowControler       : rowControler
@@ -137,6 +141,6 @@ $(document).on 'ready', ->
 
 
     # run tests
-    mocha.run()
+    # mocha.run()
 
 

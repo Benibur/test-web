@@ -34,10 +34,22 @@
 #           # redecorated
 #           onRowsMovedCB     : (rowsToDecorate)->
 #               # rowsToDecorate  : [ {rank:Integer, el:Element} , ... ]
-#               # Array of objects giving the rank and a reference to the 
+#               # Array of objects giving the rank and a reference to the
 #               # element of the moved row.
 #               # The array is sorted in order to optimize refresh (the most
 #               # usefull to refresh is the first one)
+#
+#           # [optional] call back when a row of the buffer is created (the
+#           first decoration might differ from others). If not provided,
+#           onRowsMovedCB will be called instead.
+#           onRowsCreatedCB   : (rowsToDecorate)->
+#               # rowsToDecorate  : [ {rank:Integer, el:Element} , ... ]
+#               # Array of objects giving the rank and a reference to the
+#               # element of the moved row.
+#               # The array is sorted in order to optimize refresh (the most
+#               # usefull to refresh is the first one)
+#
+#
 #
 #       longList = new LongListRows(viewportElement, options)
 #       doActions() ...
@@ -84,7 +96,10 @@ module.exports = class LongListRows
     constructor: (@externalViewport$, @options ) ->
         @options.MAX_SPEED = @options.MAX_SPEED  * @options.THROTTLE / 1000
         @onRowsMovedCB     = @options.onRowsMovedCB
-        @onRowsCreatedCB   = @options.onRowsCreatedCB
+        if @options.onRowsCreatedCB
+            @onRowsCreatedCB   = @options.onRowsCreatedCB
+        else
+            @onRowsCreatedCB   = @options.onRowsMovedCB
         ####
         # get elements (name ends with '$')
         @viewport$ = document.createElement('div')
@@ -387,9 +402,9 @@ module.exports = class LongListRows
 
         ###*
          * @param {Integer} add nToAdd rows at the bottom of the buffer
-         *     {Row}:     
+         *     {Row}:
          *          prev : {Row}
-         *          next : {Row} 
+         *          next : {Row}
          *          el   : {Element}
          *          rank : {Integer}
         ###
@@ -577,13 +592,20 @@ module.exports = class LongListRows
                 prevCreatedRow = row
                 rowsToDecorate.push({rank:n-1;el:row$})
             # set the buffer
-            bufr.first   = firstCreatedRow.prev
-            bufr.firstRk = 0
-            bufr.last    = row
-            bufr.first.next = bufr.last
-            bufr.last.prev  = bufr.first
-            bufr.lastRk  = row.rank
-            bufr.nRows   = nToCreate
+            if nToAdd == 0
+                bufr.first   = null
+                bufr.firstRk = -1
+                bufr.last    = null
+                bufr.lastRk  = -1
+                bufr.nRows   = null
+            else
+                bufr.first   = firstCreatedRow.prev
+                bufr.firstRk = 0
+                bufr.last    = row
+                bufr.first.next = bufr.last
+                bufr.last.prev  = bufr.first
+                bufr.lastRk  = row.rank
+                bufr.nRows   = nToCreate
             # check if the long list is dynamic
             if nMaxRowsInBufr < nRows
                 isDynamic = true
@@ -605,7 +627,9 @@ module.exports = class LongListRows
         ###
         _addRow = (fromRank)->
             # console.log 'LongList._addRow', fromRank
-
+            if nRows == 0
+                @_firstPopulateBuffer(1)
+                return
             ##
             # update nRows
             nRows++
@@ -1153,7 +1177,7 @@ module.exports = class LongListRows
            (next) element.
          * "closed" means that buffer.last.prev == buffer.first
          * data structure :
-          
+
            {buffer} :
              first   : {row}      # top most row
              firstRk : {integer}  # y of the first row of the buffer
@@ -1164,9 +1188,9 @@ module.exports = class LongListRows
                  rank is in the buffer, null otherwise.
                  If the buffer is not empty, all elements are removed.
 
-           {Row}:      
+           {Row}:
                 prev : {Row}
-                next : {Row} 
+                next : {Row}
                 el   : {Element}
                 rank : {Integer}
         ###

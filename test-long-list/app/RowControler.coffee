@@ -39,8 +39,8 @@ module.exports = class RowControler
             # refresh is delayed to the nex throttle
             MAX_SPEED         : 1.5
 
-            # call back in charge of the creation of the content of a row. 
-            # You can keep some references on the element to some of its 
+            # call back in charge of the creation of the content of a row.
+            # You can keep some references on the element to some of its
             # children in order to have a direct access to them when onRowsMovedCB
             # will be called on the element.
             onRowsCreatedCB   : (rowsToCreate)=>
@@ -61,13 +61,13 @@ module.exports = class RowControler
                 rowsList = @rowsList
                 for row in rowsToDecorate
                     rowTxt = rowsList.at(row.rank).data # expensive
-                    # 
+                    #
                     # option 1 : recreate the full content of the row :
                     # row.el.innerHTML = """<div class="largest-col">#{rowTxt}</div><div class="constant-col">current rank: #{row.rank}</div>"""
-                    # 
+                    #
                     # option 2 : use the references to its children to modify what
-                    # must be redecorated. The more complex is your row, the more 
-                    # usefull it will be. Here the gain of speed is around 3%, not 
+                    # must be redecorated. The more complex is your row, the more
+                    # usefull it will be. Here the gain of speed is around 3%, not
                     # huge.
                     components = row.el.components
                     components.rowTxt.textContent = rowTxt
@@ -212,7 +212,7 @@ module.exports = class RowControler
             continue if !selectedRows[rowID]
             rows.push row
 
-        # 2- remove each row
+        # 2- add each row
         smallestRank = Infinity
         for row in rows
             rank = rowsList.rank(row)
@@ -228,9 +228,28 @@ module.exports = class RowControler
             # only ones to be impacted. All the raws after the first deleted have
             # their rank modified. If their state depends on the rank, it must then
             # be adapted.
-            rowsToReRanked = @longList.getRowsAfter(smallestRank)
+            rowsToReRanked = @longList.getRowsAfter(smallestRank+1)
             for row in rowsToReRanked
                 row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+        return
+
+
+    addRowAtRk: (rank)->
+        # a- update the data (always before the longList)
+        # ! note : data must be updated before acting on the long list
+        # because the data must be uptodate when redecoration will occur.
+        newRow = @rowsList.insert(rank,'')
+        newRow.data = "row: id_#{newRow.id}"
+        # b- modify the longList
+        @longList.addRow(rank)
+        # c- update the rows rank. In deed, the rows redecorated are not the
+        # only ones to be impacted. All the raws after the first deleted have
+        # their rank modified. If their state depends on the rank, it must then
+        # be adapted.
+        rowsToReRanked = @longList.getRowsAfter(rank)
+        for row in rowsToReRanked
+            row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+
         return
 
 
