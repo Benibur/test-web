@@ -128,7 +128,7 @@ $(document).on 'ready', ->
         SHORT_LIST_LENGTH = BUFFER_LIST_LENGTH - 2
         console.log 'BUFFER_LIST_LENGTH', BUFFER_LIST_LENGTH
         console.log 'SHORT_LIST_LENGTH',  SHORT_LIST_LENGTH
-    # initVars()
+    initVars()
 
     testOptions =
         rowControler       : rowControler
@@ -141,6 +141,6 @@ $(document).on 'ready', ->
 
 
     # run tests
-    # mocha.run()
+    mocha.run()
 
 

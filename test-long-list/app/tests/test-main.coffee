@@ -1436,6 +1436,7 @@ module.exports = (options) ->
 
 
 
+
     describe '5 - Short list tests (less than in the buffer) - addRows()', () ->
 
         describe '5.1 - add a row at rank 0', () ->
@@ -1679,6 +1680,12 @@ module.exports = (options) ->
 
 
 
+
+
+
+
+
+
     describe '6 - Short list tests : with nRows == nMaxRowsInBufr - addRows()', () ->
 
         describe '6.1 - add a row at rank 0', () ->
@@ -1714,25 +1721,25 @@ module.exports = (options) ->
                 expect(stateFinal.nRows)
                     .to.eql(nRows4Test + 1)
 
-            it 'the bufffer should start at 1', () ->
+            it 'the bufffer should start at 0', () ->
                 expect(stateFinal.buffer.firstRk )
-                    .to.eql(stateInitial.buffer.firstRk+1)
+                    .to.eql(stateInitial.buffer.firstRk)
                 expect(stateFinal.buffer.firstRk )
-                    .to.eql(1)
+                    .to.eql(0)
 
             it 'the bufffer should be the same length', () ->
                 final_nRows = stateFinal.buffer.lastRk - stateFinal.buffer.firstRk + 1
                 expect(final_nRows)
                     .to.eql(stateInitial.buffer.nRows )
 
-            it 'the first visible row should be the same after insertion
+            it 'the second visible row should be the same after insertion
             (visible rows should remain the same)', () ->
-                finalFirstVisibleRow = rowControler.getDataAtRank(stateFinal.viewport.firstRk)
-                expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
+                finalSecondVisibleRow = rowControler.getDataAtRank(stateFinal.viewport.firstRk+1)
+                expect(finalSecondVisibleRow).to.eql(initialFirstVisibleRow)
 
-            it 'the inserted row of the buffer should not be in the buffer', () ->
+            it 'the inserted row of the buffer should be in the buffer', () ->
                 rowElement = rowControler.getRowElementAt(rankToAdd)
-                expect(rowElement).to.be.undefined
+                expect(rowElement).to.not.be.undefined
 
             it 'the height of the list should have more 1 row', () ->
                 expect(stateFinal.height)
