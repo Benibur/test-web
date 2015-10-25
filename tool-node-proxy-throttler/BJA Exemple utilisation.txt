@@ -1,0 +1,6 @@
+
+
+node bin/throttleproxy.js -r localhost:9121 -u 10000 -d 10000000
+
+sera accessible en http://localhost:8080
+avec une bande passante de 10000 en upload et de 10000000 en download (b/s)
