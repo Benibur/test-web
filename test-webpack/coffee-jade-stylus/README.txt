@@ -7,12 +7,12 @@ Prérequis :
     . sudo npm install webpack-dev-server -g
 
 Utilisation :
-    . npm install  (installe les dépendances de package.json, à savoir les css et styles loader)
+    . npm install
     . puis :
-        . webpack : pour exécuter webpack.config.js
-        . webpack-dev-server --progress --colors  : pour servir le tout sur http://localhost:8080/webpack-dev-server
+        . npm run build
+        . npm run w      : lance le serveur en watch sur http://localhost:8080/webpack-dev-server
 
 Organisation :
     . les sources sont dans src
     . l'output dans bin
-    . le webpack-dev-server sert les fichiers de bin
+    . npm run w : lance le webpack-dev-server sert les fichiers de bin
