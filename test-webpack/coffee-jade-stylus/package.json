@@ -1,9 +1,12 @@
 {
   "dependencies": {
+    "coffee-script": "*",
+    "coffee-loader": "*",
     "css-loader": "*",
     "jade": "^1.11.0",
     "jade-loader": "^0.8.0",
     "style-loader": "*",
+    "stylus": "*",
     "stylus-loader": "*",
     "webpack": "^1.13.0"
   },

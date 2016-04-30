@@ -11,3 +11,8 @@ Utilisation :
     . puis :
         . webpack : pour exécuter webpack.config.js
         . webpack-dev-server --progress --colors  : pour servir le tout sur http://localhost:8080/webpack-dev-server
+
+Organisation :
+    . les sources sont dans src
+    . l'output dans bin
+    . le webpack-dev-server sert les fichiers de bin

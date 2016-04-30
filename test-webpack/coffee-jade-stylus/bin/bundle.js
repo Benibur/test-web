@@ -45,9 +45,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
-	// require("./style.styl");
-	document.write(__webpack_require__(5));
-	document.write(__webpack_require__(6)());
+
+	document.write(__webpack_require__(5)());
 
 
 /***/ },
@@ -66,8 +65,8 @@
 	if(false) {
 		// When the styles change, update the <style> tags
 		if(!content.locals) {
-			module.hot.accept("!!./node_modules/css-loader/index.js!./style.css", function() {
-				var newContent = require("!!./node_modules/css-loader/index.js!./style.css");
+			module.hot.accept("!!./node_modules/css-loader/index.js!./node_modules/stylus-loader/index.js!./style.styl", function() {
+				var newContent = require("!!./node_modules/css-loader/index.js!./node_modules/stylus-loader/index.js!./style.styl");
 				if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
 				update(newContent);
 			});
@@ -85,7 +84,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\n    background: red;\n}", ""]);
+	exports.push([module.id, "body {\n  background: #f00;\n  color: #fff;\n}\n", ""]);
 
 	// exports
 
@@ -400,15 +399,9 @@
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
-
-	module.exports = "It works from my-content-module.js.";
-
-/***/ },
-/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jade = __webpack_require__(7);
+	var jade = __webpack_require__(6);
 
 	module.exports = function template(locals) {
 	var buf = [];
@@ -419,7 +412,7 @@
 	}
 
 /***/ },
-/* 7 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -639,7 +632,7 @@
 	    throw err;
 	  }
 	  try {
-	    str = str || __webpack_require__(8).readFileSync(filename, 'utf8')
+	    str = str || __webpack_require__(7).readFileSync(filename, 'utf8')
 	  } catch (ex) {
 	    rethrow(err, null, lineno)
 	  }
@@ -671,7 +664,7 @@
 
 
 /***/ },
-/* 8 */
+/* 7 */
 /***/ function(module, exports) {
 
 	/* (ignored) */
