@@ -1,8 +1,13 @@
 {
   "dependencies": {
     "css-loader": "*",
+    "jade": "^1.11.0",
     "jade-loader": "^0.8.0",
     "style-loader": "*",
-    "stylus-loader": "*"
+    "stylus-loader": "*",
+    "webpack": "^1.13.0"
+  },
+  "scripts": {
+    "watch": "webpack -w"
   }
 }
