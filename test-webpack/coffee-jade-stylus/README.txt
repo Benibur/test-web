@@ -1,8 +1,5 @@
-Template de base d'un projet webpack:
-    . javascript avec des modules common.js
-    . css
-    . et serveur avec mise à jour automatique
-    .
+Template d'un projet webpack avec coffee, stylus & jade
+
 
 Prérequis :
     . node avec une version récente
