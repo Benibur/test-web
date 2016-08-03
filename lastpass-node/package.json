@@ -1,0 +1,11 @@
+{ "name": "lastpass-node"
+, "version": "0.0.1"
+, "engines": ["node >= 4.4.7"]
+, "main": "server.coffee"
+, "dependencies":
+  {
+    "coffee-script":    "= 1.10.0",
+    "request": ""
+
+  }
+}

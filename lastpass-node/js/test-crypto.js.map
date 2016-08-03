@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "test-crypto.js",
+  "sourceRoot": "..",
+  "sources": [
+    "test-crypto.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,MAAA,GAAS,OAAA,CAAQ,QAAR;;EAET,QAAA,GAAW;;EACX,QAAA,GAAW;;EACX,mBAAA,GAAsB;;AAEtB;;EAIA,GAAA,GAAM,MAAM,CAAC,UAAP,CAAkB,QAAlB,EAA2B,QAA3B,EAAoC,mBAApC,EAAyD,EAAzD,EAA6D,QAA7D;;EAEN,OAAO,CAAC,GAAR,CAAY,KAAZ,EAAkB,GAAlB,EAAuB,GAAG,CAAC,QAAJ,CAAa,KAAb,CAAvB;AAZA"
+}
