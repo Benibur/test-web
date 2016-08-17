@@ -1,6 +1,5 @@
 require("./style.styl")
 htmlbody = require("./my-jade.jade")()
-# document.write(htmlbody)
 document.body.innerHTML = htmlbody
 
 # get html elements references
@@ -14,4 +13,3 @@ password = passwordEl.value
 
 # put focus on button
 btnEl.focus()
-console.log document.activeElement, 'toto'
