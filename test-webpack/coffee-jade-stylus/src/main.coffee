@@ -1,2 +1,2 @@
 require("./style.styl")
-document.write(require("./my-jade.jade")())
+document.body.innerHTML = require("./my-jade.jade")()

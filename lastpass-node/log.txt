@@ -5,7 +5,7 @@ make_hash( ben@sonadresse.com toto32toto32 5000 )
 make_key() ben@sonadresse.com toto32toto32 5000 )
   => <Buffer f3 e4 55 26 a6 2f d7 bb 2e 7d 3f b3 c9 18 6a 36 54 c8 6d 65 46 66 89 1b 32 f2 c1 9b 02 18 92 df> f3e45526a62fd7bb2e7d3fb3c9186a3654c86d654666891b32f2c19b021892df
  hash c9a49ef0bc4f49076c9dd764c47a7f19adc2b73665d894107bb6be14968ceb90
-request about to be sent with options = { url: 'https://lastpass.com/login.php',
+session request about to be sent with options = { url: 'https://lastpass.com/login.php',
   json: true,
   form: 
    { method: 'mobile',
@@ -15,8 +15,8 @@ request about to be sent with options = { url: 'https://lastpass.com/login.php',
      hash: 'c9a49ef0bc4f49076c9dd764c47a7f19adc2b73665d894107bb6be14968ceb90',
      iterations: 5000 } }
 null
-login body : <ok uid="102594532" uidhash="102594532_1470004081_loginphp_3336dfa51e7d571885319d5961fda7a4fce64901" sessionid="7XkMtKjb0258JAQ8HC,eSd0oUYf" pwresetreqd="0" trialduration="14" token="MTQ3MDAwNDAyMS4wMzIzLROJgMhMkGZTELcWMzcPsq9r/tmEqqluMnbDXpRapLY4" adlogin="0" disableoffline="0" accts_version="6" pushserver="https://lp-push-server-451.lastpass.com/ws/82f0f2b1a181a9957bfd924e713f6ea39649fac6d75e4c5b263abc969965efef main"   skiploginextension="1"  />
-_fetch_blob() login session= { id: '7XkMtKjb0258JAQ8HC,eSd0oUYf', key_iteration_count: 5000 }
+login body : <ok uid="102594532" uidhash="102594532_1471073212_loginphp_33f807607a55cee21da65b86d6feae0bce9934bb" sessionid="mpyNifCmDI3SrRpojNk,ovUcoU9" pwresetreqd="0" trialduration="14" token="MTQ3MTA3MzE1Mi4xNDk1LbS4ONhuNQWR0F0VHLk3oHAUKmvMTAn1bzTYGxq8tkbQ" adlogin="0" disableoffline="0" accts_version="6" pushserver="https://lp-push-server-451.lastpass.com/ws/82f0f2b1a181a9957bfd924e713f6ea39649fac6d75e4c5b263abc969965efef main"   skiploginextension="1"  />
+_fetch_blob() login session= { id: 'mpyNifCmDI3SrRpojNk,ovUcoU9', key_iteration_count: 5000 }
 -- on veut Fetcher.fetch_blob() ! ! !
 --chunk n° 1
    id=LPAV size=1

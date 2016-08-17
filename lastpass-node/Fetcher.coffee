@@ -58,7 +58,7 @@ request_session = (username, password, key_iteration_count, multifactor_password
             username   : username
             hash       : make_hash(username, password, key_iteration_count)
             iterations : key_iteration_count
-    console.log "request about to be sent with options =", options
+    console.log "session request about to be sent with options =", options
     request.post options, (err, resp, body) ->
         console.log err
         console.log 'login body :', body
