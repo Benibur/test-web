@@ -1,28 +1,28 @@
-p Client web for Lastpass (
-    a(href='http://lastpass.com') http://lastpass.com
-    | )
+div(id='form_container')
+    h1 Client web for Lastpass (
+        a(href='http://lastpass.com') http://lastpass.com
+        | )
 
-input(
-    type='text'
-    id='username'
-    placeholder='Lastpass user'
-    value='ben@sonadresse.com'
-)
-input(
-    type='text'
-    id='password'
-    placeholder='password'
-    value='toto32toto32'
-)
-button(
-    id='btn'
-    autofocus='true'
-) Get data from Lastpass
-p(
-    name='result'
-    placeholder='result'
-) tt
-p(
-    name='log'
-    placeholder='logs'
-) dd
+    input(
+        type='text'
+        id='username'
+        placeholder='Lastpass user'
+        value='ben@sonadresse.com'
+    )
+    input(
+        type='text'
+        id='password'
+        placeholder='password'
+        value='toto32toto32'
+    )
+    button(
+        id='btn'
+    ) Get data from Lastpass
+
+div(id='output_container')
+    div
+        h2 Result
+        p(name='result') tttt
+    div
+        h2 Logs
+        p(name='logs') dddd

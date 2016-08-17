@@ -1,6 +1,3 @@
-document.addEventListener 'load', () ->
-    console.log 'document.loaded'
-
 require("./style.styl")
 htmlbody = require("./my-jade.jade")()
 # document.write(htmlbody)

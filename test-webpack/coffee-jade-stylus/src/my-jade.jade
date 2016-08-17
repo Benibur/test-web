@@ -1,1 +1,29 @@
-p ceci est mon paragraphe !
+div(id='form_container')
+    h1 Client web for Lastpass (
+        a(href='http://lastpass.com') http://lastpass.com
+        | )
+
+    input(
+        type='text'
+        id='input1'
+        placeholder='Data template for input1'
+        value='Val1'
+    )
+    input(
+        type='text'
+        id='input2'
+        placeholder='Data template for input2'
+        value='Val2'
+    )
+    button(
+        id='btn'
+        autofocus='true'
+    ) Go !
+
+div(id='output_container')
+    div
+        h2 Result
+        p(name='result') Results content
+    div
+        h2 Logs
+        p(name='logs') Logs content
