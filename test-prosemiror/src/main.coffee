@@ -13,3 +13,13 @@ password = input2El.value
 
 # put focus on button
 btnEl.focus()
+
+prosemirror = require("prosemirror")
+schema = require("prosemirror/dist/schema-basic").schema
+container_01El = document.getElementById('editor01_container')
+editor = new prosemirror.ProseMirror({
+    place:  container_01El,
+    schema: schema
+    doc:    schema.parseDOM(container_01El)
+    # menuBar   : {float: true}
+})

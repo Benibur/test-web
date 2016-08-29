@@ -41,6 +41,7 @@ STRATÉGIE
                         . https://www.npmjs.com/package/cors-anywhere
                         . avec ce proxy toutes les requêtes du browser doivent marcher, ça semble top, reste à sécurité (https : qu'est ce qui passe en clair sur le proxy
                         . pourrait être un bon candidat pour un proxy côté Cozy
+                    . le proxy le plus classique sur node semble être : https://github.com/nodejitsu/node-http-proxy
 
                     .
     . voire à utiliser les appels du cli si en effet le cli évite la confirmation par mail du device
