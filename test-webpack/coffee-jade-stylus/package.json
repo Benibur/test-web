@@ -8,11 +8,13 @@
     "style-loader"  : "*",
     "stylus"        : "*",
     "stylus-loader" : "*",
-    "webpack"       : "^1.13.0"
+    "webpack"       : "^1.13.0",
+    "copy-webpack-plugin" : "^3.0.1",
+    "extract-text-webpack-plugin" : "^1.0.1",
+    "webpack-hot-middleware":"*"
     },
 "scripts"  : {
-    "build"         : "webpack",
-    "w"             : "webpack-dev-server --inline --progress --colors",
-    "server"        : "webpack-dev-server --inline --progress --colors"
+    "build"         : "webpack --config webpack.prod.config.js",
+    "w"             : "webpack-dev-server --hot --inline --config webpack.dev.config.js"
     }
 }

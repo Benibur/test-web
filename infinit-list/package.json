@@ -14,7 +14,7 @@
     },
   "scripts"  : {
     "build"         : "webpack",
-    "w"             : "webpack-dev-server --progress --colors",
-    "server"        : "webpack-dev-server --progress --colors"
+    "w"             : "webpack-dev-server --inline --progress --colors",
+    "server"        : "webpack-dev-server --inline --progress --colors"
     }
 }

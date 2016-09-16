@@ -1,3 +1,8 @@
+//
+// here the css will be compiled in the bundle.js file (hot reload is then possible)
+//
+
+var CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
     entry: "./src/main.coffee",
     output: {
@@ -12,6 +17,10 @@ module.exports = {
             { test: /\.jade$/  , loader: "jade-loader" }
         ]
     },
+    plugins: [
+        // copy ressources in the output directory
+        new CopyWebpackPlugin([{from:'src/index-dev.html', to:'index.html'}])
+    ],
     devServer: {
         contentBase: "./bin"
       }
