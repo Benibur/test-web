@@ -1,0 +1,20 @@
+{
+  "dependencies"    : {
+    "coffee-script" : "*",
+    "coffee-loader" : "*",
+    "css-loader"    : "*",
+    "jade"          : "^1.11.0",
+    "jade-loader"   : "^0.8.0",
+    "style-loader"  : "*",
+    "stylus"        : "*",
+    "stylus-loader" : "*",
+    "webpack"       : "^1.13.0",
+    "mocha": "^2.2.5",
+    "chai": "^3.0.0"
+    },
+  "scripts"  : {
+    "build"         : "webpack",
+    "w"             : "webpack-dev-server --progress --colors",
+    "server"        : "webpack-dev-server --progress --colors"
+    }
+}
