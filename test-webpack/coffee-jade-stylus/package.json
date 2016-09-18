@@ -14,7 +14,7 @@
     "webpack-hot-middleware":"*"
     },
 "scripts"  : {
-    "build"         : "webpack --config webpack.prod.config.js",
+    "build"         : "webpack --config webpack.build.config.js",
     "w"             : "webpack-dev-server --hot --inline --config webpack.dev.config.js"
     }
 }

@@ -4,6 +4,7 @@
 
 var CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
+    devtool: 'eval-source-map',
     entry: "./src/main.coffee",
     output: {
         path: __dirname + "/bin",
@@ -19,7 +20,7 @@ module.exports = {
     },
     plugins: [
         // copy ressources in the output directory
-        new CopyWebpackPlugin([{from:'src/index-dev.html', to:'index.html'}])
+        new CopyWebpackPlugin([{from:'src/index-build.html', to:'index.html'}])
     ],
     devServer: {
         contentBase: "./bin"
