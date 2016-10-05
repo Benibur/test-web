@@ -11,10 +11,13 @@
     "webpack"       : "^1.13.0",
     "copy-webpack-plugin" : "^3.0.1",
     "extract-text-webpack-plugin" : "^1.0.1",
-    "webpack-hot-middleware":"*"
+    "webpack-hot-middleware":"*",
+    "browser-sync-webpack-plugin":"*",
+    "browser-sync":"*"
     },
 "scripts"  : {
-    "build"         : "webpack --config webpack.build.config.js",
-    "w"             : "webpack-dev-server --hot --inline --config webpack.dev.config.js"
+    "build": "webpack --config webpack.config.js",
+    "watch": "webpack --config webpack.config.js --watch",
+    "w"    : "webpack --config webpack.config.js --watch"
     }
 }

@@ -62,6 +62,8 @@
 
 	password = input2El.value;
 
+	console.log('toto');
+
 	btnEl.focus();
 
 
@@ -82,7 +84,7 @@
 	var jade_mixins = {};
 	var jade_interp;
 
-	buf.push("<div id=\"form_container\"><h1>Client web for Lastpass (<a href=\"http://lastpass.com\">http://lastpass.com</a>)</h1><input type=\"text\" id=\"input1\" placeholder=\"Data template for input1\" value=\"Val1\"><input type=\"text\" id=\"input2\" placeholder=\"Data template for input2\" value=\"Val2\"><button id=\"btn\" autofocus=\"true\">Go !</button></div><div id=\"output_container\"><div><h2>Result</h2><p name=\"result\">Results content</p></div><div><h2>Logs</h2><p name=\"logs\">Logs content</p></div></div>");;return buf.join("");
+	buf.push("<div id=\"form_container\"><h1>Client web for Lastpass (<a href=\"http://lastpass.com\">http://lastpass.com</a>)</h1><input type=\"text\" id=\"input1\" placeholder=\"Data template for input1\" value=\"Val2\"><input type=\"text\" id=\"input2\" placeholder=\"Data template for input2\" value=\"Val2\"><button id=\"btn\" autofocus=\"true\">Go !</button></div><div id=\"output_container\"><div><h2>Result</h2><p name=\"result\">Results content</p></div><div><h2>Logs</h2><p name=\"logs\">Logs content</p></div></div>");;return buf.join("");
 	}
 
 /***/ },

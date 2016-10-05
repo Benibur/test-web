@@ -1,13 +1,15 @@
-//
-// here the css will be compile in a seperated css file (no hot reload possible)
+// Les sources (./src) sont copiées ou buildées dans ./bin
+// un --watch 
 //
 
-var CopyWebpackPlugin = require('copy-webpack-plugin')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var CopyWebpackPlugin  = require('copy-webpack-plugin')
+var ExtractTextPlugin  = require('extract-text-webpack-plugin')
+var BrowserSyncWebpack = require('browser-sync-webpack-plugin')
+
 module.exports = {
     entry: "./src/main.coffee",
     output: {
-        path: __dirname + "/bin",
+        path    : __dirname + "/bin",
         filename: "bundle.js"
     },
     module: {
@@ -20,11 +22,16 @@ module.exports = {
     },
     plugins: [
         // bundle the css in a single file called from the html (this way, css hot reload is not possible)
-        new CopyWebpackPlugin([{from:'src/index-prod.html', to:'index.html'}]),
+        new CopyWebpackPlugin([{from:'src/index-dev.html', to:'index.html'}]),
         // copy ressources in the output directory
-        new ExtractTextPlugin('bundle.css', {allChunks:true})
-    ],
-    devServer: {
-        contentBase: "./bin"
-      }
+        new ExtractTextPlugin('bundle.css', {allChunks:true}),
+        // BrowserSync
+        new BrowserSyncWebpack({
+            open: false,
+            server: { baseDir: ['./bin'] }
+        })
+    ]
+
+
+
 };
