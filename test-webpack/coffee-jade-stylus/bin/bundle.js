@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -45,25 +45,25 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var btnEl, htmlbody, input1El, input2El, password, username;
-
+	
 	__webpack_require__(1);
-
+	
 	htmlbody = __webpack_require__(2)();
-
+	
 	document.body.innerHTML = htmlbody;
-
+	
 	btnEl = document.getElementById('btn');
-
+	
 	input1El = document.getElementById('input1');
-
+	
 	input2El = document.getElementById('input2');
-
+	
 	username = input1El.value;
-
+	
 	password = input2El.value;
-
+	
 	console.log('toto');
-
+	
 	btnEl.focus();
 
 
@@ -78,12 +78,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var jade = __webpack_require__(3);
-
+	
 	module.exports = function template(locals) {
 	var buf = [];
 	var jade_mixins = {};
 	var jade_interp;
-
+	
 	buf.push("<div id=\"form_container\"><h1>Client web for Lastpass (<a href=\"http://lastpass.com\">http://lastpass.com</a>)</h1><input type=\"text\" id=\"input1\" placeholder=\"Data template for input1\" value=\"Val2\"><input type=\"text\" id=\"input2\" placeholder=\"Data template for input2\" value=\"Val2\"><button id=\"btn\" autofocus=\"true\">Go !</button></div><div id=\"output_container\"><div><h2>Result</h2><p name=\"result\">Results content</p></div><div><h2>Logs</h2><p name=\"logs\">Logs content</p></div></div>");;return buf.join("");
 	}
 
@@ -92,7 +92,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	/**
 	 * Merge two attribute objects giving precedence
 	 * to values in object `b`. Classes are special-cased
@@ -104,7 +104,7 @@
 	 * @return {Object} a
 	 * @api private
 	 */
-
+	
 	exports.merge = function merge(a, b) {
 	  if (arguments.length === 1) {
 	    var attrs = a[0];
@@ -115,7 +115,7 @@
 	  }
 	  var ac = a['class'];
 	  var bc = b['class'];
-
+	
 	  if (ac || bc) {
 	    ac = ac || [];
 	    bc = bc || [];
@@ -123,16 +123,16 @@
 	    if (!Array.isArray(bc)) bc = [bc];
 	    a['class'] = ac.concat(bc).filter(nulls);
 	  }
-
+	
 	  for (var key in b) {
 	    if (key != 'class') {
 	      a[key] = b[key];
 	    }
 	  }
-
+	
 	  return a;
 	};
-
+	
 	/**
 	 * Filter null `val`s.
 	 *
@@ -140,11 +140,11 @@
 	 * @return {Boolean}
 	 * @api private
 	 */
-
+	
 	function nulls(val) {
 	  return val != null && val !== '';
 	}
-
+	
 	/**
 	 * join array as classes.
 	 *
@@ -157,7 +157,7 @@
 	    (val && typeof val === 'object') ? Object.keys(val).filter(function (key) { return val[key]; }) :
 	    [val]).filter(nulls).join(' ');
 	}
-
+	
 	/**
 	 * Render the given classes.
 	 *
@@ -181,8 +181,8 @@
 	    return '';
 	  }
 	};
-
-
+	
+	
 	exports.style = function (val) {
 	  if (val && typeof val === 'object') {
 	    return Object.keys(val).map(function (style) {
@@ -233,7 +233,7 @@
 	    return ' ' + key + '="' + val + '"';
 	  }
 	};
-
+	
 	/**
 	 * Render the given attributes object.
 	 *
@@ -243,14 +243,14 @@
 	 */
 	exports.attrs = function attrs(obj, terse){
 	  var buf = [];
-
+	
 	  var keys = Object.keys(obj);
-
+	
 	  if (keys.length) {
 	    for (var i = 0; i < keys.length; ++i) {
 	      var key = keys[i]
 	        , val = obj[key];
-
+	
 	      if ('class' == key) {
 	        if (val = joinClasses(val)) {
 	          buf.push(' ' + key + '="' + val + '"');
@@ -260,10 +260,10 @@
 	      }
 	    }
 	  }
-
+	
 	  return buf.join('');
 	};
-
+	
 	/**
 	 * Escape the given string of `html`.
 	 *
@@ -271,7 +271,7 @@
 	 * @return {String}
 	 * @api private
 	 */
-
+	
 	var jade_encode_html_rules = {
 	  '&': '&amp;',
 	  '<': '&lt;',
@@ -279,18 +279,18 @@
 	  '"': '&quot;'
 	};
 	var jade_match_html = /[&<>"]/g;
-
+	
 	function jade_encode_char(c) {
 	  return jade_encode_html_rules[c] || c;
 	}
-
+	
 	exports.escape = jade_escape;
 	function jade_escape(html){
 	  var result = String(html).replace(jade_match_html, jade_encode_char);
 	  if (result === '' + html) return html;
 	  else return result;
 	};
-
+	
 	/**
 	 * Re-throw the given `err` in context to the
 	 * the jade in `filename` at the given `lineno`.
@@ -300,7 +300,7 @@
 	 * @param {String} lineno
 	 * @api private
 	 */
-
+	
 	exports.rethrow = function rethrow(err, filename, lineno, str){
 	  if (!(err instanceof Error)) throw err;
 	  if ((typeof window != 'undefined' || !filename) && !str) {
@@ -316,7 +316,7 @@
 	    , lines = str.split('\n')
 	    , start = Math.max(lineno - context, 0)
 	    , end = Math.min(lines.length, lineno + context);
-
+	
 	  // Error context
 	  var context = lines.slice(start, end).map(function(line, i){
 	    var curr = i + start + 1;
@@ -325,14 +325,14 @@
 	      + '| '
 	      + line;
 	  }).join('\n');
-
+	
 	  // Alter exception message
 	  err.path = filename;
 	  err.message = (filename || 'Jade') + ':' + lineno
 	    + '\n' + context + '\n\n' + err.message;
 	  throw err;
 	};
-
+	
 	exports.DebugItem = function DebugItem(lineno, filename) {
 	  this.lineno = lineno;
 	  this.filename = filename;
@@ -347,3 +347,4 @@
 
 /***/ }
 /******/ ]);
+//# sourceMappingURL=bundle.js.map

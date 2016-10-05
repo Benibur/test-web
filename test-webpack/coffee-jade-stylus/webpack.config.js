@@ -1,5 +1,5 @@
 // Les sources (./src) sont copiées ou buildées dans ./bin
-// un --watch 
+// un --watch
 //
 
 var CopyWebpackPlugin  = require('copy-webpack-plugin')
@@ -30,7 +30,8 @@ module.exports = {
             open: false,
             server: { baseDir: ['./bin'] }
         })
-    ]
+    ],
+    devtool: 'source-map'
 
 
 
