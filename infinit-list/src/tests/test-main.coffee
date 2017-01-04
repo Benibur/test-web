@@ -1,4 +1,5 @@
-expect = chai.expect
+expect = require('chai').expect
+
 
 module.exports = (options) ->
 
@@ -54,7 +55,7 @@ module.exports = (options) ->
             it 'the height of the list should be 1 row\'s height less', () ->
                 theoricalHeight = stateFinal.rowHeight*(LONG_LIST_LENGTH-1)
                 expect(stateFinal.height)
-                    .to.be.within(theoricalHeight-3,theoricalHeight+3)
+                    .to.eql(theoricalHeight)
 
             it 'the final state should be consistant', () ->
                 rowControler.testLongListConsistency()
@@ -865,7 +866,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = 2
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -919,9 +920,9 @@ module.exports = (options) ->
                     stateInitial = rowControler._test.getState()
                     initialFirstVisibleRow = rowControler.getDataAtRank(stateInitial.viewport.firstRk)
                     # 3- set the row to add
-                    rankToAdd = 209
+                    rankToAdd = 150
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -936,6 +937,7 @@ module.exports = (options) ->
                         .to.eql(nRows4Test + 1)
 
                 it 'the bufffer should start one rank further', () ->
+                    3+3
                     expect(stateFinal.buffer.firstRk )
                         .to.eql(stateInitial.buffer.firstRk+1)
 
@@ -980,7 +982,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = stateInitial.buffer.firstRk
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1003,7 +1005,7 @@ module.exports = (options) ->
                     expect(final_nRows )
                         .to.eql(stateInitial.buffer.nRows )
 
-                it 'the first visible row should be the same    after insertion
+                it 'the first visible row should be the same after insertion
                 (visible rows should remain the same)', () ->
                     finalFirstVisibleRow = rowControler.getDataAtRank(stateFinal.viewport.firstRk)
                     expect(finalFirstVisibleRow).to.eql(initialFirstVisibleRow)
@@ -1036,7 +1038,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = stateInitial.buffer.firstRk + 1
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1096,7 +1098,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = 212
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1155,7 +1157,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = stateInitial.buffer.lastRk
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1214,7 +1216,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = stateInitial.buffer.lastRk + 1
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1273,7 +1275,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = 2
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1332,7 +1334,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = 0
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1389,7 +1391,7 @@ module.exports = (options) ->
                     # 3- set the row to add
                     rankToAdd = stateInitial.viewport.firstRk + 1
                     # 5- delete the row from the long list
-                    rowControler.addRow(rankToAdd)
+                    rowControler.addRowAtRk(rankToAdd)
                     # 7- tests
                     stateFinal = rowControler._test.getState()
 
@@ -1459,7 +1461,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = 0
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1518,7 +1520,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = 3
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1577,7 +1579,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = stateInitial.buffer.lastRk
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1637,7 +1639,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = stateInitial.buffer.lastRk + 1
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1707,7 +1709,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = 0
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1768,7 +1770,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = 1
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1828,7 +1830,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = 5
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1888,7 +1890,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = stateInitial.buffer.lastRk
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 
@@ -1948,7 +1950,7 @@ module.exports = (options) ->
                 # 3- set the row to add
                 rankToAdd = stateInitial.buffer.lastRk + 1
                 # 5- delete the row from the long list
-                rowControler.addRow(rankToAdd)
+                rowControler.addRowAtRk(rankToAdd)
                 # 7- tests
                 stateFinal = rowControler._test.getState()
 

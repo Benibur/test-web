@@ -1,7 +1,18 @@
 ################################################################################
 # -- USAGE --
+#   # vocabulary :
+#       . buffer :
+#       . viewport :
+#       . SafeZone :
 #
-#   # creation :
+#   # principles :
+#       .
+#       .
+#       .
+#       .
+#       .
+#
+#   # creation of the long list :
 #
 #
 #       viewportElement = $('.longListViewport')[0] # the viewport element
@@ -14,7 +25,7 @@
 #           ROW_HEIGHT        : 2
 #
 #           # number of "screens" before and after the viewport in the buffer.
-#           # (ex : 1.5 => 1+2*1.5=4 screens always ready)
+#           # (ex : 1.5 => 1+2*1.5=4 screens always loaded)
 #           BUFFER_COEF       : 3
 #
 #           # number of "screens" before and after the viewport corresponding to
@@ -94,14 +105,18 @@ module.exports = class LongListRows
 #
 
     constructor: (@externalViewport$, @options ) ->
+        ####
+        # init variables
+        @options.SAFE_ZONE_COEF = Math.min(@options.BUFFER_COEF, @options.SAFE_ZONE_COEF)
         @options.MAX_SPEED = @options.MAX_SPEED  * @options.THROTTLE / 1000
         @onRowsMovedCB     = @options.onRowsMovedCB
         if @options.onRowsCreatedCB
             @onRowsCreatedCB   = @options.onRowsCreatedCB
         else
             @onRowsCreatedCB   = @options.onRowsMovedCB
+
         ####
-        # get elements (name ends with '$')
+        # get elements (variables name ends with '$')
         @viewport$ = document.createElement('div')
         @viewport$.classList.add('viewport')
         @externalViewport$.appendChild(@viewport$)
@@ -342,8 +357,6 @@ module.exports = class LongListRows
             if viewportHeight <= 0
                 if @initialHeight
                     viewportHeight = @initialHeight
-                else
-                    return false
 
             # if the height of viewport has not change, we can directly adapt
             # buffer
@@ -355,8 +368,10 @@ module.exports = class LongListRows
             # compute the theorical buffer (theorical because there might not
             # need of such a buffer if there is not many rows added)
             nRowsInViewport   = Math.ceil(viewportHeight/rowHeight)
+            # idea : even if the
+            nRowsInViewport = Math.max(nRowsInViewport, 1)
             nRowsInBufrMargin = Math.round(BUFFER_COEF * nRowsInViewport)
-            nMaxRowsInBufr       = nRowsInViewport + nRowsInBufrMargin*2
+            nMaxRowsInBufr    = nRowsInViewport + nRowsInBufrMargin*2
 
             # compute the safe zone
             nRowsInSafeZoneMargin = Math.round(SAFE_ZONE_COEF * nRowsInViewport)
@@ -381,6 +396,8 @@ module.exports = class LongListRows
             if nRows != 0
                 _moveBuffer()
 
+            return true
+
         @resizeHandler = _resizeHandler
 
 
@@ -389,7 +406,6 @@ module.exports = class LongListRows
             index = nToDelete - 1
             nDeleted = 1
             loop
-                console.log nDeleted
                 @rows$.removeChild(currentRow.el)
                 nDeleted++
                 currentRow = currentRow.next
@@ -433,7 +449,7 @@ module.exports = class LongListRows
             buffer.lastRk     = row.rank
             buffer.nRows     += nToAdd
             # decorate the created rows
-            @onRowsMovedCB(rowsToDecorate)
+            @onRowsCreatedCB(rowsToDecorate)
 
 
         ###*
@@ -1236,7 +1252,9 @@ module.exports = class LongListRows
         _getStaticDimensions()
         ####
         # compute the geometry
-        _resizeHandler()
+        resizeIsSuccess = _resizeHandler()
+        # if !resizeIsSuccess
+
         ####
         # bind events
         @viewport$.addEventListener( 'scroll', _scrollHandler)
@@ -1338,7 +1356,7 @@ module.exports = class LongListRows
                     lastRk  : SZ_lastRk
                 nRows          : nRows
                 rowHeight      : rowHeight
-                height         : parseInt(@rows$.style.height)
+                height         : Math.round(@rows$.getBoundingClientRect().height)
                 nMaxRowsInBufr : nMaxRowsInBufr
                 isDynamic      : isDynamic
             return state

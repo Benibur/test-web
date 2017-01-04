@@ -1,30 +1,50 @@
+
 .controls
-    button.initBtn Initialise rows
-    input.nbRowsToIni(type='number', value='0')
+    h1 Controls over the long list
+    span Initialise list with  
+        input.nbRowsToIni(type='number', value='1000')
+        span rows
+        button.initBtn OK
     br
-    button.goDownBtn Go Down Half buffer
-    button.goUpBtn Go Up Half buffer
+    span Move list of a half buffer 
+    button.goDownBtn down
+    button.goUpBtn up
     br
-    button.addBtn Add  a row after selected
+    span Add  a row 
+    button.addBtn after selected rows
     br
-    button.addAtRkBtn Add  a row at rank :
+    span Add  a row at rank
     input.insertionRk(type='number', value='0')
+    button.addAtRkBtn OK
     br
-    button.deleteBtn Delete selected rows
+    span Delete 
+    button.deleteBtn selected rows
+    button.deleteAllBtn all rows
     br
-    button.deleteAllBtn Delete all rows
+    span scroll listener :
+    button.unActivateBtn un-activate
+    button.activateBtn activate
     br
-    button.unActivateBtn un-activate scroll listener
-    button.activateBtn activate scroll listener
+    span Set height of the viewport to  
+        input.viewportHeight(type='number', value='600')
+        span px
+        button.setHeightBtn OK
     br
     button.testLongListBtn Test consistency
     span.consistencyResult
 
+h1 The long list
+span You can :
+ul
+    li select rows and edit their text  
+    li add and delete rows (even those out of the portview)
+    li re-order rows or resize the portview
+span Scroll as you want, whatever the size of you list, it will always be blazing fast to load and render when scrolling !
 
-.long-list-block.dynDiv_setLimit
-    #resizable-container.dynDiv_moveDiv.dynDiv_hideMove
-        section.resizedContainer.longListViewport
-        .dynDiv_resizeDiv_br
+.resizable-div
+    .longListViewport
 
-.tests TESTS
+h1 AUTOMATIC TESTS
+button.autoTestsBtn Run tests !
+.tests 
     #mocha

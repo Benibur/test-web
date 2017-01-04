@@ -1,6 +1,6 @@
 // Les sources (./src) sont copiées ou buildées dans ./bin
 // un --watch
-// Source d'inspiration pour rajouter d'autres fonctions (ugly)
+// Source d'inspiration pour rajouter d'autres fonctions (ugly...) : https://github.com/cozy/cozy-proxy/blob/master/client/webpack.config.js
 
 var CopyWebpackPlugin  = require('copy-webpack-plugin')
 var ExtractTextPlugin  = require('extract-text-webpack-plugin')

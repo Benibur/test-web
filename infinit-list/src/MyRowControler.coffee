@@ -1,16 +1,105 @@
 LongListRows = require('./libs/long-list-rows.coffee')
 LinkedList   = require('./libs/linked-list.coffee')
+require('chai')
 expect       = require('chai').expect
 
 
 
-module.exports = class RowControler
+################################################################################
+# This class controls the data of the long list of rows
+# The data are stored in
+#    - a linked list : rowsModelsList
+#    - composed of rowModels {id, data}
+#    - a dictionnary for selected rows : selectedRows {rowID : row}
+# We store the selected rows no directly in the data of the rowModel because :
+#    - this data is a context that would not be stored
+#    - it is quicker to ckeck if a row is selected or not.
+# but we could have stored this context in the rowModels of the linkedlist.
+#
+################################################################################
+
+module.exports = class MyRowControler
 
     constructor : (viewportElement) ->
 
         ###* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
          * INITIALISATION OF THE LONG LIST
         ###
+
+        # Call back in charge of the creation of the content of a row.
+        # @param
+        #    rowsToCreate : [ {rank:Integer, el:Element} , ... ]
+        onRowsCreatedCB  = (rowsToCreate)=>
+            rowsModelsList = @rowsModelsList
+            for row in rowsToCreate
+                rowIdTxt = rowsModelsList.at(row.rank).data
+                row.el.innerHTML = """
+                    <input type='checkbox'>
+                    <span class='rank-col'></span>
+                    <span class='id-col'></span>
+                    <input type="text" class='input-col'></input>
+                    <span class='status'></span>
+                    """
+                # in the row html element we keep some references to the inner
+                # elements in order to update them more quickly .
+                components = {}
+                children = row.el.children
+                components.checkbox = children[0]
+                components.rowRk    = children[1]
+                components.rowIdTxt = children[2]
+                components.rowInput= children[3]
+                components.rowStatus= children[4]
+                row.el.components = components
+                updateRowDecoration(row.el)
+            return true
+
+        # Call back in charge of decorating the rows when they are moved
+        # in the long list.
+        # rowsToDecorate = [{rank:Integer,el:Element}...]
+        onRowsMovedCB = (rowsToDecorate) =>
+            for row in rowsToDecorate
+                rowIdTxt = @rowsModelsList.at(row.rank).data # expensive
+                #
+                # option 1 : recreate the full content of the row :
+                updateRowDecoration(row.el)
+
+                # option 2 : use the references to its children to modify what
+                # must be redecorated. The more complex is your row, the more
+                # usefull it will be. Here the gain of speed is around 3%, not
+                # huge.
+                # updateRowRankDecoration(row.el)
+
+            return true
+
+        # in charge to rederocate a row that has been moved when scrolling
+        # the long (row reuse) or when a data has changed
+        # @param
+        #    row$ : {HTML element} : the element of the row where row$.dataset.rank
+        #           is always uptodate (that is the way to know)
+        updateRowDecoration = (row$) =>
+            rank = row$.dataset.rank
+            rowModel = @rowsModelsList.at(rank)
+            id = rowModel.id
+            components = row$.components
+            if @selectedRows[id]
+                row$.classList.add('selected')
+                components.checkbox.checked = true
+                components.rowStatus.textContent = 'Selected'
+            else
+                row$.classList.remove('selected')
+                components.checkbox.checked = false
+                components.rowStatus.textContent = ''
+            if rank%2 == 0
+                row$.classList.add('even')
+            else
+                row$.classList.remove('even')
+            components.rowRk.textContent = 'rank: ' + rank
+            components.rowIdTxt.textContent = 'ID: ' + id
+            components.rowInput.value = rowModel.data
+
+
+        @updateRowDecoration = updateRowDecoration
+
 
         ###*
          * Options for the long list
@@ -24,7 +113,7 @@ module.exports = class RowControler
 
             # number of "screens" before and after the viewport
             # (ex : 1.5 => 1+2*1.5=4 screens always ready)
-            BUFFER_COEF       : 3
+            BUFFER_COEF       : 0.2
 
             # number of "screens" before and after the viewport corresponding to
             # the safe zone. The Safe Zone is the rows where viewport can go
@@ -37,44 +126,14 @@ module.exports = class RowControler
 
             # max number of viewport height by seconds : beyond this speed the
             # refresh is delayed to the nex throttle
-            MAX_SPEED         : 1.5
+            MAX_SPEED         : 2
 
             # call back in charge of the creation of the content of a row.
-            # You can keep some references on the element to some of its
-            # children in order to have a direct access to them when onRowsMovedCB
-            # will be called on the element.
-            onRowsCreatedCB   : (rowsToCreate)=>
-                rowsList = @rowsList
-                for row in rowsToCreate
-                    rowTxt = rowsList.at(row.rank).data
-                    row.el.innerHTML = """<div class="largest-col">#{rowTxt}</div><div class="constant-col">current rank: #{row.rank}</div>"""
-                    row.el.components =
-                        rowTxt : row.el.firstChild
-                        rowRk  : row.el.lastChild
-                    checkIfSelected(row.el)
-                return true
+            onRowsCreatedCB   : onRowsCreatedCB
 
             # the call back in charge of decorating the rows when they are moved
             # in the long list.
-            # rowsToDecorate = [{rank:Integer,el:Element}...]
-            onRowsMovedCB     : (rowsToDecorate)=>
-                rowsList = @rowsList
-                for row in rowsToDecorate
-                    rowTxt = rowsList.at(row.rank).data # expensive
-                    #
-                    # option 1 : recreate the full content of the row :
-                    # row.el.innerHTML = """<div class="largest-col">#{rowTxt}</div><div class="constant-col">current rank: #{row.rank}</div>"""
-                    #
-                    # option 2 : use the references to its children to modify what
-                    # must be redecorated. The more complex is your row, the more
-                    # usefull it will be. Here the gain of speed is around 3%, not
-                    # huge.
-                    components = row.el.components
-                    components.rowTxt.textContent = rowTxt
-                    components.rowRk.textContent  = "current rank: #{row.rank}"
-
-                    checkIfSelected(row.el)
-                return true
+            onRowsMovedCB     : onRowsMovedCB
 
         ###*
          * longList creation and initialization
@@ -85,35 +144,35 @@ module.exports = class RowControler
 
 
         ###* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-         * listeners of rows clicks
+         * Listeners of rows events
         ###
 
-        @selectedRows = {}
-
-        onRowClick = (e) =>
+        onRowChange = (e) =>
+            console.log 'onRowChange'
             row$ = $(e.target).parent('.long-list-row')[0]
-            if row$ == undefined
+            if row$ == undefined # click outside a row
                 return
-            @toggleRow$(row$)
+            if e.target.type == 'checkbox'
+                @toggleRow$(row$)
+            else if e.target.type == 'text'
+                @updateRowModel(row$, e.target.value)
 
         @toggleRow$ = (row$)->
-            row = @rowsList.at(row$.dataset.rank)
-            rowID = row.id
+            rowModel = @rowsModelsList.at(row$.dataset.rank)
+            rowID = rowModel.id
             if @selectedRows[rowID]
-                row$.classList.remove('selected')
                 @selectedRows[rowID] = false
+                updateRowDecoration(row$)
             else
-                row$.classList.add('selected')
-                @selectedRows[rowID] = row
+                @selectedRows[rowID] = rowModel
+                updateRowDecoration(row$)
 
-        checkIfSelected = (row$) =>
-            rowID = @rowsList.at(row$.dataset.rank).id
-            if @selectedRows[rowID]
-                row$.classList.add('selected')
-            else
-                row$.classList.remove('selected')
+        @updateRowModel = (row$, val) ->
+            rowModel = @rowsModelsList.at(row$.dataset.rank)
+            rowModel.data = val
 
-        viewportElement.addEventListener('click', onRowClick)
+        # click events are catched at the viewportElement level instead of doing it at the level of each row, it is more efficient that attaching a listener on each row
+        viewportElement.addEventListener('change', onRowChange)
 
 
 
@@ -127,18 +186,14 @@ module.exports = class RowControler
      * Prepare the list of data for each row (for tests)
      * It is a double linked list
     ###
-    init: (nbRowsToIni)->
+    init: (nbRowsToInit)->
         @selectedRows = {}
-        @_initRowsList(nbRowsToIni)
-        @longList.initRows(nbRowsToIni)
-
-
-    _initRowsList: (nRows) ->
-        rowsList = new LinkedList()
-        for rk in [0..nRows-1] by 1
-            row = rowsList.append ''
-            row.data = "row: id_#{row.id}"
-        @rowsList = rowsList
+        rowsModelsList = new LinkedList()
+        for rk in [0..nbRowsToInit-1] by 1
+            rowModel = rowsModelsList.append ''
+            rowModel.data = "row: id_#{rowModel.id}"
+        @rowsModelsList = rowsModelsList
+        @longList.initRows(nbRowsToInit)
 
 
     resize: () ->
@@ -153,30 +208,13 @@ module.exports = class RowControler
         @longList._test.goUpHalfBuffer(coef)
 
 
-    addRow : (rankToAdd)->
-        # 1- add the row from the data
-        # ! note : data must be updated before acting on the long list
-        # because the data must be uptodate when redecoration will occur.
-        row = @rowsList.insert(rankToAdd, '')
-        row.data = "row: id_#{row.id}"
-        # 2- delete the row from the long list
-        @longList.addRow(rankToAdd)
-        # 3- update the rows rank. In deed, the rows redecorated are not the
-        # only ones to be impacted. All the raws after the first added
-        # have their rank modified. If their state depends on the rank,
-        # it must then be adapted.
-        rowsToReRanked = @longList.getRowsAfter(rankToAdd)
-        for row in rowsToReRanked
-            row.el.lastChild.innerHTML = "current rank: #{row.rank}"
-
-
     removeRows: (rankToDelete, nToDelete) ->
         # 1- remove the row from the data
         # ! note : data must be updated before acting on the long list
         # because the data must be uptodate when redecoration will occur.
         index = nToDelete
         while index--
-            @rowsList.remove(rankToDelete)
+            @rowsModelsList.remove(rankToDelete)
         index = nToDelete
         while index--
             if @selectedRows[rankToDelete+index]
@@ -189,14 +227,14 @@ module.exports = class RowControler
         # must then be adapted.
         rowsToReRanked = @longList.getRowsAfter(rankToDelete)
         for row in rowsToReRanked
-            row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+            @updateRowDecoration(row.el)
 
 
     removeAllRows: () ->
         # 1- reinit data
         # ! note : data must be updated before acting on the long list
         # because the data must be uptodate when redecoration will occur.
-        @rowsList = new LinkedList()
+        @rowsModelsList = new LinkedList()
         @selectedRows = {}
         # 2- delete all the rows from the long list
         @longList.removeAllRows()
@@ -204,7 +242,7 @@ module.exports = class RowControler
 
     addRowAfterSelected: ()->
         selectedRows = @selectedRows
-        rowsList = @rowsList
+        rowsModelsList = @rowsModelsList
         rows = []
         # 1- get an array of the selected rows
         for rowID, row of selectedRows
@@ -215,22 +253,22 @@ module.exports = class RowControler
         # 2- add each row
         smallestRank = Infinity
         for row in rows
-            rank = rowsList.rank(row)
+            rank = rowsModelsList.rank(row)
             smallestRank = Math.min(smallestRank, rank)
             # a- update the data (always before the longList)
             # ! note : data must be updated before acting on the long list
             # because the data must be uptodate when redecoration will occur.
-            newRow = rowsList.insert(rank+1,'')
-            newRow.data = "row: id_#{newRow.id}"
+            newRowModel = rowsModelsList.insert(rank+1,'')
+            newRowModel.data = "row: id_#{newRowModel.id}"
             # b- modify the longList
             @longList.addRow(rank+1)
             # c- update the rows rank. In deed, the rows redecorated are not the
             # only ones to be impacted. All the raws after the first deleted have
             # their rank modified. If their state depends on the rank, it must then
             # be adapted.
-            rowsToReRanked = @longList.getRowsAfter(smallestRank+1)
+            rowsToReRanked = @longList.getRowsAfter(smallestRank+2)
             for row in rowsToReRanked
-                row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+                @updateRowDecoration(row.el)
         return
 
 
@@ -238,23 +276,23 @@ module.exports = class RowControler
         # a- update the data (always before the longList)
         # ! note : data must be updated before acting on the long list
         # because the data must be uptodate when redecoration will occur.
-        newRow = @rowsList.insert(rank,'')
-        newRow.data = "row: id_#{newRow.id}"
+        newRowModel = @rowsModelsList.insert(rank,'')
+        newRowModel.data = "row: id_#{newRowModel.id}"
         # b- modify the longList
         @longList.addRow(rank)
         # c- update the rows rank. In deed, the rows redecorated are not the
         # only ones to be impacted. All the raws after the first deleted have
         # their rank modified. If their state depends on the rank, it must then
         # be adapted.
-        rowsToReRanked = @longList.getRowsAfter(rank)
+        rowsToReRanked = @longList.getRowsAfter(rank+1)
         for row in rowsToReRanked
-            row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+            @updateRowDecoration(row.el)
 
         return
 
 
     getDataAtRank: (rank)->
-        return @rowsList.at(rank).data
+        return @rowsModelsList.at(rank).data
 
 
     getRowElementAt: (rank)->
@@ -263,16 +301,16 @@ module.exports = class RowControler
 
     deleteSelected: ()->
         selectedRows = @selectedRows
-        rowsList = @rowsList
+        rowsModelsList = @rowsModelsList
         console.log selectedRows
         smallestRank = Infinity
-        for rowID, row of selectedRows
+        for rowID, rowModel of selectedRows
             rowID = parseInt(rowID)
-            console.log row
+            console.log 'row to delete = ' + rowModel
             continue if !selectedRows[rowID]
             # update data (always before to modify the longList)
-            rank = rowsList.rank(row)
-            rowsList.removeID(row.id)
+            rank = rowsModelsList.rank(rowModel)
+            rowsModelsList.removeID(rowModel.id)
             row$ = selectedRows[rowID]
             smallestRank = Math.min(smallestRank, rank)
             selectedRows[rowID] = false
@@ -284,13 +322,13 @@ module.exports = class RowControler
         # be adapted.
         rowsToReRanked = @longList.getRowsAfter(smallestRank)
         for row in rowsToReRanked
-            row.el.lastChild.innerHTML = "current rank: #{row.rank}"
+            @updateRowDecoration(row.el)
 
         return
 
 
     deleteAll: ()->
-        @rowsList = new LinkedList()
+        @rowsModelsList = new LinkedList()
         @longList.removeAllRows()
         @selectedRows = {}
 
@@ -314,9 +352,9 @@ module.exports = class RowControler
         positions...) is consistent.
     ###
     testLongListConsistency : () ->
-        longList     = @longList
-        rowsList     = @rowsList
-        selectedRows = @selectedRows
+        longList       = @longList
+        rowsModelsList = @rowsModelsList
+        selectedRows   = @selectedRows
 
         state = longList._test.getState()
         {buffer, rows$, viewport$} = longList._test.getInternals()
@@ -324,7 +362,7 @@ module.exports = class RowControler
         ##
         # Test the number of elements in rows$
         nElements = rows$.children.length
-        expectedLength = rowsList.size()
+        expectedLength = rowsModelsList.size()
         expect(expectedLength)
             .to.eql(state.nRows)
         if state.nMaxRowsInBufr < expectedLength
@@ -337,7 +375,7 @@ module.exports = class RowControler
         ##
         # Test the height of rows$
         dim = rows$.getBoundingClientRect()
-        expect(dim.height)
+        expect(Math.round(dim.height))
             .to.eql(expectedLength * state.rowHeight)
 
         ##
@@ -366,10 +404,11 @@ module.exports = class RowControler
         # Otherwise test each row of the buffer
         currentRk = buffer.firstRk
         bufferRow = buffer.first
-        dataRow   = rowsList.at(currentRk)
+        dataRow   = rowsModelsList.at(currentRk)
         domRow$   = rows$.firstChild
         rowID     = dataRow.id
         loop
+            @testDecorationOfRow(currentRk)
             expect(bufferRow.rank)
                 .to.eql(currentRk)
             expect(parseInt(domRow$.dataset.rank))
@@ -379,22 +418,23 @@ module.exports = class RowControler
             expect(parseInt(domRow$.dataset.rank))
                 .to.eql(bufferRow.rank)
             expect(dataRow.data)
-                .to.eql(domRow$.firstChild.textContent)
+                .to.eql(domRow$.children[3].value)
             expect('row: id_' + dataRow.id)
-                .to.eql(domRow$.firstChild.textContent)
-            expect('current rank: ' + currentRk)
-                .to.eql(domRow$.lastChild.textContent)
+                .to.eql(domRow$.children[3].value)
+            expect('rank: ' + currentRk)
+                .to.eql(domRow$.children[1].textContent)
             if domRow$.classList.contains('selected')
                 selRow = selectedRows[rowID]
                 expect(selRow).to.not.be.undefined
-                expect(selRow.id).to.eql(parseInt(domRow$.dataset.rank))
+                rowModel = rowsModelsList.at(parseInt(domRow$.dataset.rank))
+                expect(selRow).to.equal(rowModel) # BJA BUG
             else
                 expect(selectedRows[rowID]?).to.eql(false)
             # go to to next row
             bufferRow  = bufferRow.prev
             break if bufferRow == buffer.first
             currentRk += 1
-            dataRow    = rowsList.at(currentRk)
+            dataRow    = rowsModelsList.at(currentRk)
             domRow$    = domRow$.nextElementSibling
             rowID      = dataRow.id
         expect(buffer.lastRk).to.eql(currentRk)
@@ -406,8 +446,17 @@ module.exports = class RowControler
     ###
     testDecorationOfRow : (rank)->
         row$ = @longList.getRowElementAt(rank)
-        idDecoration = row$.firstChild.textContent
-        rkDecoration = row$.lastChild.textContent
-        row = @rowsList.at(rank)
-        expect(idDecoration).to.eql(row.data)
-        expect(rkDecoration).to.eql("current rank: #{rank}")
+        idDecoration = row$.components.rowIdTxt.textContent
+        rkDecoration = row$.components.rowRk.textContent
+        rowModel = @rowsModelsList.at(rank)
+        expect(rkDecoration).to.eql("rank: #{rank}")
+        expect(idDecoration).to.eql("ID: #{rowModel.id}")
+        isChecked = @selectedRows[rowModel.id]
+        if isChecked
+            expect(row$.firstChild.checked).to.eql(true)
+            expect(row$.classList.contains('selected')).to.eql(true)
+        else
+            expect(row$.firstChild.checked).to.eql(false)
+            expect(row$.classList.contains('selected')).to.eql(false)
+        inputDecoration = row$.components.rowInput.value
+        expect(rowModel.data).to.eql(inputDecoration)
