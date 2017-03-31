@@ -21,6 +21,7 @@ __ANALYSE TECHNIQUE__
 
 LES CLIENTS EXISTANT :
     . le cli officiel : https://github.com/lastpass/lastpass-cli
+    . /!\ : un client node nouveau jamais essayé : https://github.com/dfrankland/lastpass-node
     . en C# https://github.com/detunized/lastpass-sharp
     . en ruby: https://github.com/detunized/lastpass-ruby
     . en python : https://github.com/konomae/lastpass-python
