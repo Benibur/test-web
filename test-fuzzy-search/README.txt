@@ -17,10 +17,13 @@ Utilisation :
 RUNNING TESTS
     . pour générer une grosse liste de chemins : aller dans tools, modifier les paramètres de path-extractor.js puis `node path-extractor.js`
     . Pour les tests, ajuster le choix de la liste d'items
-    
+
 RESULTATS DES TESTS
-    . fuse.js : avec 21 000 fichiers, (nombre de fichiers dans mon dropbox), ça rame...
+    . fuse.js :
+      . avec 21 000 fichiers, (nombre de fichiers dans mon dropbox), ça rame...
+      . le retour des "matches" (plages qui collent) est strange.
     .
+
 
 DOCUMENTATIONS
     . le serveur qui sert la page est browser-sync (via le plugin webpack)

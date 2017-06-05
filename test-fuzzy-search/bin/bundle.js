@@ -62,9 +62,10 @@
 	// 2] prepare the Search options
 	const options = {
 	  shouldSort: true,
-	  tokenize: true,
+	  tokenize: false,
 	  matchAllTokens: true,
 	  includeScore: true,
+	  includeMatches: true,
 	  threshold: 0.5,
 	  location: 0,
 	  distance: 100,
@@ -78,11 +79,23 @@
 	  const results   = fuse.search(input);
 	  const endTime   = performance.now()
 	  const duration  = numeral((endTime - startTime)/1000).format('0.000')
+	  console.log(results);
 	  var output      = ''
-	  var roundScore
+	  // compute the boldified html output
 	  for (res of results){
-	    roundScore
-	    output += `<p> <span class="score">${ numeral(res.score).format('0.000')}</span><span class="path"> ${res.item.path}</span></p>`
+	    path = res.item.path
+	    var lastIndex = 0
+	    var boldified = ''
+	    if (res.matches[0].indices) {
+	      for ( range of res.matches[0].indices) {
+	        boldified +=  path.slice(lastIndex,range[0]) + '<b>' + path.slice(range[0],range[1]) + '</b>'
+	        lastIndex = range[1]
+	      }
+	      boldified +=  path.slice(lastIndex)
+	    } else {
+	      boldified = path
+	    }
+	    output += `<p> <span class="score">${ numeral(res.score).format('0.000')}</span><span class="path"> ${boldified}</span></p>`
 	  }
 	  outputEl.innerHTML = `<p>Search in ${duration}ms</p>${output}`
 	  }
