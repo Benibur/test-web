@@ -44,27 +44,22 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var btnEl, htmlbody, input1El, input2El, password, username;
+	__webpack_require__(1)
+	const htmlbody = __webpack_require__(2)()
+	document.body.innerHTML = htmlbody
 	
-	__webpack_require__(1);
+	// get html elements references
+	const btnEl    = document.getElementById('btn')
+	const input1El = document.getElementById('input1')
+	const input2El = document.getElementById('input2')
 	
-	htmlbody = __webpack_require__(2)();
+	// get form data
+	const username = input1El.value
+	const password = input2El.value
+	console.log('trotro')
 	
-	document.body.innerHTML = htmlbody;
-	
-	btnEl = document.getElementById('btn');
-	
-	input1El = document.getElementById('input1');
-	
-	input2El = document.getElementById('input2');
-	
-	username = input1El.value;
-	
-	password = input2El.value;
-	
-	console.log('toto');
-	
-	btnEl.focus();
+	// put focus on button
+	btnEl.focus()
 
 
 /***/ },

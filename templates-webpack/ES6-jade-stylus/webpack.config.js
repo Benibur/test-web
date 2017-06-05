@@ -7,7 +7,7 @@ var ExtractTextPlugin  = require('extract-text-webpack-plugin')
 var BrowserSyncWebpack = require('browser-sync-webpack-plugin')
 
 module.exports = {
-    entry: "./src/main.coffee",
+    entry: "./src/main.js",
     output: {
         path    : __dirname + "/bin",
         filename: "bundle.js"

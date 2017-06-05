@@ -10,12 +10,13 @@ Utilisation :
     . npm install
     . puis :
         . npm run w      : lance le serveur en watch sur http://localhost:3000/ avec du hotreloading
-    . les sources sont dans src
+    . les sources sont dans src, le point d'entrée est main.js
+    . sait compiler du js6 et coffee-script
     . l'output dans bin
 
 DOCUMENTATIONS
     . le serveur qui sert la page est browser-sync (via le plugin webpack)
-    . webpack embarque également un serveurle (webpack-dev-server), mais c'est moins bien :
+    . webpack embarque également un serveur (webpack-dev-server), mais c'est moins bien :
         . http://webpack.github.io/docs/webpack-dev-server.html#inlined-mode
         . a un hot reload, soit dans une iframe (plein d'effets de bords), soit en injectant du js (mieux, c'est le mode "inline")
         .
