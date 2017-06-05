@@ -13,7 +13,9 @@
     "extract-text-webpack-plugin" : "^1.0.1",
     "webpack-hot-middleware":"*",
     "browser-sync-webpack-plugin":"*",
-    "browser-sync":"*"
+    "browser-sync":"*",
+    "fuse.js":"*",
+    "numeral":"*"
     },
 "scripts"  : {
     "build": "webpack --config webpack.config.js",

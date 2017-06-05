@@ -22,7 +22,7 @@ module.exports = {
     },
     plugins: [
         // bundle the css in a single file called from the html (this way, css hot reload is not possible)
-        new CopyWebpackPlugin([{from:'src/index-dev.html', to:'index.html'}]),
+        new CopyWebpackPlugin([{from:'src/index-dev.html', to:'index.html'},{from:'tools/path-list.json',to:'path-list.json'}]),
         // copy ressources in the output directory
         new ExtractTextPlugin('bundle.css', {allChunks:true}),
         // BrowserSync

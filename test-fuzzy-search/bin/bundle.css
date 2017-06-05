@@ -3,11 +3,12 @@ body {
   color: #191b1f;
 }
 #output_container {
-  display: flex;
+  display: block;
 }
-#output_container > div {
-  flex-grow: 1;
-  border: 1px solid #7174a4;
+.score {
+  width: 45px;
+  display: inline-block;
+  color: #808080;
 }
 
 /*# sourceMappingURL=bundle.css.map*/
