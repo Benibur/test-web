@@ -1,0 +1,13 @@
+body {
+  background: #d2d2d2;
+  color: #191b1f;
+}
+#output_container {
+  display: flex;
+}
+#output_container > div {
+  flex-grow: 1;
+  border: 1px solid #7174a4;
+}
+
+/*# sourceMappingURL=bundle.css.map*/
