@@ -22,7 +22,16 @@ RESULTATS DES TESTS
     . fuse.js :
       . avec 21 000 fichiers, (nombre de fichiers dans mon dropbox), ça rame...
       . le retour des "matches" (plages qui collent) est strange.
-    .
+      . pour aller plus loin il faudrait s'assurer qu'il cherque sur chaque nom de répertoire : on pourrait splitter le chemin en un tableau de strings.
+    . fuzzaldrin :  /!\ fuzzaldrin-plus est sorti ! très très prometteur
+      . ne distingue pas les mots de la query ni les noms des répertoires (traite le path comme une seule string)
+      . calcule un score sur la base de la compacité de ce qui est trouvé dans la chaine pour une query et du ratio longueur query / longueur path, ce qui est plutot pas mal
+      . l'algo est relativement simpel et lisible, peut être repris.
+      . ne donne pas ce qui est à mettre en gras.
+      . impose que les occurences soient dans le meme ordre que dans la query : ça c'est nul
+      . quand des caractères sont trop espacés l'algo devrait interrompre sa recherche (ou plutôt revenir au caractère précédant et voir s'il y en a une occurence plus loin). Perso je limiterai à au plus 3 caractères d'écart (mais ça ne vaut que si on cherche mot par mot de la query)
+      . optimisable au niveau de l'accès aux caractères ()
+
 
 
 DOCUMENTATIONS

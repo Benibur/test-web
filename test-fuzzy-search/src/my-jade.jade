@@ -9,9 +9,23 @@ div(id='form_container')
         placeholder='Search'
         value=''
     )
+    
+    input(
+        type='text'
+        id='input2'
+        placeholder='test of autocomplet.js by algolia'
+        value=''
+    )
+    
     button(
         id='btn'
     ) Go !
 
-div(id='output_container')
-    
+div.header Fuse.js results
+div.header Test resuls for 
+    a(href='http://fusejs.io') fuse.js
+div(id='fuse'       class="output_container")
+div.header Fuzzaldrin results
+div(id='fuzzaldrin' class="output_container")
+div.header Fuzzaldrin-Plus results
+div(id='fuzzaldrin-plus' class="output_container")

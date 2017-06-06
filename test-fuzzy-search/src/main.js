@@ -1,19 +1,137 @@
 var numeral = require('numeral')   // to format the numbers
 const Fuse  = require("fuse.js")
 var fuse
+const fuzzaldrin = require('fuzzaldrin')
+const fuzzaldrinPlus = require('fuzzaldrin-plus')
+const autocompleteAlgolia = require('autocomplete.js')
 
+MAX_RESULTS = 5
+LIST_TYPE   = 'small'     // small set of data
+LIST_TYPE   = 'pathes'    // small set of pathes
+LIST_TYPE   = 'long list' // big list of pathes
+
+// ------------------------------------------------------------------
 // 1] init html
 require("./style.styl")
 const htmlbody = require("./my-jade.jade")()
 document.body.innerHTML = htmlbody
 const btnEl    = document.getElementById('btn')
 const input1El = document.getElementById('input1')
-const outputEl = document.getElementById('output_container')
+const fuseOutputEl = document.getElementById('fuse')
+const fuzzaldrinOutputEl = document.getElementById('fuzzaldrin')
+const fuzzaldrinPlusOutputEl = document.getElementById('fuzzaldrin-plus')
 input1El.select()
 input1El.focus()
 
 
-// 2] prepare the Search options
+// ------------------------------------------------------------------
+// 2] init the autocomplete.js (algolia https://github.com/algolia/autocomplete.js)
+const autocompleteAlgoliaEL = document.getElementById('input2')
+autocompleteAlgolia('#input2', { hint: true }, [
+    {
+      source: function (query, cb) {
+        cb([{path:'p1', html:'<b>p1</b>'},{path:'p2', html:'<b>p2</b>'}])
+      } ,
+      displayKey: 'path',
+      templates: {
+        suggestion: function(suggestion) {
+          console.log("dd", suggestion);
+          return suggestion.html;
+        }
+      }
+    }
+  ]).on('autocomplete:selected', function(event, suggestion, dataset) {
+    console.log(suggestion, dataset);
+  });
+
+
+// ------------------------------------------------------------------
+// 2] prepare the Search options for fuzzaldrin
+
+fuzzaldrinSearch = function (query) {
+  const t0       = performance.now()
+  const results  = fuzzaldrin.filter(list, query, {key: 'path'})
+  const t1       = performance.now()
+  const duration = numeral((t1 - t0)/1000).format('0.000')
+  var resultsStr = ''
+  var n = 0
+  for (res of results) {
+    resultsStr += `<p>${basiqueBolderify(query, res.path)}</p>`
+    if (n++>MAX_RESULTS) { break}
+  }
+  fuzzaldrinOutputEl.innerHTML = `<p>Search in ${duration}ms</p>${resultsStr}`
+}
+
+basiqueBolderify = function (query, path) {
+  words = query.split(' ')
+  words = words.filter(function (item) { return (item !== '') })
+  startIndex = 0
+  var html = ''
+  lastIndex = path.length
+  while (startIndex<lastIndex) {
+    nextWordOccurence = nextWord(path, words, startIndex)
+    if (!nextWordOccurence) {
+      break
+    }
+    html += `${path.slice(startIndex, nextWordOccurence.start)}<b>${nextWordOccurence.word}</b>`
+    startIndex = nextWordOccurence.end
+  }
+  html += path.slice(startIndex)
+  return html
+}
+nextWord = function (path, words, startIndex) {
+  path = path.toLowerCase()
+  var I = path.length
+  var W=''
+  var i = -1
+  for (let w of words) {
+    i = path.indexOf(w.toLowerCase(),startIndex)
+    if (i<I && -1<i) {
+      I = i
+      W = w
+    }
+  }
+  if (i == -1) {
+    return undefined
+  }else {
+    return {word:W, start:I, end:I+W.length}
+  }
+}
+
+// ------------------------------------------------------------------
+// 3] prepare the Search options for fuzzaldrin
+
+fuzzaldrinPlusSearch = function (query) {
+  const t0       = performance.now()
+  const results  = fuzzaldrinPlus.filter(list, query, {key: 'path'})
+  const t1       = performance.now()
+  const duration = numeral((t1 - t0)/1000).format('0.000')
+  var resultsStr = ''
+  var n = 0
+  for (res of results) {
+    resultsStr += `<p>${basiqueBolderify(query, res.path)}</p>`
+    if (n++>MAX_RESULTS) { break}
+  }
+  fuzzaldrinPlusOutputEl.innerHTML = `<p>Search in ${duration}ms</p>${resultsStr}`
+}
+
+
+
+// With an array of strings
+// candidates = ['Call', 'Me', 'Maybe']
+
+
+// With an array of objects
+// candidates = [
+//   {name: 'Call', id: 1}
+//   {name: 'Me', id: 2}
+//   {name: 'Maybe', id: 3}
+// ]
+// results = fuzzaldrin(candidates, 'me', key: 'name')
+// console.log(results) # [{name: 'Me', id: 2}, {name: 'Maybe', id: 3}]
+
+// ------------------------------------------------------------------
+// 3] prepare the Search options for fuse.js
 const options = {
   shouldSort: true,
   tokenize: false,
@@ -28,13 +146,26 @@ const options = {
   keys: ["path"]
 };
 
-search = function(input){
-  const startTime = performance.now()
-  const results   = fuse.search(input);
-  const endTime   = performance.now()
-  const duration  = numeral((endTime - startTime)/1000).format('0.000')
-  console.log(results);
-  var output      = ''
+var prepareListeForFuse = (list)=>{
+  const fuseList = []
+  // test for tuning the path into an array of folders : results are
+  // not good... neither in relevance nor in commodity (the indices are impossible to use)
+  // for (item of list) {
+  //   newItem = Object.assign({}, item)
+  //   newItem.path = item.path.split('/')
+  //   fuseList.push(newItem)
+  // }
+  // console.log(JSON.stringify(fuseList));
+  // return fuseList
+  return list
+}
+
+fuse_search = function(input){
+  const t0       = performance.now()
+  const results  = fuse.search(input);
+  const t1       = performance.now()
+  const duration = numeral((t1 - t0)/1000).format('0.000')
+  var output     = ''
   // compute the boldified html output
   for (res of results){
     path = res.item.path
@@ -42,8 +173,8 @@ search = function(input){
     var boldified = ''
     if (res.matches[0].indices) {
       for ( range of res.matches[0].indices) {
-        boldified +=  path.slice(lastIndex,range[0]) + '<b>' + path.slice(range[0],range[1]) + '</b>'
-        lastIndex = range[1]
+        boldified +=  path.slice(lastIndex,range[0]) + '<b>' + path.slice(range[0],range[1]+1) + '</b>'
+        lastIndex = range[1]+1
       }
       boldified +=  path.slice(lastIndex)
     } else {
@@ -51,25 +182,34 @@ search = function(input){
     }
     output += `<p> <span class="score">${ numeral(res.score).format('0.000')}</span><span class="path"> ${boldified}</span></p>`
   }
-  outputEl.innerHTML = `<p>Search in ${duration}ms</p>${output}`
+  fuseOutputEl.innerHTML = `<p>Search in ${duration}ms</p>${output}`
   }
 
-input1El.addEventListener('input', (e)=>{
-  search(e.target.value)}
-)
 
-// triger an imediate a search to ease debug
-function autoTrigerSearch(query) {
-  input1El.value = query
-  input1El.dispatchEvent(new Event('input'))
+
+// ------------------------------------------------------------------
+// 4] functions to run all searches
+runSearches = function (query) {
+  // fuse_search(query)
+  fuzzaldrinSearch(query)
+  fuzzaldrinPlusSearch(query)
+  // results = fuzzaldrin(candidates, 'me')
 }
 
+input1El.addEventListener('input', (e)=>{
+  runSearches(e.target.value)
+})
 
-// 3] Prepare the list where to search and trigger one
-list_type = 'long list'
-list_type = 'small'
-list_type = 'pathes'
-if (list_type == 'small') {
+// triger an imediate a search to ease debug
+autoTrigerSearch = function(query) {
+  input1El.value = query
+  runSearches(query)
+  // input1El.dispatchEvent(new Event('input'))
+}
+
+// ------------------------------------------------------------------
+// 5] Prepare the list where to search and trigger one search
+if (LIST_TYPE == 'small') {
   // for quick tests
   list = [{"type":"file","path":"atom-amd64.deb"},
   {"type":"file","path":"awesomplete-gh-pages.zip"},
@@ -81,10 +221,10 @@ if (list_type == 'small') {
   {"type":"file","path":"mikogo-starter.exe"},
   {"type":"file","path":"mikogo.tar.gz"},
   {"type":"file","path":"mikogo4.5/mikogo"}]
-  fuse = new Fuse(list, options)
+  fuse = new Fuse(prepareListeForFuse(list), options)
   autoTrigerSearch('mik')
 
-}else if (list_type == 'pathes') {
+}else if (LIST_TYPE == 'pathes') {
   // for tests on file pathes
   list = [{"type":"file","path":"/Administratif"},
   {"type":"file","path":"/Administratif/Bank statements"},
@@ -121,10 +261,11 @@ if (list_type == 'small') {
   {"type":"file","path":"/Notes/Recrutement"},
   {"type":"file","path":"/Projet appartement à Lyon"},
   {"type":"file","path":"/Vacances Périgord"}]
-  fuse = new Fuse(list, options)
-  autoTrigerSearch('admin edf fact')
 
-}else if (list_type == 'long list') {
+  fuse = new Fuse(prepareListeForFuse(list), options)
+  autoTrigerSearch('admin con')
+
+}else if (LIST_TYPE == 'long list') {
   // get data from the the json file (/tools/path-list.json)
   let url = 'path-list.json';
   fetch(url)
@@ -132,8 +273,8 @@ if (list_type == 'small') {
   .then((out) => {
     console.log('Checkout this JSON! ', out);
     list = out
-    fuse = new Fuse(list, options) // "list" is the item array
-    autoTrigerSearch('ordonnance')
+    fuse = new Fuse(prepareListeForFuse(list), options) // "list" is the item array
+    autoTrigerSearch('ordonnance ben')
   })
   .catch(err => console.error(err));
 }

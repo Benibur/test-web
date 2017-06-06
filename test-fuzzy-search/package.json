@@ -15,6 +15,9 @@
     "browser-sync-webpack-plugin":"*",
     "browser-sync":"*",
     "fuse.js":"*",
+    "fuzzaldrin":"*",
+    "fuzzaldrin-plus":"*",
+    "autocomplete.js":"*",
     "numeral":"*"
     },
 "scripts"  : {
