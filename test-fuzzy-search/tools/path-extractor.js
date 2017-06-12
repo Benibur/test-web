@@ -2,27 +2,28 @@
 // https://www.npmjs.com/package/file-system
 var fs = require('file-system')
 
-var start_path, output_file_path
+var START_PATH, OUTPUT_FILE_PATH
 
-start_path = '/home/ben/Dev/test-web/test-fuzzy-search'
-start_path = '/home/ben/Dev/test-web/test-fuzzy-search'
-start_path = '/home/ben/Téléchargements'
-start_path = '/media/ben/Windows/Users/Ben/Documents/Dropbox'
-output_file_path = './path-list.json'
+START_PATH = '/home/ben/Dev/test-web/test-fuzzy-search'
+START_PATH = '/home/ben/Dev/test-web/test-fuzzy-search'
+START_PATH = '/home/ben/Téléchargements'
+START_PATH = '/media/ben/Windows/Users/Ben/Documents/Dropbox'
+START_PATH = "/home/ben/Dev/cozy-v3/ACH/data-ben/répertoires isabelles"
+OUTPUT_FILE_PATH = './path-list.json'
 
 var n_file = 0
 var n_dir  = 0
 var path_list = '['
-fs.recurseSync(start_path, function(filepath, relative, filename) {
+fs.recurseSync(START_PATH, function(filepath, relative, filename) {
   if (filename) {
     console.log("file  ", relative);
-    path_list += `{"type":"file","path":"${relative}"},\n`
+    path_list += `{"type":"file","path":"/${relative}"},\n`
     n_file++
   } else {
     console.log("folder", relative);
-    path_list += `{"type":"folder","path":"${relative}"},\n`
+    path_list += `{"type":"folder","path":/"${relative}"},\n`
     n_dir++
   }
 })
-fs.writeFile(output_file_path, path_list.slice(0,-2)+']')
+fs.writeFile(OUTPUT_FILE_PATH, path_list.slice(0,-2)+']')
 console.log(n_dir, n_file);
