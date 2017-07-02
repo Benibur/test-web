@@ -1,280 +1,212 @@
-var numeral = require('numeral')   // to format the numbers
-const Fuse  = require("fuse.js")
-var fuse
-const fuzzaldrin = require('fuzzaldrin')
-const fuzzaldrinPlus = require('fuzzaldrin-plus')
-const autocompleteAlgolia = require('autocomplete.js')
+const
+  numeral          = require('numeral'),                 // to format the numbers
+  myFuse           = require('./search-fuse'),
+  myFuzzaldrin     = require('./search-fuzzaldrin'),
+  myFuzzaldrinPlus = require('./search-fuzzaldrin-plus'),
+  myFuzzyWords     = require('./search-fuzzy-words'),
+  Cookies          = require('js-cookie'),
+  debounce         = require('./helpers').debounce,
+  wordBolderify    = require('./helpers').wordBolderify
 
-MAX_RESULTS = 5
-LIST_TYPE   = 'small'     // small set of data
-LIST_TYPE   = 'pathes'    // small set of pathes
-LIST_TYPE   = 'long list' // big list of pathes
+var initSearches = function () {}
+
+const
+  MAX_RESULTS       = 10,
+  DEBOUNCE_DURATION = 250,   // in ms
+  DEFAULT_SEARCH    = 'capitalisation valo'
 
 // ------------------------------------------------------------------
-// 1] init html
+// init html
 require("./style.styl")
-const htmlbody = require("./my-jade.jade")()
-document.body.innerHTML = htmlbody
+document.body.innerHTML = require("./my-jade.jade")()
 const btnEl    = document.getElementById('btn')
-const input1El = document.getElementById('input1')
-const fuseOutputEl = document.getElementById('fuse')
-const fuzzaldrinOutputEl = document.getElementById('fuzzaldrin')
-const fuzzaldrinPlusOutputEl = document.getElementById('fuzzaldrin-plus')
-input1El.select()
-input1El.focus()
+const searchInput = document.getElementById('search-input')
+const realTimeSearchChkbx = document.getElementById('search-realtime-chckbox')
+searchInput.select()
+searchInput.focus()
 
 
 // ------------------------------------------------------------------
-// 2] init the autocomplete.js (algolia https://github.com/algolia/autocomplete.js)
-const autocompleteAlgoliaEL = document.getElementById('input2')
-autocompleteAlgolia('#input2', { hint: true }, [
-    {
-      source: function (query, cb) {
-        cb([{path:'p1', html:'<b>p1</b>'},{path:'p2', html:'<b>p2</b>'}])
-      } ,
-      displayKey: 'path',
-      templates: {
-        suggestion: function(suggestion) {
-          console.log("dd", suggestion);
-          return suggestion.html;
-        }
-      }
-    }
-  ]).on('autocomplete:selected', function(event, suggestion, dataset) {
-    console.log(suggestion, dataset);
-  });
-
-
-// ------------------------------------------------------------------
-// 2] prepare the Search options for fuzzaldrin
-
-fuzzaldrinSearch = function (query) {
-  const t0       = performance.now()
-  const results  = fuzzaldrin.filter(list, query, {key: 'path'})
-  const t1       = performance.now()
-  const duration = numeral((t1 - t0)/1000).format('0.000')
-  var resultsStr = ''
-  var n = 0
-  for (res of results) {
-    resultsStr += `<p>${basiqueBolderify(query, res.path)}</p>`
-    if (n++>MAX_RESULTS) { break}
-  }
-  fuzzaldrinOutputEl.innerHTML = `<p>Search in ${duration}ms</p>${resultsStr}`
-}
-
-basiqueBolderify = function (query, path) {
-  words = query.split(' ')
-  words = words.filter(function (item) { return (item !== '') })
-  startIndex = 0
-  var html = ''
-  lastIndex = path.length
-  while (startIndex<lastIndex) {
-    nextWordOccurence = nextWord(path, words, startIndex)
-    if (!nextWordOccurence) {
-      break
-    }
-    html += `${path.slice(startIndex, nextWordOccurence.start)}<b>${nextWordOccurence.word}</b>`
-    startIndex = nextWordOccurence.end
-  }
-  html += path.slice(startIndex)
-  return html
-}
-nextWord = function (path, words, startIndex) {
-  path = path.toLowerCase()
-  var I = path.length
-  var W=''
-  var i = -1
-  for (let w of words) {
-    i = path.indexOf(w.toLowerCase(),startIndex)
-    if (i<I && -1<i) {
-      I = i
-      W = w
-    }
-  }
-  if (i == -1) {
-    return undefined
-  }else {
-    return {word:W, start:I, end:I+W.length}
+// manage checkboxes states and actions
+var defaultActivatedSearches = Cookies.getJSON('defaultActivatedSearches')
+if (!defaultActivatedSearches){
+  defaultActivatedSearches = {
+    "search-realtime-chckbox":  false,
+    "fuse-checkbox":            true,
+    "fuzzaldrin-checkbox":      true,
+    "fuzzaldrin-plus-checkbox": true,
+    "listTypeRadio":            'short-list-radio'
   }
 }
 
-// ------------------------------------------------------------------
-// 3] prepare the Search options for fuzzaldrin
-
-fuzzaldrinPlusSearch = function (query) {
-  const t0       = performance.now()
-  const results  = fuzzaldrinPlus.filter(list, query, {key: 'path'})
-  const t1       = performance.now()
-  const duration = numeral((t1 - t0)/1000).format('0.000')
-  var resultsStr = ''
-  var n = 0
-  for (res of results) {
-    resultsStr += `<p>${basiqueBolderify(query, res.path)}</p>`
-    if (n++>MAX_RESULTS) { break}
-  }
-  fuzzaldrinPlusOutputEl.innerHTML = `<p>Search in ${duration}ms</p>${resultsStr}`
-}
-
-
-
-// With an array of strings
-// candidates = ['Call', 'Me', 'Maybe']
-
-
-// With an array of objects
-// candidates = [
-//   {name: 'Call', id: 1}
-//   {name: 'Me', id: 2}
-//   {name: 'Maybe', id: 3}
-// ]
-// results = fuzzaldrin(candidates, 'me', key: 'name')
-// console.log(results) # [{name: 'Me', id: 2}, {name: 'Maybe', id: 3}]
-
-// ------------------------------------------------------------------
-// 3] prepare the Search options for fuse.js
-const options = {
-  shouldSort: true,
-  tokenize: false,
-  matchAllTokens: true,
-  includeScore: true,
-  includeMatches: true,
-  threshold: 0.5,
-  location: 0,
-  distance: 100,
-  maxPatternLength: 32,
-  minMatchCharLength: 2,
-  keys: ["path"]
-};
-
-var prepareListeForFuse = (list)=>{
-  const fuseList = []
-  // test for tuning the path into an array of folders : results are
-  // not good... neither in relevance nor in commodity (the indices are impossible to use)
-  // for (item of list) {
-  //   newItem = Object.assign({}, item)
-  //   newItem.path = item.path.split('/')
-  //   fuseList.push(newItem)
-  // }
-  // console.log(JSON.stringify(fuseList));
-  // return fuseList
-  return list
-}
-
-fuse_search = function(input){
-  const t0       = performance.now()
-  const results  = fuse.search(input);
-  const t1       = performance.now()
-  const duration = numeral((t1 - t0)/1000).format('0.000')
-  var output     = ''
-  // compute the boldified html output
-  for (res of results){
-    path = res.item.path
-    var lastIndex = 0
-    var boldified = ''
-    if (res.matches[0].indices) {
-      for ( range of res.matches[0].indices) {
-        boldified +=  path.slice(lastIndex,range[0]) + '<b>' + path.slice(range[0],range[1]+1) + '</b>'
-        lastIndex = range[1]+1
-      }
-      boldified +=  path.slice(lastIndex)
-    } else {
-      boldified = path
-    }
-    output += `<p> <span class="score">${ numeral(res.score).format('0.000')}</span><span class="path"> ${boldified}</span></p>`
-  }
-  fuseOutputEl.innerHTML = `<p>Search in ${duration}ms</p>${output}`
-  }
-
-
-
-// ------------------------------------------------------------------
-// 4] functions to run all searches
-runSearches = function (query) {
-  // fuse_search(query)
-  fuzzaldrinSearch(query)
-  fuzzaldrinPlusSearch(query)
-  // results = fuzzaldrin(candidates, 'me')
-}
-
-input1El.addEventListener('input', (e)=>{
-  runSearches(e.target.value)
+document.getElementById('search-btn').addEventListener('click',  function(ev){
+  runAllSearches(true)
 })
 
-// triger an imediate a search to ease debug
-autoTrigerSearch = function(query) {
-  input1El.value = query
-  runSearches(query)
-  // input1El.dispatchEvent(new Event('input'))
+// add listeners to save the states of all checkboxes
+for (let chkbx of document.querySelectorAll('[type=checkbox]')) {
+  chkbx.addEventListener('change', (ev)=>{
+    const checked = ev.target.checked
+    defaultActivatedSearches[ev.target.id] = checked
+    Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
+  })
+}
+
+// add listeners to the activation checkboxes to handle active searches
+for (let chkbx of document.querySelectorAll('.activation-checkbox')) {
+  chkbx.onchange = (ev)=>{
+    const checked = ev.target.checked
+    if (!checked) {
+      ev.target.parentElement.parentElement.parentElement.classList.add("unactivated")
+    }else{
+      ev.target.parentElement.parentElement.parentElement.classList.remove("unactivated")
+    }
+    initSearches()
+  }
+}
+
+// add listeners to toggle comments
+for (let chkbx of document.querySelectorAll('.comment-toggler')) {
+  chkbx.addEventListener('click', (ev)=>{
+    ev.target.parentElement.querySelectorAll('.comments')[0].classList.toggle('expanded')
+    ev.target.classList.toggle('expanded')
+    })
+}
+
+// restore checkbox state
+for (chkbx of document.querySelectorAll('[type=checkbox]')) {
+  if (defaultActivatedSearches[chkbx.id]) {
+    chkbx.checked = true
+  }else {
+    chkbx.checked = false
+  }
+  chkbx.dispatchEvent(new Event('change'))
+}
+
+// add listeners to the radio for lists to save state and choose the correct list
+for (radio of document.querySelectorAll('[name=listTypeRadio]')) {
+  radio.onchange = (ev)=>{
+    let checked = ev.target.checked
+    defaultActivatedSearches['listTypeRadio'] = ev.target.id
+    Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
+    if (ev.target.id=='long-list-radio') {
+      currentList = 'long'
+    }else {
+      currentList = 'short'
+    }
+    initSearches()
+  }
+}
+
+// restore radio state
+currentList = 'short'
+if (defaultActivatedSearches['listTypeRadio']) {
+  let radio = document.getElementById(defaultActivatedSearches['listTypeRadio'])
+  radio.checked = true
+  radio.dispatchEvent(new Event('change'))
+}
+
+
+// ------------------------------------------------------------------
+// deal all triggers to run searches
+runAllSearches = function (forced) {
+  query = searchInput.value
+  if ( query.length < 3 && !forced ) {
+    return
+  }
+  if (defaultActivatedSearches['fuse-checkbox']) {
+    fuseSearch(query)
+  }
+  if (defaultActivatedSearches['fuzzaldrin-checkbox']) {
+    fuzzaldrinSearch(query)
+  }
+  if (defaultActivatedSearches['fuzzaldrin-plus-checkbox']) {
+    fuzzaldrinPlusSearch(query)
+  }
+  if (defaultActivatedSearches['fuzzy-words-checkbox']) {
+    fuzzyWordsSearch(query)
+  }
+}
+
+runAllSearchesDebounced = debounce(function(){
+  if (realTimeSearchChkbx.checked) {
+    runAllSearches()
+  }
+},DEBOUNCE_DURATION)
+
+searchInput.addEventListener('input', runAllSearchesDebounced)
+
+searchInput.addEventListener('keypress', (e)=>{
+  if (e.keyCode === 13) {
+    runAllSearches(true)
+  }
+})
+
+
+// ------------------------------------------------------------------
+// prepare the Search for fuse.js
+const fuseOutputEl = document.getElementById('fuse-results')
+fuseSearch = function fuseSearch(query) {
+  fuseOutputEl.innerHTML = myFuse.search(query)
+}
+
+
+// ------------------------------------------------------------------
+// prepare the Search for fuzzaldrin
+const fuzzaldrinOutputEl = document.getElementById('fuzzaldrin-results')
+const fuzzaldrinSearch = function (query) {
+  fuzzaldrinOutputEl.innerHTML = myFuzzaldrin.search(query)
+}
+
+
+// ------------------------------------------------------------------
+// prepare the Search for fuzzaldrin-plus
+const fuzzaldrinPlusOutputEl = document.getElementById('fuzzaldrin-plus-results')
+const fuzzaldrinPlusSearch = function (query) {
+  fuzzaldrinPlusOutputEl.innerHTML = myFuzzaldrinPlus.search(query)
 }
 
 // ------------------------------------------------------------------
-// 5] Prepare the list where to search and trigger one search
-if (LIST_TYPE == 'small') {
-  // for quick tests
-  list = [{"type":"file","path":"atom-amd64.deb"},
-  {"type":"file","path":"awesomplete-gh-pages.zip"},
-  {"type":"file","path":"google-chrome-stable_current_amd64.deb"},
-  {"type":"file","path":"jquery-3.1.1.js"},
-  {"type":"file","path":"jquery-ui-1.12.1.custom (1).zip"},
-  {"type":"file","path":"jquery-ui-1.12.1.custom.zip"},
-  {"type":"file","path":"mikogo (1).tar.gz"},
-  {"type":"file","path":"mikogo-starter.exe"},
-  {"type":"file","path":"mikogo.tar.gz"},
-  {"type":"file","path":"mikogo4.5/mikogo"}]
-  fuse = new Fuse(prepareListeForFuse(list), options)
-  autoTrigerSearch('mik')
-
-}else if (LIST_TYPE == 'pathes') {
-  // for tests on file pathes
-  list = [{"type":"file","path":"/Administratif"},
-  {"type":"file","path":"/Administratif/Bank statements"},
-  {"type":"file","path":"/Administratif/Bank statements/Bank Of America"},
-  {"type":"file","path":"/Administratif/Bank statements/Deutsche Bank"},
-  {"type":"file","path":"/Administratif/Bank statements/Société Générale"},
-  {"type":"file","path":"/Administratif/CPAM"},
-  {"type":"file","path":"/Administratif/EDF"},
-  {"type":"file","path":"/Administratif/EDF/Contrat"},
-  {"type":"file","path":"/Administratif/EDF/Factures"},
-  {"type":"file","path":"/Administratif/Emploi"},
-  {"type":"file","path":"/Administratif/Impôts"},
-  {"type":"file","path":"/Administratif/Logement"},
-  {"type":"file","path":"/Administratif/Logement/Loyer 158 rue de Verdun"},
-  {"type":"file","path":"/Administratif/Orange"},
-  {"type":"file","path":"/Administratif/Pièces identité"},
-  {"type":"file","path":"/Administratif/Pièces identité/Carte identité"},
-  {"type":"file","path":"/Administratif/Pièces identité/Passeport"},
-  {"type":"file","path":"/Administratif/Pièces identité/Permis de conduire"},
-  {"type":"file","path":"/Appareils photo"},
-  {"type":"file","path":"/Boulot"},
-  {"type":"file","path":"/Cours ISEN"},
-  {"type":"file","path":"/Cours ISEN/CIR"},
-  {"type":"file","path":"/Cours ISEN/CIR/LINUX"},
-  {"type":"file","path":"/Cours ISEN/CIR/MICROCONTROLEUR"},
-  {"type":"file","path":"/Cours ISEN/CIR/RESEAUX"},
-  {"type":"file","path":"/Cours ISEN/CIR/TRAITEMENT_SIGNAL"},
-  {"type":"file","path":"/Divers photo"},
-  {"type":"file","path":"/Divers photo/wallpapers"},
-  {"type":"file","path":"/Films"},
-  {"type":"file","path":"/Notes"},
-  {"type":"file","path":"/Notes/Communication"},
-  {"type":"file","path":"/Notes/Notes techniques"},
-  {"type":"file","path":"/Notes/Recrutement"},
-  {"type":"file","path":"/Projet appartement à Lyon"},
-  {"type":"file","path":"/Vacances Périgord"}]
-
-  fuse = new Fuse(prepareListeForFuse(list), options)
-  autoTrigerSearch('admin con')
-
-}else if (LIST_TYPE == 'long list') {
-  // get data from the the json file (/tools/path-list.json)
-  let url = 'path-list.json';
-  fetch(url)
-  .then(res => res.json())
-  .then((out) => {
-    console.log('Checkout this JSON! ', out);
-    list = out
-    fuse = new Fuse(prepareListeForFuse(list), options) // "list" is the item array
-    autoTrigerSearch('ordonnance ben')
-  })
-  .catch(err => console.error(err));
+// prepare the Search for fuzzy-words
+const fuzzyWordsOutputEl = document.getElementById('fuzzy-words-results')
+const fuzzyWordsSearch = function (query) {
+  fuzzyWordsOutputEl.innerHTML = myFuzzyWords.search(query)
 }
+
+
+// ------------------------------------------------------------------
+// Prepare the list where to search and trigger an automatic search
+initSearches = function (query) {
+  var initDuration
+  searchInput.value = query
+  if (lists[currentList]) {
+
+    if (defaultActivatedSearches['fuse-checkbox']) {
+      console.log('fuse init');
+      document.getElementById('fuse-comments').innerHTML = myFuse.init(lists[currentList], MAX_RESULTS)
+    }else{myFuse.init([],0)}
+
+    if (defaultActivatedSearches['fuzzaldrin-checkbox']) {
+      console.log('fuzzaldrin init');
+      document.getElementById('fuzzaldrin-comments').innerHTML =myFuzzaldrin.init(lists[currentList], MAX_RESULTS)
+    }else{myFuzzaldrin.init([],0)}
+
+    if (defaultActivatedSearches['fuzzaldrin-plus-checkbox']) {
+      console.log('fuzzaldrin-plus init');
+      document.getElementById('fuzzaldrin-plus-comments').innerHTML =myFuzzaldrinPlus.init(lists[currentList], MAX_RESULTS)
+    }else{myFuzzaldrinPlus.init([],0)}
+
+    if (defaultActivatedSearches['fuzzy-words-checkbox']) {
+      initDuration = myFuzzyWords.init(lists[currentList], MAX_RESULTS)
+      console.log(`fuzzy-words init (in ${initDuration}ms)`);
+      document.getElementById('fuzzy-words-comments').innerHTML = `Init in ${initDuration}ms` + myFuzzyWords.getComments()
+    }else{myFuzzyWords.init([],0)}
+  }
+  runAllSearches(true)
+}
+prepareLists = require('./lists-of-data')
+prepareLists(function (preparedLists) {
+  lists = preparedLists
+  initSearches(DEFAULT_SEARCH)
+  // tests TODO : "bank  adm"  and "bank adm" should scrore the same : it is not the case
+})

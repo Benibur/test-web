@@ -2,23 +2,66 @@ body
     background: white
     color: #191B1F
 
+.unactivated
+  button
+    display: none
+  .output_container
+    display: none
+
+
 #output_container
     display:block
 
 .header
     margin-top: 1em
+    font-weight: bold
 
 
 .output_container
+    min-height: 1em
     border-width: 4px
     border-style: solid
     border-color: #cecece
 
+[type=checkbox],[type=radio]
+    margin: 0
+    vertical-align: middle
+
+label.comment-toggler
+  text-align: center
+
+label.comment-toggler:hover
+  cursor: pointer
+
+label.comment-toggler::before
+  font-family: Consolas, monaco, monospace
+  font-weight: bold
+  font-size: 15px
+  content: "+"
+  vertical-align: text-top
+  display: inline-block
+  width: 20px
+  height: 20px
+  margin-right: 3px
+  background: radial-gradient(ellipse at center, #CCC 50%, transparent 50%)
+
+label.expanded::before
+  content: "-"
+
+.comments
+  max-height: 0px
+  overflow: hidden
+  transition: max-height 0.5s
+
+.comments.expanded
+  max-height: 2000px
 
 
 p
-  margin-top: 0.2em
-  margin-bottom: 0.2em
+  margin-top: 0.3em
+  margin-bottom: 0.3em
+  b
+    color: #0055ff
 
 .score
     width: 45px

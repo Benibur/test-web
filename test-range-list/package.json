@@ -1,0 +1,9 @@
+{
+    "dependencies": {
+        "chai": "*"
+    },
+    "scripts": {
+        "test": "node ./test/range-list-test.js",
+        "test-debug": "node --inspect=3467 --debug-brk ./test/range-list-test.js"
+    }
+}

@@ -16,7 +16,11 @@ module.exports = {
         loaders: [
             { test: /\.coffee$/, loader: "coffee-loader" },
             { test: /\.css$/   , loader: "style!css" },
-            { test: /\.styl$/  , loader: ExtractTextPlugin.extract('style-loader','css-loader!stylus-loader') },
+            { test: /\.styl$/  , loader: ExtractTextPlugin.extract({
+                fallback:'style-loader',
+                use:'css-loader!stylus-loader'
+              })
+            },
             { test: /\.jade$/  , loader: "jade-loader" }
         ]
     },
@@ -24,7 +28,7 @@ module.exports = {
         // bundle the css in a single file called from the html (this way, css hot reload is not possible)
         new CopyWebpackPlugin([{from:'src/index-dev.html', to:'index.html'},{from:'tools/path-list.json',to:'path-list.json'}]),
         // copy ressources in the output directory
-        new ExtractTextPlugin('bundle.css', {allChunks:true}),
+        new ExtractTextPlugin('bundle.css'),
         // BrowserSync
         new BrowserSyncWebpack({
             open: false,
