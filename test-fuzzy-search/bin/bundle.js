@@ -63,103 +63,11 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 28);
+/******/ 	return __webpack_require__(__webpack_require__.s = 29);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const removeDiacritics = __webpack_require__(5).remove
-const RangeList = __webpack_require__(37)
-
-const wordBolderify = function (query, path){
-  const normalizedPath = removeDiacritics(path.toLowerCase())
-  const words = removeDiacritics(query.toLowerCase()).split(' ').filter(Boolean)
-  var boldRanges = new RangeList()
-  for (let word of words) {
-    let i = 0
-    while (i != -1) {
-      i = normalizedPath.indexOf(word,i)
-      if (i != -1){
-        boldRanges.addRange(i,i+word.length-1)
-        i++
-      }
-    }
-  }
-  const ranges = boldRanges.ranges()
-  if (ranges.length == 0) {
-      return path
-  }
-  var html = ''
-  var previousStop = 0
-  for (let range of ranges) {
-    html += path.slice(previousStop,range[0])
-    previousStop = range[1]+1
-    html += `<b>${path.slice(range[0], previousStop)}</b>`
-  }
-  return html + path.slice(previousStop)
-}
-
-
-//
-const basiqueBolderify = function (query, path) {
-  words = query.toLowerCase().split(' ').filter(Boolean)
-  startIndex = 0
-  var html = ''
-  lastIndex = path.length
-  while (startIndex<lastIndex) {
-    nextWordOccurence = _nextWord(path, words, startIndex)
-    if (!nextWordOccurence) {
-      break
-    }
-    html += `${path.slice(startIndex, nextWordOccurence.start)}<b>${nextWordOccurence.word}</b>`
-    startIndex = nextWordOccurence.end
-  }
-  html += path.slice(startIndex)
-  return html
-}
-
-const _nextWord = function (path, words, startIndex) {
-  path = path.toLowerCase()
-  var I = path.length
-  var W=''
-  var i = -1
-  for (let w of words) {
-    i = path.indexOf(w,startIndex)
-    if (i<I && -1<i) {
-      I = i
-      W = w
-    }
-  }
-  if (i == -1) {
-    return undefined
-  }else {
-    return {word:W, start:I, end:I+W.length}
-  }
-}
-
-
-const debounce = function debounce(func, wait, immediate) {
-	var timeout
-	return function() {
-		var context = this, args = arguments
-		var later = function() {
-			timeout = null
-			if (!immediate) func.apply(context, args)
-		}
-		var callNow = immediate && !timeout
-		clearTimeout(timeout)
-		timeout = setTimeout(later, wait)
-		if (callNow) func.apply(context, args)
-	}
-}
-
-module.exports = {debounce:debounce, basiqueBolderify:basiqueBolderify, wordBolderify:wordBolderify}
-
-
-/***/ }),
-/* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! @preserve
@@ -1182,6 +1090,98 @@ return numeral;
 
 
 /***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const removeDiacritics = __webpack_require__(3).remove
+const RangeList = __webpack_require__(28)
+
+const wordBolderify = function (query, path){
+  const normalizedPath = removeDiacritics(path.toLowerCase())
+  const words = removeDiacritics(query.toLowerCase()).split(' ').filter(Boolean)
+  var boldRanges = new RangeList()
+  for (let word of words) {
+    let i = 0
+    while (i != -1) {
+      i = normalizedPath.indexOf(word,i)
+      if (i != -1){
+        boldRanges.addRange(i,i+word.length-1)
+        i++
+      }
+    }
+  }
+  const ranges = boldRanges.ranges()
+  if (ranges.length == 0) {
+      return path
+  }
+  var html = ''
+  var previousStop = 0
+  for (let range of ranges) {
+    html += path.slice(previousStop,range[0])
+    previousStop = range[1]+1
+    html += `<b>${path.slice(range[0], previousStop)}</b>`
+  }
+  return html + path.slice(previousStop)
+}
+
+
+//
+const basiqueBolderify = function (query, path) {
+  words = query.toLowerCase().split(' ').filter(Boolean)
+  startIndex = 0
+  var html = ''
+  lastIndex = path.length
+  while (startIndex<lastIndex) {
+    nextWordOccurence = _nextWord(path, words, startIndex)
+    if (!nextWordOccurence) {
+      break
+    }
+    html += `${path.slice(startIndex, nextWordOccurence.start)}<b>${nextWordOccurence.word}</b>`
+    startIndex = nextWordOccurence.end
+  }
+  html += path.slice(startIndex)
+  return html
+}
+
+const _nextWord = function (path, words, startIndex) {
+  path = path.toLowerCase()
+  var I = path.length
+  var W=''
+  var i = -1
+  for (let w of words) {
+    i = path.indexOf(w,startIndex)
+    if (i<I && -1<i) {
+      I = i
+      W = w
+    }
+  }
+  if (i == -1) {
+    return undefined
+  }else {
+    return {word:W, start:I, end:I+W.length}
+  }
+}
+
+
+const debounce = function debounce(func, wait, immediate) {
+	var timeout
+	return function() {
+		var context = this, args = arguments
+		var later = function() {
+			timeout = null
+			if (!immediate) func.apply(context, args)
+		}
+		var callNow = immediate && !timeout
+		clearTimeout(timeout)
+		timeout = setTimeout(later, wait)
+		if (callNow) func.apply(context, args)
+	}
+}
+
+module.exports = {debounce:debounce, basiqueBolderify:basiqueBolderify, wordBolderify:wordBolderify}
+
+
+/***/ }),
 /* 2 */
 /***/ (function(module, exports) {
 
@@ -1520,353 +1520,6 @@ return numeral;
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-(function() {
-  var computeScore, countDir, file_coeff, getExtension, getExtensionScore, isMatch, scorePath, scoreSize, tau_depth, _ref;
-
-  _ref = __webpack_require__(2), isMatch = _ref.isMatch, computeScore = _ref.computeScore, scoreSize = _ref.scoreSize;
-
-  tau_depth = 13;
-
-  file_coeff = 1.2;
-
-  exports.score = function(string, query, options) {
-    var allowErrors, preparedQuery, score, string_lw;
-    preparedQuery = options.preparedQuery, allowErrors = options.allowErrors;
-    if (!(allowErrors || isMatch(string, preparedQuery.core_lw, preparedQuery.core_up))) {
-      return 0;
-    }
-    string_lw = string.toLowerCase();
-    score = computeScore(string, string_lw, preparedQuery);
-    score = scorePath(string, string_lw, score, options);
-    return Math.ceil(score);
-  };
-
-  scorePath = function(subject, subject_lw, fullPathScore, options) {
-    var alpha, basePathScore, basePos, depth, end, extAdjust, fileLength, pathSeparator, preparedQuery, useExtensionBonus;
-    if (fullPathScore === 0) {
-      return 0;
-    }
-    preparedQuery = options.preparedQuery, useExtensionBonus = options.useExtensionBonus, pathSeparator = options.pathSeparator;
-    end = subject.length - 1;
-    while (subject[end] === pathSeparator) {
-      end--;
-    }
-    basePos = subject.lastIndexOf(pathSeparator, end);
-    fileLength = end - basePos;
-    extAdjust = 1.0;
-    if (useExtensionBonus) {
-      extAdjust += getExtensionScore(subject_lw, preparedQuery.ext, basePos, end, 2);
-      fullPathScore *= extAdjust;
-    }
-    if (basePos === -1) {
-      return fullPathScore;
-    }
-    depth = preparedQuery.depth;
-    while (basePos > -1 && depth-- > 0) {
-      basePos = subject.lastIndexOf(pathSeparator, basePos - 1);
-    }
-    basePathScore = basePos === -1 ? fullPathScore : extAdjust * computeScore(subject.slice(basePos + 1, end + 1), subject_lw.slice(basePos + 1, end + 1), preparedQuery);
-    alpha = 0.5 * tau_depth / (tau_depth + countDir(subject, end + 1, pathSeparator));
-    return alpha * basePathScore + (1 - alpha) * fullPathScore * scoreSize(0, file_coeff * fileLength);
-  };
-
-  exports.countDir = countDir = function(path, end, pathSeparator) {
-    var count, i;
-    if (end < 1) {
-      return 0;
-    }
-    count = 0;
-    i = -1;
-    while (++i < end && path[i] === pathSeparator) {
-      continue;
-    }
-    while (++i < end) {
-      if (path[i] === pathSeparator) {
-        count++;
-        while (++i < end && path[i] === pathSeparator) {
-          continue;
-        }
-      }
-    }
-    return count;
-  };
-
-  exports.getExtension = getExtension = function(str) {
-    var pos;
-    pos = str.lastIndexOf(".");
-    if (pos < 0) {
-      return "";
-    } else {
-      return str.substr(pos + 1);
-    }
-  };
-
-  getExtensionScore = function(candidate, ext, startPos, endPos, maxDepth) {
-    var m, matched, n, pos;
-    if (!ext.length) {
-      return 0;
-    }
-    pos = candidate.lastIndexOf(".", endPos);
-    if (!(pos > startPos)) {
-      return 0;
-    }
-    n = ext.length;
-    m = endPos - pos;
-    if (m < n) {
-      n = m;
-      m = ext.length;
-    }
-    pos++;
-    matched = -1;
-    while (++matched < n) {
-      if (candidate[pos + matched] !== ext[matched]) {
-        break;
-      }
-    }
-    if (matched === 0 && maxDepth > 0) {
-      return 0.9 * getExtensionScore(candidate, ext, startPos, pos - 2, maxDepth - 1);
-    }
-    return matched / m;
-  };
-
-}).call(this);
-
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-// resolves . and .. elements in a path array with directory names there
-// must be no slashes, empty elements, or device names (c:\) in the array
-// (so also no leading and trailing slashes - it does not distinguish
-// relative and absolute paths)
-function normalizeArray(parts, allowAboveRoot) {
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = parts.length - 1; i >= 0; i--) {
-    var last = parts[i];
-    if (last === '.') {
-      parts.splice(i, 1);
-    } else if (last === '..') {
-      parts.splice(i, 1);
-      up++;
-    } else if (up) {
-      parts.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (allowAboveRoot) {
-    for (; up--; up) {
-      parts.unshift('..');
-    }
-  }
-
-  return parts;
-}
-
-// Split a filename into [root, dir, basename, ext], unix version
-// 'root' is just a slash, or nothing.
-var splitPathRe =
-    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
-var splitPath = function(filename) {
-  return splitPathRe.exec(filename).slice(1);
-};
-
-// path.resolve([from ...], to)
-// posix version
-exports.resolve = function() {
-  var resolvedPath = '',
-      resolvedAbsolute = false;
-
-  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
-    var path = (i >= 0) ? arguments[i] : process.cwd();
-
-    // Skip empty and invalid entries
-    if (typeof path !== 'string') {
-      throw new TypeError('Arguments to path.resolve must be strings');
-    } else if (!path) {
-      continue;
-    }
-
-    resolvedPath = path + '/' + resolvedPath;
-    resolvedAbsolute = path.charAt(0) === '/';
-  }
-
-  // At this point the path should be resolved to a full absolute path, but
-  // handle relative paths to be safe (might happen when process.cwd() fails)
-
-  // Normalize the path
-  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
-    return !!p;
-  }), !resolvedAbsolute).join('/');
-
-  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
-};
-
-// path.normalize(path)
-// posix version
-exports.normalize = function(path) {
-  var isAbsolute = exports.isAbsolute(path),
-      trailingSlash = substr(path, -1) === '/';
-
-  // Normalize the path
-  path = normalizeArray(filter(path.split('/'), function(p) {
-    return !!p;
-  }), !isAbsolute).join('/');
-
-  if (!path && !isAbsolute) {
-    path = '.';
-  }
-  if (path && trailingSlash) {
-    path += '/';
-  }
-
-  return (isAbsolute ? '/' : '') + path;
-};
-
-// posix version
-exports.isAbsolute = function(path) {
-  return path.charAt(0) === '/';
-};
-
-// posix version
-exports.join = function() {
-  var paths = Array.prototype.slice.call(arguments, 0);
-  return exports.normalize(filter(paths, function(p, index) {
-    if (typeof p !== 'string') {
-      throw new TypeError('Arguments to path.join must be strings');
-    }
-    return p;
-  }).join('/'));
-};
-
-
-// path.relative(from, to)
-// posix version
-exports.relative = function(from, to) {
-  from = exports.resolve(from).substr(1);
-  to = exports.resolve(to).substr(1);
-
-  function trim(arr) {
-    var start = 0;
-    for (; start < arr.length; start++) {
-      if (arr[start] !== '') break;
-    }
-
-    var end = arr.length - 1;
-    for (; end >= 0; end--) {
-      if (arr[end] !== '') break;
-    }
-
-    if (start > end) return [];
-    return arr.slice(start, end - start + 1);
-  }
-
-  var fromParts = trim(from.split('/'));
-  var toParts = trim(to.split('/'));
-
-  var length = Math.min(fromParts.length, toParts.length);
-  var samePartsLength = length;
-  for (var i = 0; i < length; i++) {
-    if (fromParts[i] !== toParts[i]) {
-      samePartsLength = i;
-      break;
-    }
-  }
-
-  var outputParts = [];
-  for (var i = samePartsLength; i < fromParts.length; i++) {
-    outputParts.push('..');
-  }
-
-  outputParts = outputParts.concat(toParts.slice(samePartsLength));
-
-  return outputParts.join('/');
-};
-
-exports.sep = '/';
-exports.delimiter = ':';
-
-exports.dirname = function(path) {
-  var result = splitPath(path),
-      root = result[0],
-      dir = result[1];
-
-  if (!root && !dir) {
-    // No dirname whatsoever
-    return '.';
-  }
-
-  if (dir) {
-    // It has a dirname, strip trailing slash
-    dir = dir.substr(0, dir.length - 1);
-  }
-
-  return root + dir;
-};
-
-
-exports.basename = function(path, ext) {
-  var f = splitPath(path)[2];
-  // TODO: make this comparison case-insensitive on windows?
-  if (ext && f.substr(-1 * ext.length) === ext) {
-    f = f.substr(0, f.length - ext.length);
-  }
-  return f;
-};
-
-
-exports.extname = function(path) {
-  return splitPath(path)[3];
-};
-
-function filter (xs, f) {
-    if (xs.filter) return xs.filter(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        if (f(xs[i], i, xs)) res.push(xs[i]);
-    }
-    return res;
-}
-
-// String.prototype.substr - negative index don't work in IE8
-var substr = 'ab'.substr(-1) === 'b'
-    ? function (str, start, len) { return str.substr(start, len) }
-    : function (str, start, len) {
-        if (start < 0) start = str.length + start;
-        return str.substr(start, len);
-    }
-;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
-
-/***/ }),
-/* 5 */
 /***/ (function(module, exports) {
 
 exports.remove = removeDiacritics;
@@ -2188,168 +1841,123 @@ exports.diacriticsMap = diacriticsMap;
 
 
 /***/ }),
-/* 6 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function() {
-  var Query, coreChars, countDir, getCharCodes, getExtension, opt_char_re, truncatedUpperCase, _ref;
+  var computeScore, countDir, file_coeff, getExtension, getExtensionScore, isMatch, scorePath, scoreSize, tau_depth, _ref;
 
-  _ref = __webpack_require__(3), countDir = _ref.countDir, getExtension = _ref.getExtension;
+  _ref = __webpack_require__(2), isMatch = _ref.isMatch, computeScore = _ref.computeScore, scoreSize = _ref.scoreSize;
 
-  module.exports = Query = (function() {
-    function Query(query, _arg) {
-      var optCharRegEx, pathSeparator, _ref1;
-      _ref1 = _arg != null ? _arg : {}, optCharRegEx = _ref1.optCharRegEx, pathSeparator = _ref1.pathSeparator;
-      if (!(query && query.length)) {
-        return null;
-      }
-      this.query = query;
-      this.query_lw = query.toLowerCase();
-      this.core = coreChars(query, optCharRegEx);
-      this.core_lw = this.core.toLowerCase();
-      this.core_up = truncatedUpperCase(this.core);
-      this.depth = countDir(query, query.length, pathSeparator);
-      this.ext = getExtension(this.query_lw);
-      this.charCodes = getCharCodes(this.query_lw);
+  tau_depth = 13;
+
+  file_coeff = 1.2;
+
+  exports.score = function(string, query, options) {
+    var allowErrors, preparedQuery, score, string_lw;
+    preparedQuery = options.preparedQuery, allowErrors = options.allowErrors;
+    if (!(allowErrors || isMatch(string, preparedQuery.core_lw, preparedQuery.core_up))) {
+      return 0;
     }
-
-    return Query;
-
-  })();
-
-  opt_char_re = /[ _\-:\/\\]/g;
-
-  coreChars = function(query, optCharRegEx) {
-    if (optCharRegEx == null) {
-      optCharRegEx = opt_char_re;
-    }
-    return query.replace(optCharRegEx, '');
+    string_lw = string.toLowerCase();
+    score = computeScore(string, string_lw, preparedQuery);
+    score = scorePath(string, string_lw, score, options);
+    return Math.ceil(score);
   };
 
-  truncatedUpperCase = function(str) {
-    var char, upper, _i, _len;
-    upper = "";
-    for (_i = 0, _len = str.length; _i < _len; _i++) {
-      char = str[_i];
-      upper += char.toUpperCase()[0];
+  scorePath = function(subject, subject_lw, fullPathScore, options) {
+    var alpha, basePathScore, basePos, depth, end, extAdjust, fileLength, pathSeparator, preparedQuery, useExtensionBonus;
+    if (fullPathScore === 0) {
+      return 0;
     }
-    return upper;
+    preparedQuery = options.preparedQuery, useExtensionBonus = options.useExtensionBonus, pathSeparator = options.pathSeparator;
+    end = subject.length - 1;
+    while (subject[end] === pathSeparator) {
+      end--;
+    }
+    basePos = subject.lastIndexOf(pathSeparator, end);
+    fileLength = end - basePos;
+    extAdjust = 1.0;
+    if (useExtensionBonus) {
+      extAdjust += getExtensionScore(subject_lw, preparedQuery.ext, basePos, end, 2);
+      fullPathScore *= extAdjust;
+    }
+    if (basePos === -1) {
+      return fullPathScore;
+    }
+    depth = preparedQuery.depth;
+    while (basePos > -1 && depth-- > 0) {
+      basePos = subject.lastIndexOf(pathSeparator, basePos - 1);
+    }
+    basePathScore = basePos === -1 ? fullPathScore : extAdjust * computeScore(subject.slice(basePos + 1, end + 1), subject_lw.slice(basePos + 1, end + 1), preparedQuery);
+    alpha = 0.5 * tau_depth / (tau_depth + countDir(subject, end + 1, pathSeparator));
+    return alpha * basePathScore + (1 - alpha) * fullPathScore * scoreSize(0, file_coeff * fileLength);
   };
 
-  getCharCodes = function(str) {
-    var charCodes, i, len;
-    len = str.length;
+  exports.countDir = countDir = function(path, end, pathSeparator) {
+    var count, i;
+    if (end < 1) {
+      return 0;
+    }
+    count = 0;
     i = -1;
-    charCodes = [];
-    while (++i < len) {
-      charCodes[str.charCodeAt(i)] = true;
+    while (++i < end && path[i] === pathSeparator) {
+      continue;
     }
-    return charCodes;
+    while (++i < end) {
+      if (path[i] === pathSeparator) {
+        count++;
+        while (++i < end && path[i] === pathSeparator) {
+          continue;
+        }
+      }
+    }
+    return count;
+  };
+
+  exports.getExtension = getExtension = function(str) {
+    var pos;
+    pos = str.lastIndexOf(".");
+    if (pos < 0) {
+      return "";
+    } else {
+      return str.substr(pos + 1);
+    }
+  };
+
+  getExtensionScore = function(candidate, ext, startPos, endPos, maxDepth) {
+    var m, matched, n, pos;
+    if (!ext.length) {
+      return 0;
+    }
+    pos = candidate.lastIndexOf(".", endPos);
+    if (!(pos > startPos)) {
+      return 0;
+    }
+    n = ext.length;
+    m = endPos - pos;
+    if (m < n) {
+      n = m;
+      m = ext.length;
+    }
+    pos++;
+    matched = -1;
+    while (++matched < n) {
+      if (candidate[pos + matched] !== ext[matched]) {
+        break;
+      }
+    }
+    if (matched === 0 && maxDepth > 0) {
+      return 0.9 * getExtensionScore(candidate, ext, startPos, pos - 2, maxDepth - 1);
+    }
+    return matched / m;
   };
 
 }).call(this);
 
 
 /***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-(function() {
-  var PathSeparator, queryIsLastPathSegment;
-
-  PathSeparator = __webpack_require__(4).sep;
-
-  exports.basenameScore = function(string, query, score) {
-    var base, depth, index, lastCharacter, segmentCount, slashCount;
-    index = string.length - 1;
-    while (string[index] === PathSeparator) {
-      index--;
-    }
-    slashCount = 0;
-    lastCharacter = index;
-    base = null;
-    while (index >= 0) {
-      if (string[index] === PathSeparator) {
-        slashCount++;
-        if (base == null) {
-          base = string.substring(index + 1, lastCharacter + 1);
-        }
-      } else if (index === 0) {
-        if (lastCharacter < string.length - 1) {
-          if (base == null) {
-            base = string.substring(0, lastCharacter + 1);
-          }
-        } else {
-          if (base == null) {
-            base = string;
-          }
-        }
-      }
-      index--;
-    }
-    if (base === string) {
-      score *= 2;
-    } else if (base) {
-      score += exports.score(base, query);
-    }
-    segmentCount = slashCount + 1;
-    depth = Math.max(1, 10 - segmentCount);
-    score *= depth * 0.01;
-    return score;
-  };
-
-  exports.score = function(string, query) {
-    var character, characterScore, indexInQuery, indexInString, lowerCaseIndex, minIndex, queryLength, queryScore, stringLength, totalCharacterScore, upperCaseIndex, _ref;
-    if (string === query) {
-      return 1;
-    }
-    if (queryIsLastPathSegment(string, query)) {
-      return 1;
-    }
-    totalCharacterScore = 0;
-    queryLength = query.length;
-    stringLength = string.length;
-    indexInQuery = 0;
-    indexInString = 0;
-    while (indexInQuery < queryLength) {
-      character = query[indexInQuery++];
-      lowerCaseIndex = string.indexOf(character.toLowerCase());
-      upperCaseIndex = string.indexOf(character.toUpperCase());
-      minIndex = Math.min(lowerCaseIndex, upperCaseIndex);
-      if (minIndex === -1) {
-        minIndex = Math.max(lowerCaseIndex, upperCaseIndex);
-      }
-      indexInString = minIndex;
-      if (indexInString === -1) {
-        return 0;
-      }
-      characterScore = 0.1;
-      if (string[indexInString] === character) {
-        characterScore += 0.1;
-      }
-      if (indexInString === 0 || string[indexInString - 1] === PathSeparator) {
-        characterScore += 0.8;
-      } else if ((_ref = string[indexInString - 1]) === '-' || _ref === '_' || _ref === ' ') {
-        characterScore += 0.7;
-      }
-      string = string.substring(indexInString + 1, stringLength);
-      totalCharacterScore += characterScore;
-    }
-    queryScore = totalCharacterScore / queryLength;
-    return ((queryScore * (queryLength / stringLength)) + queryScore) / 2;
-  };
-
-  queryIsLastPathSegment = function(string, query) {
-    if (string[string.length - query.length - 1] === PathSeparator) {
-      return string.lastIndexOf(query) === string.length - query.length;
-    }
-  };
-
-}).call(this);
-
-
-/***/ }),
-/* 8 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -3642,6 +3250,398 @@ if (true) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(26)))
 
 /***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+(function() {
+  var Query, coreChars, countDir, getCharCodes, getExtension, opt_char_re, truncatedUpperCase, _ref;
+
+  _ref = __webpack_require__(4), countDir = _ref.countDir, getExtension = _ref.getExtension;
+
+  module.exports = Query = (function() {
+    function Query(query, _arg) {
+      var optCharRegEx, pathSeparator, _ref1;
+      _ref1 = _arg != null ? _arg : {}, optCharRegEx = _ref1.optCharRegEx, pathSeparator = _ref1.pathSeparator;
+      if (!(query && query.length)) {
+        return null;
+      }
+      this.query = query;
+      this.query_lw = query.toLowerCase();
+      this.core = coreChars(query, optCharRegEx);
+      this.core_lw = this.core.toLowerCase();
+      this.core_up = truncatedUpperCase(this.core);
+      this.depth = countDir(query, query.length, pathSeparator);
+      this.ext = getExtension(this.query_lw);
+      this.charCodes = getCharCodes(this.query_lw);
+    }
+
+    return Query;
+
+  })();
+
+  opt_char_re = /[ _\-:\/\\]/g;
+
+  coreChars = function(query, optCharRegEx) {
+    if (optCharRegEx == null) {
+      optCharRegEx = opt_char_re;
+    }
+    return query.replace(optCharRegEx, '');
+  };
+
+  truncatedUpperCase = function(str) {
+    var char, upper, _i, _len;
+    upper = "";
+    for (_i = 0, _len = str.length; _i < _len; _i++) {
+      char = str[_i];
+      upper += char.toUpperCase()[0];
+    }
+    return upper;
+  };
+
+  getCharCodes = function(str) {
+    var charCodes, i, len;
+    len = str.length;
+    i = -1;
+    charCodes = [];
+    while (++i < len) {
+      charCodes[str.charCodeAt(i)] = true;
+    }
+    return charCodes;
+  };
+
+}).call(this);
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+(function() {
+  var PathSeparator, queryIsLastPathSegment;
+
+  PathSeparator = __webpack_require__(6).sep;
+
+  exports.basenameScore = function(string, query, score) {
+    var base, depth, index, lastCharacter, segmentCount, slashCount;
+    index = string.length - 1;
+    while (string[index] === PathSeparator) {
+      index--;
+    }
+    slashCount = 0;
+    lastCharacter = index;
+    base = null;
+    while (index >= 0) {
+      if (string[index] === PathSeparator) {
+        slashCount++;
+        if (base == null) {
+          base = string.substring(index + 1, lastCharacter + 1);
+        }
+      } else if (index === 0) {
+        if (lastCharacter < string.length - 1) {
+          if (base == null) {
+            base = string.substring(0, lastCharacter + 1);
+          }
+        } else {
+          if (base == null) {
+            base = string;
+          }
+        }
+      }
+      index--;
+    }
+    if (base === string) {
+      score *= 2;
+    } else if (base) {
+      score += exports.score(base, query);
+    }
+    segmentCount = slashCount + 1;
+    depth = Math.max(1, 10 - segmentCount);
+    score *= depth * 0.01;
+    return score;
+  };
+
+  exports.score = function(string, query) {
+    var character, characterScore, indexInQuery, indexInString, lowerCaseIndex, minIndex, queryLength, queryScore, stringLength, totalCharacterScore, upperCaseIndex, _ref;
+    if (string === query) {
+      return 1;
+    }
+    if (queryIsLastPathSegment(string, query)) {
+      return 1;
+    }
+    totalCharacterScore = 0;
+    queryLength = query.length;
+    stringLength = string.length;
+    indexInQuery = 0;
+    indexInString = 0;
+    while (indexInQuery < queryLength) {
+      character = query[indexInQuery++];
+      lowerCaseIndex = string.indexOf(character.toLowerCase());
+      upperCaseIndex = string.indexOf(character.toUpperCase());
+      minIndex = Math.min(lowerCaseIndex, upperCaseIndex);
+      if (minIndex === -1) {
+        minIndex = Math.max(lowerCaseIndex, upperCaseIndex);
+      }
+      indexInString = minIndex;
+      if (indexInString === -1) {
+        return 0;
+      }
+      characterScore = 0.1;
+      if (string[indexInString] === character) {
+        characterScore += 0.1;
+      }
+      if (indexInString === 0 || string[indexInString - 1] === PathSeparator) {
+        characterScore += 0.8;
+      } else if ((_ref = string[indexInString - 1]) === '-' || _ref === '_' || _ref === ' ') {
+        characterScore += 0.7;
+      }
+      string = string.substring(indexInString + 1, stringLength);
+      totalCharacterScore += characterScore;
+    }
+    queryScore = totalCharacterScore / queryLength;
+    return ((queryScore * (queryLength / stringLength)) + queryScore) / 2;
+  };
+
+  queryIsLastPathSegment = function(string, query) {
+    if (string[string.length - query.length - 1] === PathSeparator) {
+      return string.lastIndexOf(query) === string.length - query.length;
+    }
+  };
+
+}).call(this);
+
+
+/***/ }),
 /* 9 */
 /***/ (function(module, exports) {
 
@@ -3848,7 +3848,7 @@ var buf = [];
 var jade_mixins = {};
 var jade_interp;
 
-buf.push("<div id=\"form_container\"><h1>Test of different search solutions</h1><input type=\"text\" id=\"search-input\" placeholder=\"Search terms\" value=\"\"><button id=\"search-btn\">Search all</button><br><label><input type=\"checkbox\" id=\"search-realtime-chckbox\" value=\"false\">Search as you type</label><br><input id=\"short-list-radio\" type=\"radio\" name=\"listTypeRadio\" checked=\"true\">short list<br><input id=\"long-list-radio\" type=\"radio\" name=\"listTypeRadio\">long list</div><div><div class=\"header\"> <Test>A] Results for </Test><a href=\"http://fusejs.io\">fuse.js</a><label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuse-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuse-comments\" class=\"comments\"></div><div id=\"fuse-results\" class=\"output_container\"></div></div><div><div class=\"header\">B] Fuzzaldrin results<label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuzzaldrin-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuzzaldrin-comments\" class=\"comments\"></div><div id=\"fuzzaldrin-results\" class=\"output_container\"></div></div><div><div class=\"header\">C] Fuzzaldrin-Plus results<label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuzzaldrin-plus-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuzzaldrin-plus-comments\" class=\"comments\"></div><div id=\"fuzzaldrin-plus-results\" class=\"output_container\"></div></div><div><div class=\"header\">D] search by \"fuzzy words\"<label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuzzy-words-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuzzy-words-comments\" class=\"comments\"></div><div id=\"fuzzy-words-results\" class=\"output_container\"></div></div>");;return buf.join("");
+buf.push("<div id=\"form_container\"><h1>Test of different search solutions</h1><input type=\"text\" id=\"search-input\" placeholder=\"Search terms\" value=\"\"><button id=\"search-btn\">Search all</button><label><input type=\"checkbox\" id=\"search-realtime-chckbox\" value=\"false\">Search as you type</label><div id=\"radio-container\"></div></div><div><div class=\"header\"> <Test>A] Results for </Test><a href=\"http://fusejs.io\">fuse.js</a><label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuse-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuse-comments\" class=\"comments\"></div><div id=\"fuse-results\" class=\"output_container\"></div></div><div><div class=\"header\">B] Fuzzaldrin results<label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuzzaldrin-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuzzaldrin-comments\" class=\"comments\"></div><div id=\"fuzzaldrin-results\" class=\"output_container\"></div></div><div><div class=\"header\">C] Fuzzaldrin-Plus results<label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuzzaldrin-plus-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuzzaldrin-plus-comments\" class=\"comments\"></div><div id=\"fuzzaldrin-plus-results\" class=\"output_container\"></div></div><div><div class=\"header\">D] search by \"fuzzy words\"<label>&nbsp;&nbsp;(<input type=\"checkbox\" id=\"fuzzy-words-checkbox\" value=\"false\" class=\"activation-checkbox\"> activated)</label></div><label class=\"comment-toggler\">Explanations</label><div id=\"fuzzy-words-comments\" class=\"comments\"></div><div id=\"fuzzy-words-results\" class=\"output_container\"></div></div>");;return buf.join("");
 }
 
 /***/ }),
@@ -4030,7 +4030,9 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 /* 13 */
 /***/ (function(module, exports) {
 
-const lists = {}
+const lists = []
+let   items
+
 const prepareLists  = function (cb) {
   // get data from the the json file (/tools/path-list.json)
   let url = 'path-list.json';
@@ -4039,55 +4041,135 @@ const prepareLists  = function (cb) {
     return res.json()
   })
   .then((out) => {
-    lists.long = out
+    lists.push({name:'long list', id:'longList', defaultSearch:'banque pret', items:out})
     cb(lists)
   })
   .catch(err => console.error(err));
 }
-// for quick tests
-// lists.short =
-// [{"type":"file","path":"/Administratif"},
-//   {"type":"file","path":"/Administratif/Bank statements"},
-//   {"type":"file","path":"/Administratif/Bank statements/Bank Of America"}
-// ]
-// for quick tests
-lists.short =
-[{"type":"file","path":"/Administratif","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Bank statements","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Bank statements/Bank Of America","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Bank statements/Deutsche Bank","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Bank statements/Société Générale","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/CPAM","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/EDF","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/EDF/Contrat","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/EDF/Factures","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Emploi","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Impôts","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Logement","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Logement/Loyer 158 rue de Verdun","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Orange","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Pièces identité","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Pièces identité/Carte identité","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Pièces identité/Passeport","name":"test-filesname.txt"},
-  {"type":"file","path":"/Administratif/Pièces identité/Permis de conduire","name":"test-filesname.txt"},
-  {"type":"file","path":"/Appareils photo","name":"test-filesname.txt"},
-  {"type":"file","path":"/Boulot","name":"test-filesname.txt"},
-  {"type":"file","path":"/Cours ISEN","name":"test-filesname.txt"},
-  {"type":"file","path":"/Cours ISEN/CIR","name":"test-filesname.txt"},
-  {"type":"file","path":"/Cours ISEN/CIR/LINUX","name":"test-filesname.txt"},
-  {"type":"file","path":"/Cours ISEN/CIR/MICROCONTROLEUR","name":"test-filesname.txt"},
-  {"type":"file","path":"/Cours ISEN/CIR/RESEAUX","name":"test-filesname.txt"},
-  {"type":"file","path":"/Cours ISEN/CIR/TRAITEMENT_SIGNAL","name":"test-filesname.txt"},
-  {"type":"file","path":"/Divers photo","name":"test-filesname.txt"},
-  {"type":"file","path":"/Divers photo/wallpapers","name":"test-filesname.txt"},
-  {"type":"file","path":"/Films","name":"test-filesname.txt"},
-  {"type":"file","path":"/Notes","name":"test-filesname.txt"},
-  {"type":"file","path":"/Notes/Communication","name":"test-filesname.txt"},
-  {"type":"file","path":"/Notes/Notes techniques","name":"test-filesname.txt"},
-  {"type":"file","path":"/Notes/Recrutement","name":"test-filesname.txt"},
-  {"type":"file","path":"/Projet appartement à Lyon","name":"test-filesname.txt"},
-  {"type":"file","path":"/Vacances Périgord", "name":"test-filesname.txt"}
+
+// format a list of full path into [ {name:"fileName", path:"dirPath", type:"file or directory"} ]
+const _format = function (items) {
+  let path_list = []
+  for (fullPath of items) {
+    let i = fullPath.lastIndexOf('/')
+    path_list.push({type:"file",path:fullPath.slice(0,i), name:fullPath.slice(i+1)})
+  }
+  return path_list
+}
+
+items =
+[
+  '/Comptabilité/Fiscal/2015 12 30 - Controle fiscal/Documents clé USB/Banque'
 ]
+lists.push({name:'1 item for test', id:'1_items', defaultSearch:'banque pret', items:_format(items)})
+
+items =
+[
+  '/Administratif/test-filesname.txt',
+  '/Administratif/Bank statements/test-filesname.txt',
+  '/Administratif/Bank statements/Bank Of America/test-filesname.txt',
+  '/Administratif/Bank statements/Deutsche Bank/test-filesname.txt',
+  '/Administratif/Bank statements/Société Générale/test-filesname.txt',
+  '/Administratif/CPAM/test-filesname.txt',
+  '/Administratif/EDF/test-filesname.txt',
+  '/Administratif/EDF/Contrat/test-filesname.txt',
+  '/Administratif/EDF/Factures/test-filesname.txt',
+  '/Administratif/Emploi/test-filesname.txt',
+  '/Administratif/Impôts/test-filesname.txt',
+  '/Administratif/Logement/test-filesname.txt',
+  '/Administratif/Logement/Loyer 158 rue de Verdun/test-filesname.txt',
+  '/Administratif/Orange/test-filesname.txt',
+  '/Administratif/Pièces identité/test-filesname.txt',
+  '/Administratif/Pièces identité/Carte identité/test-filesname.txt',
+  '/Administratif/Pièces identité/Passeport/test-filesname.txt',
+  '/Administratif/Pièces identité/Permis de conduire/test-filesname.txt',
+  '/Appareils photo/test-filesname.txt',
+  '/Boulot/test-filesname.txt',
+  '/Cours ISEN/test-filesname.txt',
+  '/Cours ISEN/CIR/test-filesname.txt',
+  '/Cours ISEN/CIR/LINUX/test-filesname.txt',
+  '/Cours ISEN/CIR/MICROCONTROLEUR/test-filesname.txt',
+  '/Cours ISEN/CIR/RESEAUX/test-filesname.txt',
+  '/Cours ISEN/CIR/TRAITEMENT_SIGNAL/test-filesname.txt',
+  '/Divers photo/test-filesname.txt',
+  '/Divers photo/wallpapers/test-filesname.txt',
+  '/Films/test-filesname.txt',
+  '/Notes/test-filesname.txt',
+  '/Notes/Communication/test-filesname.txt',
+  '/Notes/Notes techniques/test-filesname.txt',
+  '/Notes/Recrutement/test-filesname.txt',
+  '/Projet appartement à Lyon/test-filesname.txt',
+  '/Vacances Périgord"/test-filesname.txt'
+]
+lists.push({name:'23 items', id:'23_items', defaultSearch:'admin', items:_format(items)})
+
+$A='A666'
+$B='B666'
+$C='C666'
+$D='D666'
+$$='----'
+
+items = [
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6a_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6ab_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abc_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcd_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcde_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdef_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdefg_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdefgh_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}`]
+lists.push({name:'test 1', id:'test_1', defaultSearch:'A66', items:_format(items)})
+
+items = [
+  `/A0_${$A}7.txt`,
+  `/A0_${$A}.txt`,
+  `/A0_${$$}/A1_${$A}but relevance diluted.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$$}/A3_${$$}/A4_${$A}.txt`,
+  `/A0_${$$}/A1_${$A}.txt`,
+  `/A0_${$A}/A1_${$$}/A2_${$A}.txt`,
+  `/A0_${$A}`,
+  `/A0_${$$}/A1_${$$}/A2_${$$}/A3_${$A}/A4_${$$}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$$}/A3_${$A}`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.1_${$$}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.2_${$$}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.3_${$$}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.4_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.5_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}`]
+lists.push({name:'test 2', id:'test_2', defaultSearch:'A66', items:_format(items)})
+
+items = [
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6a_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6ab_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abc_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcd_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcde_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdef_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdefg_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdefgh_${$A}.txt`,
+  `/A0_${$$}/A1_${$$}/A2_${$A}`,
+  `/B0_${$A}.txt`,
+  `/B0_${$A}/B1_${$A}.txt`,
+  `/B0_${$A}/B1_${$A}/B2_${$A}.txt`,
+  `/B0_${$A}/B1_${$A}/B2_${$A}/B3_${$A}.txt`,
+  `/B0_${$A}/B1_${$A}/B2_${$A}/B3_${$A}/B4_${$A}.txt`,
+  `/C0_${$A}.txt`,
+  `/C0_${$A}/C1_`,
+  `/C0_${$A}/C1_/C2_${$A}.txt`,
+  `/C0_${$A}/C1_/C2_${$A}/C3_`,
+  `/C0_${$A}/C1_/C2_${$A}/C3_/C4_${$A}.txt`,
+  `/D0_${$D}.txt`,
+  `/D0_${$D}/D1_`,
+  `/D0_${$D}/D1_/D2_${$D}.txt`,
+  `/D0_${$D}/D1_/D2_${$D}/D3_`,
+  `/D0_${$D}/D1_/D2_${$D}/D3_/D4_${$D}.txt`
+]
+lists.push({name:'test 3', id:'test_3', defaultSearch:'A66', items:_format(items)})
+
 
 
 module.exports = prepareLists
@@ -4098,7 +4180,7 @@ module.exports = prepareLists
 /***/ (function(module, exports, __webpack_require__) {
 
 const Fuse    = __webpack_require__(18)
-const numeral = __webpack_require__(1)        // to format the numbers
+const numeral = __webpack_require__(0)        // to format the numbers
 
 var fuse
 const options = {
@@ -4164,10 +4246,10 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 const
-  numeral        = __webpack_require__(1),        // to format the numbers
+  numeral        = __webpack_require__(0),        // to format the numbers
   fuzzaldrinPlus = __webpack_require__(20),
-  wordBolderify  = __webpack_require__(0).wordBolderify,
-  markdown       = __webpack_require__(8)
+  wordBolderify  = __webpack_require__(1).wordBolderify,
+  markdown       = __webpack_require__(5)
 var
   list,
   MAX_RESULTS
@@ -4208,10 +4290,10 @@ module.exports = {
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const numeral    = __webpack_require__(1)        // to format the numbers
+const numeral    = __webpack_require__(0)        // to format the numbers
 const fuzzaldrin = __webpack_require__(23)
-const Helpers    = __webpack_require__(0)
-const markdown   = __webpack_require__(8)
+const Helpers    = __webpack_require__(1)
+const markdown   = __webpack_require__(5)
 var list, MAX_RESULTS
 
 basiqueBolderify = Helpers.basiqueBolderify
@@ -4252,13 +4334,17 @@ module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 const
-  fuzzyWordsSearch = __webpack_require__(35)
-  numeral          = __webpack_require__(1),          // to format the numbers,
-  wordBolderify    = __webpack_require__(0).wordBolderify,
-  markdown         = __webpack_require__(8)
+  fuzzyWordsSearches = __webpack_require__(30)
+  fuzzyWordsSearchForDebug = fuzzyWordsSearches.forDebugPackage
+  fuzzyWordsSearchForPerf  = fuzzyWordsSearches.forPerfPackage
+  // fuzzyWordsSearch4Perf = require('../build/fuzzy-words-search-for-paths.build')
+  numeral          = __webpack_require__(0),          // to format the numbers,
+  wordBolderify    = __webpack_require__(1).wordBolderify,
+  markdown         = __webpack_require__(5)
 
 let
  list,
+ fuzzyWordsSearch,
  currentQuery=[],
  previousSuggestions=[],
  MAX_RESULTS
@@ -4294,18 +4380,44 @@ where :
 
 `
 
+numeral.register('locale', 'fr', {
+    delimiters: {
+        thousands: '.',
+        decimal: ','
+    },
+    abbreviations: {
+        thousand: 'k',
+        million: 'm',
+        billion: 'b',
+        trillion: 't'
+    },
+    ordinal : function (number) {
+        return number === 1 ? 'er' : 'ème';
+    },
+    currency: {
+        symbol: '€'
+    }
+});
+numeral.locale('fr')
+
 
 // ------------------------------------------------------------------
 //
 
 module.exports = {
+
   init : (newList, max_results)=>{
+    // if the list is too long, use the production lib (without logs)
+    if (newList.length<2000) {
+      fuzzyWordsSearch = fuzzyWordsSearchForDebug
+    } else {
+      fuzzyWordsSearch = fuzzyWordsSearchForPerf
+    }
     const t0       = performance.now()
     fuzzyWordsSearch.init(newList)
     const t1       = performance.now()
     MAX_RESULTS = max_results
     return numeral((t1 - t0)/1000).format('0.000')
-
   },
 
   getComments : () => {
@@ -4319,7 +4431,9 @@ module.exports = {
     const duration = numeral((t1 - t0)/1000).format('0.000')
     let resultsStr = ''
     for (let res of results) {
-      resultsStr += `<p><span class="score">${numeral(res.score).format('00.00')}</span> ${wordBolderify(query, res.path)}/${wordBolderify(query, res.name)}</p>`
+      let scoreStr = numeral(res.score).format('0,0.')
+      scoreStr = Array(12 - scoreStr.length).join('&#160;') + scoreStr
+      resultsStr += `<p><span class="score">${scoreStr}</span> ${wordBolderify(query, res.path)}/${wordBolderify(query, res.name)}</p>`
     }
     const t2 = performance.now()
     const duration2 = numeral((t2 - t1)/1000).format('0.000')
@@ -5323,9 +5437,9 @@ module.exports = Fuse;
 
   scorer = __webpack_require__(2);
 
-  pathScorer = __webpack_require__(3);
+  pathScorer = __webpack_require__(4);
 
-  Query = __webpack_require__(6);
+  Query = __webpack_require__(7);
 
   pluckCandidates = function(a) {
     return a.candidate;
@@ -5383,9 +5497,9 @@ module.exports = Fuse;
 
   scorer = __webpack_require__(2);
 
-  pathScorer = __webpack_require__(3);
+  pathScorer = __webpack_require__(4);
 
-  Query = __webpack_require__(6);
+  Query = __webpack_require__(7);
 
   preparedQueryCache = null;
 
@@ -5716,7 +5830,7 @@ module.exports = Fuse;
 (function() {
   var pluckCandidates, scorer, sortCandidates;
 
-  scorer = __webpack_require__(7);
+  scorer = __webpack_require__(8);
 
   pluckCandidates = function(a) {
     return a.candidate;
@@ -5767,13 +5881,13 @@ module.exports = Fuse;
 (function() {
   var PathSeparator, SpaceRegex, filter, matcher, scorer;
 
-  scorer = __webpack_require__(7);
+  scorer = __webpack_require__(8);
 
   filter = __webpack_require__(22);
 
   matcher = __webpack_require__(24);
 
-  PathSeparator = __webpack_require__(4).sep;
+  PathSeparator = __webpack_require__(6).sep;
 
   SpaceRegex = /\ /g;
 
@@ -5853,7 +5967,7 @@ module.exports = Fuse;
 (function() {
   var PathSeparator;
 
-  PathSeparator = __webpack_require__(4).sep;
+  PathSeparator = __webpack_require__(6).sep;
 
   exports.basenameMatch = function(string, query) {
     var base, index, lastCharacter, slashCount;
@@ -6147,7 +6261,7 @@ exports.rethrow = function rethrow(err, filename, lineno, str){
     throw err;
   }
   try {
-    str = str || __webpack_require__(30).readFileSync(filename, 'utf8')
+    str = str || __webpack_require__(31).readFileSync(filename, 'utf8')
   } catch (ex) {
     rethrow(err, null, lineno)
   }
@@ -6206,26 +6320,489 @@ module.exports = g;
 
 
 /***/ }),
-/* 27 */,
+/* 27 */
+/***/ (function(module, exports) {
+
+
+/*
+
+head  node
+      A
+next  |  |  prev
+        V
+tail  node
+ */
+// var DoublyLinkedList
+
+module.exports = (function () {
+  /*
+   * Constructor. Takes no arguments.
+   */
+  function DoublyLinkedList () {
+    // pointer to first item
+    this._head = null
+    // pointer to the last item
+    this._tail = null
+    // length of list
+    this._length = 0
+    // counter for nodes' ids
+    this._counter = 0
+    return
+  }
+
+  // Wraps data in a node object.
+  DoublyLinkedList.prototype._createNewNode = function (data) {
+    var node
+    node = {
+      data: data,
+      next: null,
+      prev: null,
+      id: this._counter
+    }
+    this._counter++
+    return node
+  }
+
+  /*
+   * Appends a node to the end of the list.
+   */
+
+  DoublyLinkedList.prototype.append = function (data) {
+    var node
+    node = this._createNewNode(data)
+    if (this._length === 0) {
+      // first node, so all pointers to this
+      this._head = node
+      this._tail = node
+    } else {
+      // put on the tail
+      this._tail.prev = node
+      node.next = this._tail
+      this._tail = node
+    }
+    // update count
+    this._length++
+    return node
+  }
+
+  /*
+   * Prepends a node to the start of the list.
+   */
+
+  DoublyLinkedList.prototype.prepend = function (data) {
+    var node
+    if (this._head === null) {
+      // list is empty, so this is the first node
+      // use the same logic as append
+      return this.append(data)
+    } else {
+      node = this._createNewNode(data)
+      // place before head
+      this._head.next = node
+      node.prev = this._head
+      this._head = node
+    }
+    // update count
+    this._length++
+    return node
+  }
+
+  /*
+   * Insert one node at rank.
+   * Returns the new node, undefined if rank out of range.
+   */
+  DoublyLinkedList.prototype.insert = function (rank, data) {
+    var next
+    var nodeToAdd
+    var target
+    if (this._length === 0) {
+      if (rank !== 0) {
+        return void 0
+      }
+      return this.append(data)
+    }
+    if (rank === 0) {
+      return this.prepend(data)
+    }
+    if (rank === this._length) {
+      return this.append(data)
+    }
+    if (this._length < rank || rank < 0) {
+      return void 0
+    }
+    nodeToAdd = this._createNewNode(data)
+    target = this.at(rank)
+    if (target === void 0) {
+      return void 0
+    }
+    next = target.next
+    target.next = nodeToAdd
+    nodeToAdd.prev = target
+    nodeToAdd.next = next
+    next.prev = nodeToAdd
+    this._length++
+    return nodeToAdd
+  }
+
+  /*
+   * Insert a new node after one
+   * Returns the new node
+   */
+  DoublyLinkedList.prototype.insertAfterNode = function (nextNode, data) {
+    var nodeToAdd
+    var target
+    var prev
+    if (nextNode.prev === null) {
+      return this.append(data)
+    }
+    nodeToAdd = this._createNewNode(data)
+    target = nextNode
+    prev = target.prev
+    target.prev = nodeToAdd
+    nodeToAdd.next = target
+    nodeToAdd.prev = prev
+    prev.next = nodeToAdd
+    this._length++
+    return nodeToAdd
+  }
+
+  /*
+   * Returns the node at the specified index. The index starts at 0.
+   * Undefined if index out of range.
+   */
+  DoublyLinkedList.prototype.at = function (index) {
+    var node
+    if (index >= 0 && index < this._length) {
+      node = this._head
+      while (index--) {
+        node = node.prev
+      }
+      return node
+    }
+    return void 0
+  }
+
+  /*
+   * Returns the node with the specified id, undefined if wrong id.
+   */
+  DoublyLinkedList.prototype.id = function (id) {
+    // var index
+    var node
+    id = parseInt(id)
+    // index = this._length
+    node = this._head
+    while (node && node.id !== id) {
+      node = node.prev
+    }
+    if (node) {
+      return node
+    } else {
+      return void 0
+    }
+  }
+
+  /*
+   * Returns the rank of a node, undefined if node not found
+   */
+  DoublyLinkedList.prototype.rank = function (node) {
+    var currentNode
+    // var id
+    // var index
+    var rank
+    rank = 0
+    // id = parseInt(id)
+    // index = this._length
+    currentNode = this._head
+    while (true) {
+      if (currentNode === node) {
+        return rank
+      }
+      rank++
+      currentNode = currentNode.prev
+      if (currentNode === null) {
+        break
+      }
+    }
+    return void 0
+  }
+
+  /*
+   * Returns the node at the head of the list.
+   */
+  DoublyLinkedList.prototype.head = function () {
+    return this._head
+  }
+
+  /*
+   * Returns the node at the tail of the list.
+   */
+  DoublyLinkedList.prototype.tail = function () {
+    return this._tail
+  }
+
+  /*
+   * Returns the size of the list.
+   */
+
+  DoublyLinkedList.prototype.size = function () {
+    return this._length
+  }
+
+  /*
+   * Removes the item at the index.
+   * returns undefined if index out of range
+   */
+  DoublyLinkedList.prototype.remove = function (index) {
+    var node
+    node = this.at(index)
+    if (node === void 0) {
+      return void 0
+    }
+    return this.removeNode(node)
+  }
+
+  /*
+   * Removes the item with this id
+   * Returns undefined if id not in the chain
+   */
+  DoublyLinkedList.prototype.removeID = function (id) {
+    var node
+    node = this.id(id)
+    if (node === void 0) {
+      return void 0
+    }
+    return this.removeNode(node)
+  }
+
+  DoublyLinkedList.prototype.removeNode = function (node) {
+    var next
+    var prev
+    if (this._length === 0) {
+      return void 0
+    }
+    if (this._length === 1) {
+      if (node !== this._head) {
+        return void 0
+      }
+      this._head = null
+      this._tail = null
+      this._length = 0
+      return node
+    }
+
+    // head and length > 1
+    if (node === this._head) {
+      this._head = node.prev
+      this._head.next = null
+      node.prev = null
+      this._length -= 1
+      return node
+    }
+
+    // tail and length > 1
+    if (node === this._tail) {
+      this._tail = node.next
+      this._tail.prev = null
+      node.next = null
+      this._length -= 1
+      return node
+    }
+
+    // node is in the middle of the list
+    prev = node.prev
+    next = node.next
+    prev.next = next
+    next.prev = prev
+    node.prev = null
+    node.next = null
+    this._length -= 1
+    return node
+  }
+
+  DoublyLinkedList.prototype.printIdChain = function () {
+    var index
+    var node
+    var txt
+    node = this._head
+    if (node === null) {
+      return 'empty chain'
+    }
+    txt = []
+    index = this._length
+    while (index--) {
+      txt.push(node.id)
+      node = node.prev
+    }
+    return txt.join('-')
+  }
+
+  DoublyLinkedList.prototype.printAllChain = function () {
+    var index
+    var length
+    var node
+    var rk
+    var txt
+    node = this._head
+    if (node === null) {
+      return 'empty chain'
+    }
+    txt = []
+    index = this._length
+    length = this._length - 1
+    while (index--) {
+      rk = length - index
+      txt.push(rk + ' - id:' + node.id + ' - data:' + JSON.stringify(node.data))
+      node = node.prev
+    }
+    return txt.join('\n')
+  }
+
+  DoublyLinkedList.prototype.printDataChain = function () {
+    var index
+    var node
+    var txt
+    node = this._head
+    if (node === null) {
+      return 'empty chain'
+    }
+    txt = []
+    index = this._length
+    while (index--) {
+      txt.push(node.data)
+      node = node.prev
+    }
+    return txt.join('-')
+  }
+
+  return DoublyLinkedList
+})()
+
+
+/***/ }),
 /* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
+const LinkedList = __webpack_require__(27)
+
+module.exports = class RangeList {
+  constructor () {
+    this._list = new LinkedList()
+  }
+
+  // add a range [a,b] to the list. Can overlap an existing range, will unifomize so that in the end there is no overlaping.
+  addRange (a, b) {
+    if (b === undefined) {
+      b = a[1]
+      a = a[0]
+    }
+    // let's find r1, the range with a inside
+    var r1 = this._getRangeAtOrRangeBefore(a)
+    if (r1 === null) {
+      // a is before the first range
+      r1 = this._list.prepend({a, b})
+      if (r1.prev == null) {
+        // there was no range before insertion
+        return
+      }
+    } else if (r1.data.b < a) {
+      // a is after r1, lets create a new range
+      r1 = this._list.insertAfterNode(r1, {a: a, b: b})
+    } else if (b <= r1.data.b) {
+      // a is in r1, and b is also in r1 : nothing to do
+      return
+    }
+    // r1 is now the first range with a inside and b is not in r1
+    // let's find r2, the range with b inside
+    // find the first range with upper bound higher than b
+    var r2 = r1.prev
+    while (r2) {
+      if (b <= r2.data.b) {
+        break
+      }
+      // b if after r2, remove r2 and go to next range
+      let previousr2 = r2
+      r2 = r2.prev
+      this._list.removeNode(previousr2)
+    }
+    if (r2 == null) {
+      // we reach the end of the chain without finding b
+      // r2 = r1
+      r1.data.b = b
+      return
+    }
+    if (r2.data.a <= b) {
+      // b is in r2 => extend r1 to r2 and remove r2
+      r1.data.b = r2.data.b
+      this._list.removeNode(r2)
+      return
+    } else {
+      // otherwise b is before r2 => extend r1 to b
+      r1.data.b = b
+      return
+    }
+  }
+
+  // returns an array of all ranges [[a,b], ... , [c,d]]
+  ranges () {
+    var range = this._list.at(0)
+    const ranges = []
+    while (range) {
+      ranges.push([range.data.a, range.data.b])
+      range = range.prev
+    }
+    return ranges
+  }
+
+  _getRangeAtOrRangeBefore (a) {
+    var range = this._list.at(0)
+    if (range && a < range.data.a) {
+      return null
+    }
+    // find the first range with upper bound higher than a
+    while (range) {
+      if (a <= range.data.b) {
+        break
+      }
+      range = range.prev
+    }
+    if (range == null) {
+      // we reach the end of the chain : return tail
+      return this._list.tail()
+    }
+    if (range.data.a <= a) {
+      // a is in range => range
+      return range
+    } else {
+      // otherwise a is before
+      return range.next
+    }
+  }
+}
+
+
+/***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
 const
-  numeral          = __webpack_require__(1),                 // to format the numbers
-  myFuse           = __webpack_require__(14),
-  myFuzzaldrin     = __webpack_require__(16),
-  myFuzzaldrinPlus = __webpack_require__(15),
-  myFuzzyWords     = __webpack_require__(17),
-  Cookies          = __webpack_require__(12),
-  debounce         = __webpack_require__(0).debounce,
-  wordBolderify    = __webpack_require__(0).wordBolderify
+  numeral           = __webpack_require__(0),                 // to format the numbers
+  myFuse            = __webpack_require__(14),
+  myFuzzaldrin      = __webpack_require__(16),
+  myFuzzaldrinPlus  = __webpack_require__(15),
+  myFuzzyWords      = __webpack_require__(17),
+  Cookies           = __webpack_require__(12),
+  debounce          = __webpack_require__(1).debounce,
+  wordBolderify     = __webpack_require__(1).wordBolderify
 
 var initSearches = function () {}
+var currentList
+var lists
+var defaultActivatedSearches
 
 const
-  MAX_RESULTS       = 10,
+  MAX_RESULTS       = 40,
   DEBOUNCE_DURATION = 250,   // in ms
-  DEFAULT_SEARCH    = 'capitalisation valo'
+  DEFAULT_SEARCH    = 'A66'
 
 // ------------------------------------------------------------------
 // init html
@@ -6237,7 +6814,7 @@ const realTimeSearchChkbx = document.getElementById('search-realtime-chckbox')
 searchInput.select()
 searchInput.focus()
 
-
+  
 // ------------------------------------------------------------------
 // manage checkboxes states and actions
 var defaultActivatedSearches = Cookies.getJSON('defaultActivatedSearches')
@@ -6295,27 +6872,53 @@ for (chkbx of document.querySelectorAll('[type=checkbox]')) {
   chkbx.dispatchEvent(new Event('change'))
 }
 
-// add listeners to the radio for lists to save state and choose the correct list
-for (radio of document.querySelectorAll('[name=listTypeRadio]')) {
-  radio.onchange = (ev)=>{
-    let checked = ev.target.checked
-    defaultActivatedSearches['listTypeRadio'] = ev.target.id
-    Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
-    if (ev.target.id=='long-list-radio') {
-      currentList = 'long'
-    }else {
-      currentList = 'short'
-    }
-    initSearches()
+// create the radio buttons for the selection of the list of items (will be called when lists will be ready)
+const radioCreation = function (lists) {
+  console.log("entered");
+  target = document.getElementById('radio-container')
+  for (list of lists) {
+    let l = document.createElement('label')
+    let r = document.createElement('input')
+    r.name = 'listTypeRadio'
+    r.checked = true
+    r.type = 'radio'
+    r.id = list.id
+    l.appendChild(r)
+    l.appendChild(document.createTextNode(list.name))
+    target.appendChild(l)
+    2+2
   }
 }
 
-// restore radio state
-currentList = 'short'
-if (defaultActivatedSearches['listTypeRadio']) {
-  let radio = document.getElementById(defaultActivatedSearches['listTypeRadio'])
-  radio.checked = true
-  radio.dispatchEvent(new Event('change'))
+
+finalizeRadio = function () {
+  // restore radio state
+  if (defaultActivatedSearches['listTypeRadio']) {
+    let radio = document.getElementById(defaultActivatedSearches['listTypeRadio'])
+    if (radio) {
+      radio.checked = true
+      currentList = getListById(defaultActivatedSearches['listTypeRadio'])
+      searchInput.value = currentList.defaultSearch
+    } else {
+      currentList = lists[0]
+      defaultActivatedSearches['listTypeRadio'] = currentList.id
+      searchInput.value = currentList.defaultSearch
+      Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
+    }
+    // radio.dispatchEvent(new Event('change'))
+  }
+
+  // add listeners to the radio for lists to save state and choose the correct list
+  for (radio of document.querySelectorAll('[name=listTypeRadio]')) {
+    radio.onchange = (ev)=>{
+      let checked = ev.target.checked
+      defaultActivatedSearches['listTypeRadio'] = ev.target.id
+      Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
+      currentList = getListById(ev.target.id)
+      searchInput.value = currentList.defaultSearch
+      initSearches()
+    }
+  }
 }
 
 
@@ -6390,68 +6993,81 @@ const fuzzyWordsSearch = function (query) {
 // Prepare the list where to search and trigger an automatic search
 initSearches = function (query) {
   var initDuration
-  searchInput.value = query
-  if (lists[currentList]) {
+  if (defaultActivatedSearches['fuse-checkbox']) {
+    console.log('fuse init')
+    document.getElementById('fuse-comments').innerHTML = myFuse.init(currentList.items, MAX_RESULTS)
+  }else{myFuse.init([],0)}
 
-    if (defaultActivatedSearches['fuse-checkbox']) {
-      console.log('fuse init');
-      document.getElementById('fuse-comments').innerHTML = myFuse.init(lists[currentList], MAX_RESULTS)
-    }else{myFuse.init([],0)}
+  if (defaultActivatedSearches['fuzzaldrin-checkbox']) {
+    console.log('fuzzaldrin init')
+    document.getElementById('fuzzaldrin-comments').innerHTML =myFuzzaldrin.init(currentList.items, MAX_RESULTS)
+  }else{myFuzzaldrin.init([],0)}
 
-    if (defaultActivatedSearches['fuzzaldrin-checkbox']) {
-      console.log('fuzzaldrin init');
-      document.getElementById('fuzzaldrin-comments').innerHTML =myFuzzaldrin.init(lists[currentList], MAX_RESULTS)
-    }else{myFuzzaldrin.init([],0)}
+  if (defaultActivatedSearches['fuzzaldrin-plus-checkbox']) {
+    console.log('fuzzaldrin-plus init')
+    document.getElementById('fuzzaldrin-plus-comments').innerHTML =myFuzzaldrinPlus.init(currentList.items, MAX_RESULTS)
+  }else{myFuzzaldrinPlus.init([],0)}
 
-    if (defaultActivatedSearches['fuzzaldrin-plus-checkbox']) {
-      console.log('fuzzaldrin-plus init');
-      document.getElementById('fuzzaldrin-plus-comments').innerHTML =myFuzzaldrinPlus.init(lists[currentList], MAX_RESULTS)
-    }else{myFuzzaldrinPlus.init([],0)}
+  if (defaultActivatedSearches['fuzzy-words-checkbox']) {
+    initDuration = myFuzzyWords.init(currentList.items, MAX_RESULTS)
+    console.log(`fuzzy-words init in ${initDuration}ms`)
+    document.getElementById('fuzzy-words-comments').innerHTML = `Init in ${initDuration}ms` + myFuzzyWords.getComments()
+  }else{myFuzzyWords.init([],0)}
 
-    if (defaultActivatedSearches['fuzzy-words-checkbox']) {
-      initDuration = myFuzzyWords.init(lists[currentList], MAX_RESULTS)
-      console.log(`fuzzy-words init (in ${initDuration}ms)`);
-      document.getElementById('fuzzy-words-comments').innerHTML = `Init in ${initDuration}ms` + myFuzzyWords.getComments()
-    }else{myFuzzyWords.init([],0)}
-  }
   runAllSearches(true)
 }
+
 prepareLists = __webpack_require__(13)
-prepareLists(function (preparedLists) {
+
+
+
+prepareLists((preparedLists) => {
   lists = preparedLists
-  initSearches(DEFAULT_SEARCH)
+  radioCreation(preparedLists)
+  finalizeRadio()
+  initSearches()
   // tests TODO : "bank  adm"  and "bank adm" should scrore the same : it is not the case
 })
 
+getListById = function (listId) {
+  for (list of lists) {
+    if (list.id === listId) {
+      return list
+    }
+  }
+}
+
 
 /***/ }),
-/* 29 */,
 /* 30 */
-/***/ (function(module, exports) {
-
-/* (ignored) */
-
-/***/ }),
-/* 31 */,
-/* 32 */,
-/* 33 */,
-/* 34 */,
-/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
+TODO
+- ajust scoring rules
+  - impact of the distance from the filename on the score
+  - impact of the path length : when searching 'D'  /D1 should be higher than /D1/D2
+  - turn into a class
+  - memory consumption : test and improvements
 
 ### Description
 Search for words occurences in paths of files.
 Occurence can occure in any order, but the closer from the filename is the occurence, the more it is considered relevant.
 Results are ranked by order of relevance.
+Perfomances :
+  - tested with 40.000 paths (file of 6 Mo) :
+    - Init in 0.251ms (when file is already loaded)
+    - a single caracter search in 0.128ms
+    - a 4 caracters search in 0.065ms
+    - ...
 
 ### Usage
 - \`fuzzyWordsSearch = require('fuzzy-words-search-for-paths')\`
-- \`fuzzyWordsSearch.init(itemList)\`
+- \`fuzzyWordsSearch.init(itemList, [max_results])\`
 - \`fuzzyWordsSearch.search(query)\`
 where :
 - itemList : an array of item of the form of : \`{"path":"/Administratif/Bank statements", "name":"bank-statement-01-2017.pdf"}\` (can include ofther properties, only path and name are required)
+- max_results : optionnal : an integer to limit the number of returned suggestions
 - query : the string with words to search for.
 
 ### Principles :
@@ -6473,643 +7089,481 @@ where :
 */
 
 
-const
-  removeDiacritics = __webpack_require__(5).remove
-
-let
-  list,
-  currentQuery=[],
-  previousSuggestions=[]
-
-
 // ------------------------------------------------------------------
-// Main object, two methods : init() and search()
-module.exports = {
+// Main public object, two methods : init() and search()
 
-  init : (newItemsList)=>{
-    list = newItemsList
-    for (let file of list) {
-      file.pathArray = removeDiacritics((file.path+'/'+file.name).toLowerCase()).split('/').filter(Boolean).reverse()
-    }
-  },
+/* BLOCK:START */
+/* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
+const forDebugPackage = function(){
+  /* devblock:start */
+  // just for debug
+  const numeral = __webpack_require__(0)
+  numeral.locale('fr')
 
-  search: function (query, max_results) {
-    return _fuzzyWordsSearch(query, max_results)
+  const scoreLogger = function (width, strBlack,strBlue,strRed,strGreen) {
+    let cssBlue = 'color:blue;font-family:"Courier New", Courier, monospace'
+    let cssRed = 'color:red;font-family:"Courier New", Courier, monospace'
+    let cssBlack = 'color:black;font-family:"Courier New", Courier, monospace'
+    let cssGreen = 'color:green;font-family:"Courier New", Courier, monospace'
+    let spacesNb = width - strBlack.length - strBlue.length
+    if (spacesNb<1) spacesNb = 2
+    console.log('%c'+ strBlack + Array(spacesNb).join(' ') +'%c' + strBlue  + '%c' + strRed +'%c'+ strGreen, cssBlack,cssBlue,cssRed,cssGreen )
   }
-}
+  /* devblock:end */
 
+  const removeDiacritics = __webpack_require__(3).remove
 
-// ------------------------------------------------------------------
-// Private methods
+  let list
+  let previousQuery = []
+  let previousSuggestions = []
 
-// The main method. query is a string.
-const _fuzzyWordsSearch = function (query, max_results) {
+  // ------------------------------------------------------------------
+  // Private methods
+
+  // The main method. query is a string.
   // extract words from query, compare them to the words of previous query and
   // launch a new search or refine the previous one.
-  const Query = []
-  if (query == '') return ''
-  for (let w of removeDiacritics(query.trim().toLowerCase()).split(' ').filter(Boolean)) {
-    Query.push({w:w, isAugmentedWord:false, isNewWord:true })
+  const _fuzzyWordsSearch = function (query, maxResults) {
+    if (query === '') return []
+    // 1 prepare the Query (array of words)
+    const Query = _prepareQuery(query)
+    console.log('')                                    // devline
+    console.log('%c=== New query', 'font-weight:bold') // devline
+    // 2 check if the new query is an augmentation of the previous
+    let [isQueryAugmented, priorizedWords] = _isAugmentingCurrentQuery(Query)
+    // 3 launch adapted filters on list of previous suggestions
+    if (isQueryAugmented && previousSuggestions.length !== 0) {
+      // the new query is just more selective than the previous one : just refine the previous suggestions (if no previous suggestion : nothing to do)
+      // console.log('we update the suggestions for priorizedWords', _logQuery(priorizedWords))
+      previousSuggestions = _filterAndScore(previousSuggestions, priorizedWords)
+    } else {
+      // the new query is too different : run a new search
+      // console.log('we build a new suggestions for priorizedWords', _logQuery(priorizedWords))
+      previousSuggestions = _filterAndScore(list, priorizedWords)
+    }
+    console.log('')                                     // devline
+    console.log('%cSuggestions : ', 'font-weight:bold') // devline
+    _logSugggestions(previousSuggestions)               // devline
+    if (maxResults) {
+      return previousSuggestions.slice(0, maxResults)
+    } else {
+      return previousSuggestions
+    }
   }
-  // console.log('\nprevious query :', _logQuery(currentQuery));
-  // console.log('new query      :', _logQuery(Query));
-  let {isQueryAugmented, priorizedWords} = _isAugmentingCurrentQuery(Query)
-  if (isQueryAugmented && (previousSuggestions.length != 0)) {
-    // the new query is just more selective than the previous one : refine the suggestions
-    // console.log("we update the suggestions");
-    // console.log('priorizedWords',_logQuery(priorizedWords));
-    previousSuggestions = _filterAndScore(previousSuggestions, priorizedWords)
-  }else {
-    // the new query is too different : run a new search
-    // console.log("we build a new suggestion")
-    previousSuggestions = _filterAndScore(list, priorizedWords)
-  }
-  currentQuery = Query
-  console.log('max_results', max_results);
-  if (max_results) {
-    return previousSuggestions.slice(0,max_results)
-  }else {
-    return previousSuggestions
-  }
-}
 
-// returns a ranked array of [suggestions].
-// suggestion items are objects : {score:[number], ... (all the properties
-//   of an item given in init(newItemsList))}
-const _filterAndScore = function (list_items, words) {
-  // console.log('\n === _filterAndScore', _logQuery(words));
-  // console.log(list_items);
-  const suggestions = []
-  itemLoop:
-  for (let item of list_items) {
-    let itemScore = 0
-    for (let w of words) {
-      let
-        wordOccurenceValue = 1,
-        wScore = 0
-      for (let dirName of item.pathArray) {
-        if (dirName.includes(w.w)){
-          wScore += wordOccurenceValue
+  // cut the query string into an array of words
+  const _prepareQuery = function (query) {
+    const Query = []
+    for (let w of removeDiacritics(query.trim().toLowerCase()).split(' ').filter(Boolean)) {
+      Query.push({ w: w, isAugmentedWord: false, isNewWord: true })
+    }
+    return Query
+  }
+
+  /* devblock:start */
+  // returns a ranked array of [suggestions].
+  // suggestion items are objects : {score:[number], ... (all the properties
+  //   of an item given in init(newItemsList))}
+  const _filterAndScore0 = function (listItems, words) {
+    // console.log('\n === _filterAndScore', _logQuery(words));
+    // console.log(listItems);
+    const suggestions = []
+    // eslint-disable-next-line
+    itemLoop:
+    for (let item of listItems) {
+      let itemScore = 0
+      for (let w of words) {
+        let wordOccurenceValue = 1
+        let wScore = 0
+        for (let dirName of item.pathArray) {
+          if (dirName.includes(w.w)) {
+            wScore += wordOccurenceValue
+          }
+          // the score of the occurence of a word decreases with distance from the leaf, but can not be too small
+          wordOccurenceValue -= 0.4
+          if (wordOccurenceValue === 0) wordOccurenceValue = 0.1
         }
-        // the score of the occurence of a word decreases with distance from the leaf, but can not be too small
-        wordOccurenceValue -= 0.4
-        if(wordOccurenceValue===0) i=0.1
+        if (wScore === 0) {
+          // w is not in the path : reject the item
+          // eslint-disable-next-line
+          continue itemLoop
+        }
+        itemScore += wScore // increase the
+        // console.log(`\npath: "${item.path}", \nword: "${w.w}", itemScore:${itemScore}`);
       }
-      if (wScore === 0) {
-        // w is not in the path : reject the item
-        continue itemLoop
+      if (itemScore !== 0) {
+        item.score = itemScore
+        // console.log("one found !", item);
+        suggestions.push(item)
       }
-      itemScore += wScore // increase the
-      // console.log(`\npath: "${item.path}", \nword: "${w.w}", itemScore:${itemScore}`);
     }
-    if (itemScore != 0) {
-      item.score = itemScore
-      // console.log("one found !", item);
-      suggestions.push(item)
-    }
+    suggestions.sort((s1, s2) => {
+      return s2.score - s1.score
+    })
+    return suggestions
   }
-  // console.log('=== In the end, suggestions for query :', _logQuery(words))
-  suggestions.sort((s1, s2)=>{
-    return s2.score-s1.score
-  })
-  // _logSugggestions(suggestions)
-  return suggestions
-}
+  /* devblock:end */
 
-// in charge of checking if the query is augmented, ie there are only new words or
-// more preciser words (for instance "atom ele" became "atom elect neutrinos").
-// returns {isQueryAugmented, priorizedWords}
-// where isQueryAugmented : Boolean
-/// priorizedWords : [Array] : [{w:'word'}...]
-const _isAugmentingCurrentQuery = function (query){
-  var
-    priorizedWords      = [],
-    isFromPreviousQuery = []
-  // check that each word of the previous query is included in a word
-  // of the new query.
-  // Included means : 'spa' is in 'backspace' : true, 'spa' is in 'separate' : false
-  for (let W of currentQuery){
-    let isIncluded = false
+  // returns a ranked array of [suggestions].
+  // suggestion items are objects : {score:[number], ... (all the properties
+  //   of an item given in init(newItemsList))}
+  const _filterAndScore = function (listItems, words) {
+    _logQuery('_filterAndScore with : ', words,'') // devline
+    const suggestions = []
+    // eslint-disable-next-line
+    itemLoop:
+    for (let item of listItems) {
+      let itemScore = 0
+      console.log('') // devline
+      console.log('%cscoring-->%c' + item.path + '/' + item.name, 'color:black;font-weight: bold', 'color:red') // devline
+      for (let w of words) {
+        let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+        let wScore = 0
+        let distance = 0  // devline
+        for (let dirName of item.pathArray) {
+          if (dirName.includes(w.w)) {
+            let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
+            // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
+            wScore += delta
+            let str1 = 'D'+distance+'- '                // devline
+            let str2 = numeral(delta).format('+0,0.')   // devline
+            scoreLogger(27, str1,str2,' - '+dirName,'') // devline
+          } else {
+            let str1 = 'D'+distance+'- '                 // devline
+            let str2 = numeral(-10000).format('+0,0.')   // devline
+            scoreLogger(27, str1,str2,' - '+dirName,'')  // devline
+            wScore -= 10000
+          }
+          // the score of the occurence of a word decreases with distance from the leaf
+          distance++ // devline
+          wordOccurenceValue = wordOccurenceValue / 2
+        }
+
+        /* devblock:start */
+        scoreLogger(27,
+                    'word score',
+                    numeral(wScore).format('+0,0.'),
+                    '',
+                    ' - '+w.w
+                  )
+        /* devblock:end */
+
+        if (wScore < 0) {
+          // w is not in the path : reject the item
+          // eslint-disable-next-line
+          continue itemLoop
+        }
+        itemScore += wScore // increase the score
+      }
+
+      /* devblock:start */
+      scoreLogger(27,
+                  'path score =',
+                  numeral(itemScore).format('+0,0.'),
+                  '',
+                  ''
+                )
+      /* devblock:end */
+
+      if (0 < itemScore) {
+        item.score = itemScore
+        suggestions.push(item)
+      }
+    }
+    suggestions.sort((s1, s2) => {
+        return s2.score - s1.score
+    })
+    return suggestions
+  }
+
+  // In charge of checking if the query is augmented.
+  // If there are only new words or more preciser words (for
+  // instance "atom ele" became "atom elect neutrinos").
+  // returns {isQueryAugmented, priorizedWords}
+  // where
+  //     isQueryAugmented : Boolean
+  //     priorizedWords   : [Array] : [{w:'word'}...]
+  const _isAugmentingCurrentQuery = function (query) {
+    var priorizedWords = []
+    var isFromPreviousQuery = []
+    // check that each word of the previous query is included in a word
+    // of the new query.
+    // Included means : 'spa' is in 'backspace' : true, 'spa' is in 'separate' : false
+    for (let W of previousQuery) {
+      let isIncluded = false
+      for (let w of query) {
+        if (w.w.includes(W.w)) {
+          isIncluded = true
+          if (w.w.length !== W.w.length) {
+            w.isAugmentedWord = true
+          } else {
+            w.isNewWord = false
+          }
+        }
+      }
+      if (!isIncluded) {
+        console.log('query is reinitialized because of', W) // devline
+        priorizedWords = _sortQuerybyLength(query)
+        previousQuery = query
+        const isQueryAugmented = false
+        return [isQueryAugmented, priorizedWords]
+      }
+    }
+    // list the words of the new query that have been augmented
     for (let w of query) {
-      if (w.w.includes(W.w)){
-        isIncluded = true
-        if(w.w.length !== W.w.length){
-          w.isAugmentedWord = true
-        }else {
-          w.isNewWord = false
-        }
+      if (w.isNewWord || w.isAugmentedWord) {
+        priorizedWords.push(w)
+      } else {
+        isFromPreviousQuery.push(w)
       }
     }
-    if (!isIncluded) {
-      // console.log("query is reinitialized because of", W);
-      priorizedWords = _sortQuerybyLength(query)
-      const isQueryAugmented = false
-      return {isQueryAugmented,priorizedWords}
+    priorizedWords = _sortQuerybyLength(priorizedWords).concat(_sortQuerybyLength(isFromPreviousQuery))
+    _logQuery('query is augmenting the previous one. Augmented words are : ', priorizedWords, '')   // devline
+    previousQuery = query
+    return [true, priorizedWords]
+  }
+
+  // sort by decreasing length
+  const _sortQuerybyLength = function (query) {
+    query.sort(function (a, b) {
+      return (b.w.length - a.w.length)
+    })
+    return query
+  }
+
+  /* devblock:start */
+  /* LOG HELPERS FOR DEV */
+
+  const _logSugggestions = function (suggestions) {
+    for (let sugg of suggestions) {
+      let score = numeral(sugg.score).format('+0,0.')
+      score = Array(15 - score.length).join(' ') + score
+
+      console.log(`%c${score}  %c${sugg.path}/${sugg.name}"`, 'color:blue', 'color:red')
+      // txt += `score:${sugg.score} "${sugg.path}/${sugg.name}"`
     }
   }
-  // list the words of the new query that have been augmented
-  for (let w of query) {
-    if (w.isNewWord || w.isAugmentedWord) {
-      priorizedWords.push(w)
-    }else{
-      isFromPreviousQuery.push(w)
+
+  const _logQuery = function (beforeTxt, Query, afterText) {
+    let txt = beforeTxt
+    let csss = []
+    for (let w of Query) {
+      txt += '"%c' + w.w + '%c"  '
+      csss.push('color:black')
+      csss.push('color:green')
+    }
+    txt += afterText
+    csss.push(txt)
+    csss.reverse()
+    console.log.apply(null,csss)
+  }
+  /* devblock:end */
+
+
+
+  return {
+
+    init: (newItemsList) => {
+      list = newItemsList
+      previousQuery = []
+      previousSuggestions = newItemsList
+      for (let file of list) {
+        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+      }
+    },
+
+    search: function (query, maxResults) {
+      return _fuzzyWordsSearch(query, maxResults)
+    }
+
+    /* devblock:start */
+    // expose some funtions for the tests
+    ,_forTests: {
+      _fuzzyWordsSearch, _prepareQuery, _isAugmentingCurrentQuery
+    }
+    /* devblock:end */
+  }
+
+}
+/* BLOCK:END */
+
+exports.forDebugPackage = forDebugPackage()
+/* BLOCK:START */
+/* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
+const forPerfPackage = function(){
+
+  const removeDiacritics = __webpack_require__(3).remove
+
+  let list
+  let previousQuery = []
+  let previousSuggestions = []
+
+  // ------------------------------------------------------------------
+  // Private methods
+
+  // The main method. query is a string.
+  // extract words from query, compare them to the words of previous query and
+  // launch a new search or refine the previous one.
+  const _fuzzyWordsSearch = function (query, maxResults) {
+    if (query === '') return []
+    // 1 prepare the Query (array of words)
+    const Query = _prepareQuery(query)
+    // 2 check if the new query is an augmentation of the previous
+    let [isQueryAugmented, priorizedWords] = _isAugmentingCurrentQuery(Query)
+    // 3 launch adapted filters on list of previous suggestions
+    if (isQueryAugmented && previousSuggestions.length !== 0) {
+      // the new query is just more selective than the previous one : just refine the previous suggestions (if no previous suggestion : nothing to do)
+      // console.log('we update the suggestions for priorizedWords', _logQuery(priorizedWords))
+      previousSuggestions = _filterAndScore(previousSuggestions, priorizedWords)
+    } else {
+      // the new query is too different : run a new search
+      // console.log('we build a new suggestions for priorizedWords', _logQuery(priorizedWords))
+      previousSuggestions = _filterAndScore(list, priorizedWords)
+    }
+    if (maxResults) {
+      return previousSuggestions.slice(0, maxResults)
+    } else {
+      return previousSuggestions
     }
   }
-  // console.log("query is augmenting the previous one. Augmented words are :", _logQuery(priorizedWords))
-  priorizedWords = _sortQuerybyLength(priorizedWords).concat(_sortQuerybyLength(isFromPreviousQuery))
-  return {isQueryAugmented:true,priorizedWords}
-}
 
-const _sortQuerybyLength = function(query){
-  query.sort(function(a,b){
-    b.w.length - a.w.length
-  })
-  return query
-}
-
-const _logSugggestions = function(suggestions){
-  const res = []
-  for (let sugg of suggestions) {
-    console.log(`score:${sugg.score} "${sugg.path}"`);
+  // cut the query string into an array of words
+  const _prepareQuery = function (query) {
+    const Query = []
+    for (let w of removeDiacritics(query.trim().toLowerCase()).split(' ').filter(Boolean)) {
+      Query.push({ w: w, isAugmentedWord: false, isNewWord: true })
+    }
+    return Query
   }
-}
 
-const _logQuery = function (Query) {
-  res = []
-  for (let w of Query) {
-    res.push(w.w)
+
+  // returns a ranked array of [suggestions].
+  // suggestion items are objects : {score:[number], ... (all the properties
+  //   of an item given in init(newItemsList))}
+  const _filterAndScore = function (listItems, words) {
+    const suggestions = []
+    // eslint-disable-next-line
+    itemLoop:
+    for (let item of listItems) {
+      let itemScore = 0
+      for (let w of words) {
+        let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+        let wScore = 0
+        for (let dirName of item.pathArray) {
+          if (dirName.includes(w.w)) {
+            let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
+            // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
+            wScore += delta
+          } else {
+            wScore -= 10000
+          }
+          // the score of the occurence of a word decreases with distance from the leaf
+          wordOccurenceValue = wordOccurenceValue / 2
+        }
+
+
+        if (wScore < 0) {
+          // w is not in the path : reject the item
+          // eslint-disable-next-line
+          continue itemLoop
+        }
+        itemScore += wScore // increase the score
+      }
+
+
+      if (0 < itemScore) {
+        item.score = itemScore
+        suggestions.push(item)
+      }
+    }
+    suggestions.sort((s1, s2) => {
+        return s2.score - s1.score
+    })
+    return suggestions
   }
-  return JSON.stringify(res);
-}
 
+  // In charge of checking if the query is augmented.
+  // If there are only new words or more preciser words (for
+  // instance "atom ele" became "atom elect neutrinos").
+  // returns {isQueryAugmented, priorizedWords}
+  // where
+  //     isQueryAugmented : Boolean
+  //     priorizedWords   : [Array] : [{w:'word'}...]
+  const _isAugmentingCurrentQuery = function (query) {
+    var priorizedWords = []
+    var isFromPreviousQuery = []
+    // check that each word of the previous query is included in a word
+    // of the new query.
+    // Included means : 'spa' is in 'backspace' : true, 'spa' is in 'separate' : false
+    for (let W of previousQuery) {
+      let isIncluded = false
+      for (let w of query) {
+        if (w.w.includes(W.w)) {
+          isIncluded = true
+          if (w.w.length !== W.w.length) {
+            w.isAugmentedWord = true
+          } else {
+            w.isNewWord = false
+          }
+        }
+      }
+      if (!isIncluded) {
+        priorizedWords = _sortQuerybyLength(query)
+        previousQuery = query
+        const isQueryAugmented = false
+        return [isQueryAugmented, priorizedWords]
+      }
+    }
+    // list the words of the new query that have been augmented
+    for (let w of query) {
+      if (w.isNewWord || w.isAugmentedWord) {
+        priorizedWords.push(w)
+      } else {
+        isFromPreviousQuery.push(w)
+      }
+    }
+    priorizedWords = _sortQuerybyLength(priorizedWords).concat(_sortQuerybyLength(isFromPreviousQuery))
+    previousQuery = query
+    return [true, priorizedWords]
+  }
+
+  // sort by decreasing length
+  const _sortQuerybyLength = function (query) {
+    query.sort(function (a, b) {
+      return (b.w.length - a.w.length)
+    })
+    return query
+  }
+
+
+
+
+  return {
+
+    init: (newItemsList) => {
+      list = newItemsList
+      previousQuery = []
+      previousSuggestions = newItemsList
+      for (let file of list) {
+        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+      }
+    },
+
+    search: function (query, maxResults) {
+      return _fuzzyWordsSearch(query, maxResults)
+    }
+
+  }
+
+}
+/* BLOCK:END */
+exports.forPerfPackage = forPerfPackage()
 
 /***/ }),
-/* 36 */
+/* 31 */
 /***/ (function(module, exports) {
 
-
-/*
-
-head  node
-      A
-next  |  |  prev
-        V
-tail  node
- */
-var DoublyLinkedList;
-
-module.exports = DoublyLinkedList = (function() {
-
-  /*
-   * Constructor. Takes no arguments.
-   */
-  function DoublyLinkedList() {
-    // pointer to first item
-    this._head = null;
-    // pointer to the last item
-    this._tail = null;
-    // length of list
-    this._length = 0;
-    // counter for nodes' ids
-    this._counter = 0;
-    return;
-  }
-
-  // Wraps data in a node object.
-  DoublyLinkedList.prototype._createNewNode = function(data) {
-    var node;
-    node = {
-      data: data,
-      next: null,
-      prev: null,
-      id: this._counter
-    };
-    this._counter++;
-    return node;
-  };
-
-
-  /*
-   * Appends a node to the end of the list.
-   */
-
-  DoublyLinkedList.prototype.append = function(data) {
-    var node;
-    node = this._createNewNode(data);
-    if (this._length === 0) {
-      // first node, so all pointers to this
-      this._head = node;
-      this._tail = node;
-    } else {
-      // put on the tail
-      this._tail.prev = node;
-      node.next = this._tail;
-      this._tail = node;
-    }
-    // update count
-    this._length++;
-    return node;
-  };
-
-
-  /*
-   * Prepends a node to the start of the list.
-   */
-
-  DoublyLinkedList.prototype.prepend = function(data) {
-    var node;
-    if (this._head === null) {
-      // list is empty, so this is the first node
-      // use the same logic as append
-      return this.append(data);
-    } else {
-      node = this._createNewNode(data);
-      // place before head
-      this._head.next = node;
-      node.prev = this._head;
-      this._head = node;
-    }
-    // update count
-    this._length++;
-    return node;
-  };
-
-
-  /*
-   * Insert one node at rank.
-   * Returns the new node, undefined if rank out of range.
-   */
-
-  DoublyLinkedList.prototype.insert = function(rank, data) {
-    var next, nodeToAdd, target;
-    if (this._length === 0) {
-      if (rank !== 0) {
-        return void 0;
-      }
-      return this.append(data);
-    }
-    if (rank === 0) {
-      return this.prepend(data);
-    }
-    if (rank === this._length) {
-      return this.append(data);
-    }
-    if (this._length < rank || rank < 0) {
-      return void 0;
-    }
-    nodeToAdd = this._createNewNode(data);
-    target = this.at(rank);
-    if (target === void 0) {
-      return void 0;
-    }
-    next = target.next;
-    target.next = nodeToAdd;
-    nodeToAdd.prev = target;
-    nodeToAdd.next = next;
-    next.prev = nodeToAdd;
-    this._length++;
-    return nodeToAdd;
-  };
-
-
-  /*
-   * Insert a new node after one
-   * Returns the new node
-   */
-
-  DoublyLinkedList.prototype.insertAfterNode = function(nextNode, data) {
-    var next, nodeToAdd, target;
-    if (nextNode.prev === null) {
-      return this.append(data);
-    }
-    nodeToAdd = this._createNewNode(data);
-    target = nextNode;
-    prev = target.prev;
-    target.prev = nodeToAdd;
-    nodeToAdd.next = target;
-    nodeToAdd.prev = prev;
-    prev.next = nodeToAdd;
-    this._length++;
-    return nodeToAdd;
-  };
-
-
-  /*
-   * Returns the node at the specified index. The index starts at 0.
-   * Undefined if index out of range.
-   */
-
-  DoublyLinkedList.prototype.at = function(index) {
-    var node;
-    if (index >= 0 && index < this._length) {
-      node = this._head;
-      while (index--) {
-        node = node.prev;
-      }
-      return node;
-    }
-    return void 0;
-  };
-
-
-  /*
-   * Returns the node with the specified id, undefined if wrong id.
-   */
-
-  DoublyLinkedList.prototype.id = function(id) {
-    var index, node;
-    id = parseInt(id);
-    index = this._length;
-    node = this._head;
-    while (node && node.id !== id) {
-      node = node.prev;
-    }
-    if (node) {
-      return node;
-    } else {
-      return void 0;
-    }
-  };
-
-
-  /*
-   * Returns the rank of a node, undefined if node not found
-   */
-
-  DoublyLinkedList.prototype.rank = function(node) {
-    var currentNode, id, index, rank;
-    rank = 0;
-    id = parseInt(id);
-    index = this._length;
-    currentNode = this._head;
-    while (true) {
-      if (currentNode === node) {
-        return rank;
-      }
-      rank++;
-      currentNode = currentNode.prev;
-      if (currentNode === null) {
-        break;
-      }
-    }
-    return void 0;
-  };
-
-
-  /*
-   * Returns the node at the head of the list.
-   */
-
-  DoublyLinkedList.prototype.head = function() {
-    return this._head;
-  };
-
-
-  /*
-   * Returns the node at the tail of the list.
-   */
-
-  DoublyLinkedList.prototype.tail = function() {
-    return this._tail;
-  };
-
-
-  /*
-   * Returns the size of the list.
-   */
-
-  DoublyLinkedList.prototype.size = function() {
-    return this._length;
-  };
-
-
-  /*
-   * Removes the item at the index.
-   * returns undefined if index out of range
-   */
-
-  DoublyLinkedList.prototype.remove = function(index) {
-    var node;
-    node = this.at(index);
-    if (node === void 0) {
-      return void 0;
-    }
-    return this.removeNode(node);
-  };
-
-
-  /*
-   * Removes the item with this id
-   * Returns undefined if id not in the chain
-   */
-
-  DoublyLinkedList.prototype.removeID = function(id) {
-    var node;
-    node = this.id(id);
-    if (node === void 0) {
-      return void 0;
-    }
-    return this.removeNode(node);
-  };
-
-  DoublyLinkedList.prototype.removeNode = function(node) {
-    var next, prev;
-    if (this._length === 0) {
-      return void 0;
-    }
-    if (this._length === 1) {
-      if (node !== this._head) {
-        return void 0;
-      }
-      this._head = null;
-      this._tail = null;
-      this._length = 0;
-      return node;
-    }
-
-    // head and length > 1
-    if (node === this._head) {
-      this._head = node.prev;
-      this._head.next = null;
-      node.prev = null;
-      this._length -= 1;
-      return node;
-    }
-
-    // tail and length > 1
-    if (node === this._tail) {
-      this._tail = node.next;
-      this._tail.prev = null;
-      node.next = null;
-      this._length -= 1;
-      return node;
-    }
-
-    // node is in the middle of the list
-    prev = node.prev;
-    next = node.next;
-    prev.next = next;
-    next.prev = prev;
-    node.prev = null;
-    node.next = null;
-    this._length -= 1;
-    return node;
-  };
-
-  DoublyLinkedList.prototype.printIdChain = function() {
-    var index, node, txt;
-    node = this._head;
-    if (node === null) {
-      return 'empty chain';
-    }
-    txt = [];
-    index = this._length;
-    while (index--) {
-      txt.push(node.id);
-      node = node.prev;
-    }
-    return txt.join('-');
-  };
-
-  DoublyLinkedList.prototype.printAllChain = function() {
-    var index, length, node, rk, txt;
-    node = this._head;
-    if (node === null) {
-      return 'empty chain';
-    }
-    txt = [];
-    index = this._length;
-    length = this._length - 1;
-    while (index--) {
-      rk = length - index;
-      txt.push(rk + " - id:" + node.id + " - data:" + JSON.stringify(node.data));
-      node = node.prev;
-    }
-    return txt.join('\n');
-  };
-
-  DoublyLinkedList.prototype.printDataChain = function() {
-    var index, node, txt;
-    node = this._head;
-    if (node === null) {
-      return 'empty chain';
-    }
-    txt = [];
-    index = this._length;
-    while (index--) {
-      txt.push(node.data);
-      node = node.prev;
-    }
-    return txt.join('-');
-  };
-
-  return DoublyLinkedList;
-
-})();
-
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const LinkedList = __webpack_require__(36)
-
-module.exports = class RangeList{
-  constructor(){
-    this._list = new LinkedList()
-
-  }
-
-  // add a range [a,b] to the list. Can overlap an existing range, will unifomize so that in the end there is no overlaping.
-  addRange(a,b){
-    if (!b) {
-      b = a[1]
-      a = a[0]
-    }
-    // let's find r1, the range with a inside
-    var r1 = this._getRangeAtOrRangeBefore(a)
-    if (r1 === null) {
-      // a is before the first range
-      r1 = this._list.prepend({a,b})
-      if (r1.prev == null) {
-        // there was no range before insertion
-        return
-      }
-    }else if (r1.data.b < a) {
-      // a is after r1, lets create a new range
-      r1 = this._list.insertAfterNode(r1, {a:a,b:b})
-    }else if (b <= r1.data.b) {
-      // a is in r1, and b is also in r1 : nothing to do
-      return
-    }
-    // r1 is now the first range with a inside and b is not in r1
-    // let's find r2, the range with b inside
-    // find the first range with upper bound higher than b
-    var r2 = r1.prev
-    while (r2) {
-      if (b <= r2.data.b){
-        break
-      }
-      // b if after r2, remove r2 and go to next range
-      let previousr2 = r2
-      r2 = r2.prev
-      this._list.removeNode(previousr2)
-    }
-    if (r2 == null) {
-      // we reach the end of the chain without finding b
-      // r2 = r1
-      r1.data.b = b
-      return
-    }
-    if (r2.data.a <= b) {
-      // b is in r2 => extend r1 to r2 and remove r2
-      r1.data.b = r2.data.b
-      this._list.removeNode(r2)
-      return
-    }else {
-      // otherwise b is before r2 => extend r1 to b
-      r1.data.b = b
-      return
-    }
-  }
-
-  // returns an array of all ranges [[a,b], ... , [c,d]]
-  ranges(){
-    var range = this._list.at(0)
-    const ranges = []
-    while (range) {
-      ranges.push([range.data.a,range.data.b])
-      range = range.prev
-    }
-    return ranges
-  }
-
-  _getRangeAtOrRangeBefore(a){
-    var range = this._list.at(0)
-    if (range && a < range.data.a) {
-      return null
-    }
-    // find the first range with upper bound higher than a
-    while (range) {
-      if (a <= range.data.b){
-        break
-      }
-      range = range.prev
-    }
-    if (range == null) {
-      // we reach the end of the chain : return tail
-      return this._list.tail()
-    }
-    if (range.data.a <= a) {
-      // a is in range => range
-      return range
-    }else {
-      // otherwise a is before
-      return range.next
-    }
-  }
-}
-
+/* (ignored) */
 
 /***/ })
 /******/ ]);

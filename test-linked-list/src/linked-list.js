@@ -41,7 +41,6 @@ module.exports = (function () {
   /*
    * Appends a node to the end of the list.
    */
-
   DoublyLinkedList.prototype.append = function (data) {
     var node
     node = this._createNewNode(data)

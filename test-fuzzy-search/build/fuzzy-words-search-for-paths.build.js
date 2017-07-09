@@ -51,21 +51,6 @@ where :
 /* BLOCK:START */
 /* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
 const forDebugPackage = function(){
-  /* devblock:start */
-  // just for debug
-  const numeral = require('numeral')
-  numeral.locale('fr')
-
-  const scoreLogger = function (width, strBlack,strBlue,strRed,strGreen) {
-    let cssBlue = 'color:blue;font-family:"Courier New", Courier, monospace'
-    let cssRed = 'color:red;font-family:"Courier New", Courier, monospace'
-    let cssBlack = 'color:black;font-family:"Courier New", Courier, monospace'
-    let cssGreen = 'color:green;font-family:"Courier New", Courier, monospace'
-    let spacesNb = width - strBlack.length - strBlue.length
-    if (spacesNb<1) spacesNb = 2
-    console.log('%c'+ strBlack + Array(spacesNb).join(' ') +'%c' + strBlue  + '%c' + strRed +'%c'+ strGreen, cssBlack,cssBlue,cssRed,cssGreen )
-  }
-  /* devblock:end */
 
   const removeDiacritics = require('diacritics').remove
 
@@ -83,8 +68,6 @@ const forDebugPackage = function(){
     if (query === '') return []
     // 1 prepare the Query (array of words)
     const Query = _prepareQuery(query)
-    console.log('')                                    // devline
-    console.log('%c=== New query', 'font-weight:bold') // devline
     // 2 check if the new query is an augmentation of the previous
     let [isQueryAugmented, priorizedWords] = _isAugmentingCurrentQuery(Query)
     // 3 launch adapted filters on list of previous suggestions
@@ -97,9 +80,6 @@ const forDebugPackage = function(){
       // console.log('we build a new suggestions for priorizedWords', _logQuery(priorizedWords))
       previousSuggestions = _filterAndScore(list, priorizedWords)
     }
-    console.log('')                                     // devline
-    console.log('%cSuggestions : ', 'font-weight:bold') // devline
-    _logSugggestions(previousSuggestions)               // devline
     if (maxResults) {
       return previousSuggestions.slice(0, maxResults)
     } else {
@@ -116,93 +96,31 @@ const forDebugPackage = function(){
     return Query
   }
 
-  /* devblock:start */
-  // returns a ranked array of [suggestions].
-  // suggestion items are objects : {score:[number], ... (all the properties
-  //   of an item given in init(newItemsList))}
-  const _filterAndScore0 = function (listItems, words) {
-    // console.log('\n === _filterAndScore', _logQuery(words));
-    // console.log(listItems);
-    const suggestions = []
-    // eslint-disable-next-line
-    itemLoop:
-    for (let item of listItems) {
-      let itemScore = 0
-      for (let w of words) {
-        let wordOccurenceValue = 1
-        let wScore = 0
-        for (let dirName of item.pathArray) {
-          if (dirName.includes(w.w)) {
-            wScore += wordOccurenceValue
-          }
-          // the score of the occurence of a word decreases with distance from the leaf, but can not be too small
-          wordOccurenceValue -= 0.4
-          if (wordOccurenceValue === 0) wordOccurenceValue = 0.1
-        }
-        if (wScore === 0) {
-          // w is not in the path : reject the item
-          // eslint-disable-next-line
-          continue itemLoop
-        }
-        itemScore += wScore // increase the
-        // console.log(`\npath: "${item.path}", \nword: "${w.w}", itemScore:${itemScore}`);
-      }
-      if (itemScore !== 0) {
-        item.score = itemScore
-        // console.log("one found !", item);
-        suggestions.push(item)
-      }
-    }
-    suggestions.sort((s1, s2) => {
-      return s2.score - s1.score
-    })
-    return suggestions
-  }
-  /* devblock:end */
 
   // returns a ranked array of [suggestions].
   // suggestion items are objects : {score:[number], ... (all the properties
   //   of an item given in init(newItemsList))}
   const _filterAndScore = function (listItems, words) {
-    _logQuery('_filterAndScore with : ', words,'') // devline
     const suggestions = []
     // eslint-disable-next-line
     itemLoop:
     for (let item of listItems) {
       let itemScore = 0
-      console.log('') // devline
-      console.log('%cscoring-->%c' + item.path + '/' + item.name, 'color:black;font-weight: bold', 'color:red') // devline
       for (let w of words) {
         let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
         let wScore = 0
-        let distance = 0  // devline
         for (let dirName of item.pathArray) {
           if (dirName.includes(w.w)) {
             let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
             // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
             wScore += delta
-            let str1 = 'D'+distance+'- '                // devline
-            let str2 = numeral(delta).format('+0,0.')   // devline
-            scoreLogger(27, str1,str2,' - '+dirName,'') // devline
           } else {
-            let str1 = 'D'+distance+'- '                 // devline
-            let str2 = numeral(-10000).format('+0,0.')   // devline
-            scoreLogger(27, str1,str2,' - '+dirName,'')  // devline
             wScore -= 10000
           }
           // the score of the occurence of a word decreases with distance from the leaf
-          distance++ // devline
           wordOccurenceValue = wordOccurenceValue / 2
         }
 
-        /* devblock:start */
-        scoreLogger(27,
-                    'word score',
-                    numeral(wScore).format('+0,0.'),
-                    '',
-                    ' - '+w.w
-                  )
-        /* devblock:end */
 
         if (wScore < 0) {
           // w is not in the path : reject the item
@@ -212,14 +130,6 @@ const forDebugPackage = function(){
         itemScore += wScore // increase the score
       }
 
-      /* devblock:start */
-      scoreLogger(27,
-                  'path score =',
-                  numeral(itemScore).format('+0,0.'),
-                  '',
-                  ''
-                )
-      /* devblock:end */
 
       if (0 < itemScore) {
         item.score = itemScore
@@ -258,7 +168,6 @@ const forDebugPackage = function(){
         }
       }
       if (!isIncluded) {
-        console.log('query is reinitialized because of', W) // devline
         priorizedWords = _sortQuerybyLength(query)
         previousQuery = query
         const isQueryAugmented = false
@@ -274,7 +183,6 @@ const forDebugPackage = function(){
       }
     }
     priorizedWords = _sortQuerybyLength(priorizedWords).concat(_sortQuerybyLength(isFromPreviousQuery))
-    _logQuery('query is augmenting the previous one. Augmented words are : ', priorizedWords, '')   // devline
     previousQuery = query
     return [true, priorizedWords]
   }
@@ -287,33 +195,6 @@ const forDebugPackage = function(){
     return query
   }
 
-  /* devblock:start */
-  /* LOG HELPERS FOR DEV */
-
-  const _logSugggestions = function (suggestions) {
-    for (let sugg of suggestions) {
-      let score = numeral(sugg.score).format('+0,0.')
-      score = Array(15 - score.length).join(' ') + score
-
-      console.log(`%c${score}  %c${sugg.path}/${sugg.name}"`, 'color:blue', 'color:red')
-      // txt += `score:${sugg.score} "${sugg.path}/${sugg.name}"`
-    }
-  }
-
-  const _logQuery = function (beforeTxt, Query, afterText) {
-    let txt = beforeTxt
-    let csss = []
-    for (let w of Query) {
-      txt += '"%c' + w.w + '%c"  '
-      csss.push('color:black')
-      csss.push('color:green')
-    }
-    txt += afterText
-    csss.push(txt)
-    csss.reverse()
-    console.log.apply(null,csss)
-  }
-  /* devblock:end */
 
 
 
@@ -332,15 +213,9 @@ const forDebugPackage = function(){
       return _fuzzyWordsSearch(query, maxResults)
     }
 
-    /* devblock:start */
-    // expose some funtions for the tests
-    ,_forTests: {
-      _fuzzyWordsSearch, _prepareQuery, _isAugmentingCurrentQuery
-    }
-    /* devblock:end */
   }
 
 }
 /* BLOCK:END */
 
-exports.forDebugPackage = forDebugPackage()
+module.exports = forDebugPackage()

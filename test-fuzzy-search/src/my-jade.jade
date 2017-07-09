@@ -10,7 +10,6 @@ div(id='form_container')
     button(
       id='search-btn'
     ) Search all
-    br
     label
       input(
           type='checkbox'
@@ -18,13 +17,7 @@ div(id='form_container')
           value='false'
       ) 
       | Search as you type
-    br
-    input(id='short-list-radio', type='radio', name='listTypeRadio', checked='true')
-    | short list
-    br
-    input(id='long-list-radio', type='radio', name='listTypeRadio' )
-    | long list
-
+    div#radio-container
 
 div
   div.header  

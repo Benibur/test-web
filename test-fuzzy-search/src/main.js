@@ -1,19 +1,22 @@
 const
-  numeral          = require('numeral'),                 // to format the numbers
-  myFuse           = require('./search-fuse'),
-  myFuzzaldrin     = require('./search-fuzzaldrin'),
-  myFuzzaldrinPlus = require('./search-fuzzaldrin-plus'),
-  myFuzzyWords     = require('./search-fuzzy-words'),
-  Cookies          = require('js-cookie'),
-  debounce         = require('./helpers').debounce,
-  wordBolderify    = require('./helpers').wordBolderify
+  numeral           = require('numeral'),                 // to format the numbers
+  myFuse            = require('./search-fuse'),
+  myFuzzaldrin      = require('./search-fuzzaldrin'),
+  myFuzzaldrinPlus  = require('./search-fuzzaldrin-plus'),
+  myFuzzyWords      = require('./search-fuzzy-words'),
+  Cookies           = require('js-cookie'),
+  debounce          = require('./helpers').debounce,
+  wordBolderify     = require('./helpers').wordBolderify
 
 var initSearches = function () {}
+var currentList
+var lists
+var defaultActivatedSearches
 
 const
-  MAX_RESULTS       = 10,
+  MAX_RESULTS       = 40,
   DEBOUNCE_DURATION = 250,   // in ms
-  DEFAULT_SEARCH    = 'capitalisation valo'
+  DEFAULT_SEARCH    = 'A66'
 
 // ------------------------------------------------------------------
 // init html
@@ -25,7 +28,7 @@ const realTimeSearchChkbx = document.getElementById('search-realtime-chckbox')
 searchInput.select()
 searchInput.focus()
 
-
+  
 // ------------------------------------------------------------------
 // manage checkboxes states and actions
 var defaultActivatedSearches = Cookies.getJSON('defaultActivatedSearches')
@@ -83,27 +86,53 @@ for (chkbx of document.querySelectorAll('[type=checkbox]')) {
   chkbx.dispatchEvent(new Event('change'))
 }
 
-// add listeners to the radio for lists to save state and choose the correct list
-for (radio of document.querySelectorAll('[name=listTypeRadio]')) {
-  radio.onchange = (ev)=>{
-    let checked = ev.target.checked
-    defaultActivatedSearches['listTypeRadio'] = ev.target.id
-    Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
-    if (ev.target.id=='long-list-radio') {
-      currentList = 'long'
-    }else {
-      currentList = 'short'
-    }
-    initSearches()
+// create the radio buttons for the selection of the list of items (will be called when lists will be ready)
+const radioCreation = function (lists) {
+  console.log("entered");
+  target = document.getElementById('radio-container')
+  for (list of lists) {
+    let l = document.createElement('label')
+    let r = document.createElement('input')
+    r.name = 'listTypeRadio'
+    r.checked = true
+    r.type = 'radio'
+    r.id = list.id
+    l.appendChild(r)
+    l.appendChild(document.createTextNode(list.name))
+    target.appendChild(l)
+    2+2
   }
 }
 
-// restore radio state
-currentList = 'short'
-if (defaultActivatedSearches['listTypeRadio']) {
-  let radio = document.getElementById(defaultActivatedSearches['listTypeRadio'])
-  radio.checked = true
-  radio.dispatchEvent(new Event('change'))
+
+finalizeRadio = function () {
+  // restore radio state
+  if (defaultActivatedSearches['listTypeRadio']) {
+    let radio = document.getElementById(defaultActivatedSearches['listTypeRadio'])
+    if (radio) {
+      radio.checked = true
+      currentList = getListById(defaultActivatedSearches['listTypeRadio'])
+      searchInput.value = currentList.defaultSearch
+    } else {
+      currentList = lists[0]
+      defaultActivatedSearches['listTypeRadio'] = currentList.id
+      searchInput.value = currentList.defaultSearch
+      Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
+    }
+    // radio.dispatchEvent(new Event('change'))
+  }
+
+  // add listeners to the radio for lists to save state and choose the correct list
+  for (radio of document.querySelectorAll('[name=listTypeRadio]')) {
+    radio.onchange = (ev)=>{
+      let checked = ev.target.checked
+      defaultActivatedSearches['listTypeRadio'] = ev.target.id
+      Cookies.set('defaultActivatedSearches', defaultActivatedSearches)
+      currentList = getListById(ev.target.id)
+      searchInput.value = currentList.defaultSearch
+      initSearches()
+    }
+  }
 }
 
 
@@ -178,35 +207,46 @@ const fuzzyWordsSearch = function (query) {
 // Prepare the list where to search and trigger an automatic search
 initSearches = function (query) {
   var initDuration
-  searchInput.value = query
-  if (lists[currentList]) {
+  if (defaultActivatedSearches['fuse-checkbox']) {
+    console.log('fuse init')
+    document.getElementById('fuse-comments').innerHTML = myFuse.init(currentList.items, MAX_RESULTS)
+  }else{myFuse.init([],0)}
 
-    if (defaultActivatedSearches['fuse-checkbox']) {
-      console.log('fuse init');
-      document.getElementById('fuse-comments').innerHTML = myFuse.init(lists[currentList], MAX_RESULTS)
-    }else{myFuse.init([],0)}
+  if (defaultActivatedSearches['fuzzaldrin-checkbox']) {
+    console.log('fuzzaldrin init')
+    document.getElementById('fuzzaldrin-comments').innerHTML =myFuzzaldrin.init(currentList.items, MAX_RESULTS)
+  }else{myFuzzaldrin.init([],0)}
 
-    if (defaultActivatedSearches['fuzzaldrin-checkbox']) {
-      console.log('fuzzaldrin init');
-      document.getElementById('fuzzaldrin-comments').innerHTML =myFuzzaldrin.init(lists[currentList], MAX_RESULTS)
-    }else{myFuzzaldrin.init([],0)}
+  if (defaultActivatedSearches['fuzzaldrin-plus-checkbox']) {
+    console.log('fuzzaldrin-plus init')
+    document.getElementById('fuzzaldrin-plus-comments').innerHTML =myFuzzaldrinPlus.init(currentList.items, MAX_RESULTS)
+  }else{myFuzzaldrinPlus.init([],0)}
 
-    if (defaultActivatedSearches['fuzzaldrin-plus-checkbox']) {
-      console.log('fuzzaldrin-plus init');
-      document.getElementById('fuzzaldrin-plus-comments').innerHTML =myFuzzaldrinPlus.init(lists[currentList], MAX_RESULTS)
-    }else{myFuzzaldrinPlus.init([],0)}
+  if (defaultActivatedSearches['fuzzy-words-checkbox']) {
+    initDuration = myFuzzyWords.init(currentList.items, MAX_RESULTS)
+    console.log(`fuzzy-words init in ${initDuration}ms`)
+    document.getElementById('fuzzy-words-comments').innerHTML = `Init in ${initDuration}ms` + myFuzzyWords.getComments()
+  }else{myFuzzyWords.init([],0)}
 
-    if (defaultActivatedSearches['fuzzy-words-checkbox']) {
-      initDuration = myFuzzyWords.init(lists[currentList], MAX_RESULTS)
-      console.log(`fuzzy-words init (in ${initDuration}ms)`);
-      document.getElementById('fuzzy-words-comments').innerHTML = `Init in ${initDuration}ms` + myFuzzyWords.getComments()
-    }else{myFuzzyWords.init([],0)}
-  }
   runAllSearches(true)
 }
-prepareLists = require('./lists-of-data')
-prepareLists(function (preparedLists) {
+
+prepareLists = require('./get-lists-of-paths')
+
+
+
+prepareLists((preparedLists) => {
   lists = preparedLists
-  initSearches(DEFAULT_SEARCH)
+  radioCreation(preparedLists)
+  finalizeRadio()
+  initSearches()
   // tests TODO : "bank  adm"  and "bank adm" should scrore the same : it is not the case
 })
+
+getListById = function (listId) {
+  for (list of lists) {
+    if (list.id === listId) {
+      return list
+    }
+  }
+}

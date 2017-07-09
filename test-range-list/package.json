@@ -1,6 +1,7 @@
 {
     "dependencies": {
-        "chai": "*"
+        "chai": "*",
+        "ascii-art":"*"
     },
     "scripts": {
         "test": "node ./test/range-list-test.js",

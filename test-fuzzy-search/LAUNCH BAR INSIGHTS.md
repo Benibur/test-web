@@ -11,7 +11,9 @@ Pouvoir rapidement ouvrir :
   - un album photo
   - une recherche plein texte avec des tags
   - lancer une recherche sur le web (Qwant...)
-  - Plus tard : un contact, un compte en banque, initier la création d'une entrée dans l'agenda, ouvrir la page d'un de ses compte de sa vault à mots de passe, lancer un album de musique ...
+  - Plus tard :
+    - un contact, un compte en banque, initier la création d'une entrée dans l'agenda, ouvrir la page d'un de ses compte de sa vault à mots de passe, lancer un album de musique ...
+    - rendre possible l'invocation de la bar depuis une app pour récupérer une référence à un object. Par exemple dans une note pouvoir insérer une référence à un fichier, insérer un emoji, une référence à un rdv, à un album photo...
 
 Avec les points d'attention suivant :
   - Et ce depuis le browser, l'app mobile et l'app desktop, idéalement en **offline** et en **online**.

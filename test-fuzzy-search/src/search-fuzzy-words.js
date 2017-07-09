@@ -1,11 +1,15 @@
 const
-  fuzzyWordsSearch = require('./lib/fuzzy-words-search-for-paths')
+  fuzzyWordsSearches = require('./lib/fuzzy-words-search-for-paths')
+  fuzzyWordsSearchForDebug = fuzzyWordsSearches.forDebugPackage
+  fuzzyWordsSearchForPerf  = fuzzyWordsSearches.forPerfPackage
+  // fuzzyWordsSearch4Perf = require('../build/fuzzy-words-search-for-paths.build')
   numeral          = require('numeral'),          // to format the numbers,
   wordBolderify    = require('./helpers').wordBolderify,
   markdown         = require('marked')
 
 let
  list,
+ fuzzyWordsSearch,
  currentQuery=[],
  previousSuggestions=[],
  MAX_RESULTS
@@ -41,18 +45,44 @@ where :
 
 `
 
+numeral.register('locale', 'fr', {
+    delimiters: {
+        thousands: '.',
+        decimal: ','
+    },
+    abbreviations: {
+        thousand: 'k',
+        million: 'm',
+        billion: 'b',
+        trillion: 't'
+    },
+    ordinal : function (number) {
+        return number === 1 ? 'er' : 'ème';
+    },
+    currency: {
+        symbol: '€'
+    }
+});
+numeral.locale('fr')
+
 
 // ------------------------------------------------------------------
 //
 
 module.exports = {
+
   init : (newList, max_results)=>{
+    // if the list is too long, use the production lib (without logs)
+    if (newList.length<2000) {
+      fuzzyWordsSearch = fuzzyWordsSearchForDebug
+    } else {
+      fuzzyWordsSearch = fuzzyWordsSearchForPerf
+    }
     const t0       = performance.now()
     fuzzyWordsSearch.init(newList)
     const t1       = performance.now()
     MAX_RESULTS = max_results
     return numeral((t1 - t0)/1000).format('0.000')
-
   },
 
   getComments : () => {
@@ -66,7 +96,9 @@ module.exports = {
     const duration = numeral((t1 - t0)/1000).format('0.000')
     let resultsStr = ''
     for (let res of results) {
-      resultsStr += `<p><span class="score">${numeral(res.score).format('00.00')}</span> ${wordBolderify(query, res.path)}/${wordBolderify(query, res.name)}</p>`
+      let scoreStr = numeral(res.score).format('0,0.')
+      scoreStr = Array(12 - scoreStr.length).join('&#160;') + scoreStr
+      resultsStr += `<p><span class="score">${scoreStr}</span> ${wordBolderify(query, res.path)}/${wordBolderify(query, res.name)}</p>`
     }
     const t2 = performance.now()
     const duration2 = numeral((t2 - t1)/1000).format('0.000')

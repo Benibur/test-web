@@ -1,4 +1,10 @@
 ###
+DEPRECATED
+the source is now the js file
+###
+
+
+###
 
 head  node
          A
@@ -273,4 +279,3 @@ module.exports = class DoublyLinkedList
       txt.push(node.data)
       node = node.prev
     return txt.join('-')
-

@@ -1,25 +1,4 @@
-const lists = {}
-const prepareLists  = function (cb) {
-  // get data from the the json file (/tools/path-list.json)
-  let url = 'path-list.json';
-  fetch(url)
-  .then(res => {
-    return res.json()
-  })
-  .then((out) => {
-    lists.long = out
-    cb(lists)
-  })
-  .catch(err => console.error(err));
-}
-// for quick tests
-// lists.short =
-// [{"type":"file","path":"/Administratif"},
-//   {"type":"file","path":"/Administratif/Bank statements"},
-//   {"type":"file","path":"/Administratif/Bank statements/Bank Of America"}
-// ]
-// for quick tests
-lists.short =
+module.exports =
 [{"type":"file","path":"/Administratif","name":"test-filesname.txt"},
   {"type":"file","path":"/Administratif/Bank statements","name":"test-filesname.txt"},
   {"type":"file","path":"/Administratif/Bank statements/Bank Of America","name":"test-filesname.txt"},
@@ -56,6 +35,3 @@ lists.short =
   {"type":"file","path":"/Projet appartement à Lyon","name":"test-filesname.txt"},
   {"type":"file","path":"/Vacances Périgord", "name":"test-filesname.txt"}
 ]
-
-
-module.exports = prepareLists

@@ -1,13 +1,15 @@
 {
     "dependencies": {
+        "ascii-art": "^1.4.2",
         "autocomplete.js": "*",
-        "browser-sync-webpack-plugin": "*",
         "browser-sync": "*",
+        "browser-sync-webpack-plugin": "*",
         "chai": "*",
-        "coffee-script": "*",
         "coffee-loader": "*",
+        "coffee-script": "*",
         "copy-webpack-plugin": "^3.0.1",
         "css-loader": "*",
+        "diacritics": "*",
         "extract-text-webpack-plugin": "^2.0.0-rc.3",
         "fuse.js": "*",
         "fuzzaldrin": "*",
@@ -22,12 +24,12 @@
         "stylus": "*",
         "stylus-loader": "*",
         "webpack": "^2.2.1",
-        "webpack-hot-middleware": "*",
-        "diacritics": "*"
+        "webpack-hot-middleware": "*"
     },
     "scripts": {
-        "build": "webpack --config webpack.config.js",
+        "build": "node ./tools/build.js",
         "watch": "webpack --config webpack.config.js --watch",
-        "w": "webpack --config webpack.config.js --watch"
+        "w": "webpack --config webpack.config.js --watch",
+        "test": "node ./test/search-fuzzy-words-tests.js"
     }
 }

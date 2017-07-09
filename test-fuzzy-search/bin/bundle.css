@@ -1,6 +1,30 @@
 body {
   background: #fff;
   color: #191b1f;
+  font-family: "Operator Mono SSm A", "Operator Mono SSm B", 'Source Code Pro', Menlo, Consolas, Monaco, monospace;
+  font-weight: normal;
+  font-size: small;
+}
+#search-input {
+  margin-bottom: 0.8em;
+  font-family: "Operator Mono SSm A", "Operator Mono SSm B", 'Source Code Pro', Menlo, Consolas, Monaco, monospace;
+  font-weight: normal;
+  font-size: small;
+}
+button {
+  font-family: "Operator Mono SSm A", "Operator Mono SSm B", 'Source Code Pro', Menlo, Consolas, Monaco, monospace;
+  font-weight: normal;
+  font-size: small;
+}
+#search-realtime-chckbox {
+  margin-left: 1em;
+}
+#radio-container > label {
+  margin-right: 1.5em;
+  cursor: pointer;
+}
+#radio-container > label input {
+  margin-right: 0.3em;
 }
 .unactivated button {
   display: none;
@@ -8,12 +32,16 @@ body {
 .unactivated .output_container {
   display: none;
 }
-#output_container {
-  display: block;
-}
 .header {
   margin-top: 1em;
   font-weight: bold;
+}
+.header label {
+  font-weight: normal;
+}
+#radio-container {
+  margin-top: 0.8em;
+  margin-bottom: 2em;
 }
 .output_container {
   min-height: 1em;
@@ -58,12 +86,14 @@ label.expanded::before {
 p {
   margin-top: 0.3em;
   margin-bottom: 0.3em;
+  font-family: monospace;
+  font-size: 1.2em;
 }
 p b {
   color: #05f;
 }
 .score {
-  width: 45px;
+  margin-right: 0.8em;
   display: inline-block;
   color: #808080;
 }

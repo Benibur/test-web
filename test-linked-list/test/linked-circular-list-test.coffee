@@ -244,16 +244,3 @@ test = (listType, ListClass, _testCoherence) ->
 test('list', List, _testCoherence)
 
 test('circularList', CircularList, _testCircularCoherence)
-
-describe 'circularList.headToTail()', ->
-    before () ->
-        l = new CircularList()
-        l.append('c')
-        l.prepend('a')
-        l.insert(1,'b')
-        l.headToTail()
-    it 'should pass tests', () ->
-        expect(true).to.be.undefined
-    it 'should be coherent', () ->
-        _testCircularCoherence(l)
-

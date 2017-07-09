@@ -2,6 +2,7 @@ TESTS OF DIFFERENT SEARCHES
 
 
 Prérequis :
+    . sudo apt-get install libcairo2-dev libjpeg-dev libgif-dev  // for the npm module "ascii-art"
     . node avec une version récente
     . sudo npm install webpack -g
     . sudo npm install webpack-dev-server -g
@@ -15,8 +16,14 @@ Utilisation :
     . l'output dans bin
 
 RUNNING TESTS
-    . pour générer une grosse liste de chemins : aller dans tools, modifier les paramètres de path-extractor.js puis `node path-extractor.js`
-    . Pour les tests, ajuster le choix de la liste d'items
+    . npm run test
+
+DEBUG
+    . les données pour faire des tests sont générées par /src/get-lists-of-paths.js
+    . la liste pour les tests de perf est générée en amont via /tools/path-extractor.js
+        . modifier les paramètres en fonction du tests
+        . puis `node path-extractor.js`
+        . puis tester dans le browser :-)
 
 RESULTATS DES TESTS
     . fuse.js :
