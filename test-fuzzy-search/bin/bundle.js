@@ -4110,35 +4110,34 @@ $D='D666'
 $$='----'
 
 items = [
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6a_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6ab_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abc_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcd_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcde_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdef_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdefg_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6abcdefgh_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}`]
+  `/ExpectedRk:_08_/D0_${$A}/D1_${$$}/D2_${$$}`,
+  `/ExpectedRk:_07_/D0_${$A}/D1_${$$}`,
+  `/ExpectedRk:_06_/D0_${$$}/D1_${$$}/D2_${$A}/D3.6abc_${$A}.txt`,
+  `/ExpectedRk:_05_/D0_${$$}/D1_${$$}/D2_${$A}/D3.6ab_${$A}.txt`,
+  `/ExpectedRk:_04_/D0_${$$}/D1_${$$}/D2_${$A}/D3.6a_${$A}.txt`,
+  `/ExpectedRk:_03_/D0_${$$}/D1_${$$}/D2_${$A}/D3.6_${$A}.txt`,
+  `/ExpectedRk:_02_/D0_${$$}/D1_${$$}/D2_${$A}`,
+  `/ExpectedRk:_01_/D0_${$A}`]
 lists.push({name:'test 1', id:'test_1', defaultSearch:'A66', items:_format(items)})
 
 items = [
-  `/A0_${$A}7.txt`,
-  `/A0_${$A}.txt`,
-  `/A0_${$$}/A1_${$A}but relevance diluted.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$$}/A3_${$$}/A4_${$A}.txt`,
-  `/A0_${$$}/A1_${$A}.txt`,
-  `/A0_${$A}/A1_${$$}/A2_${$A}.txt`,
-  `/A0_${$A}`,
-  `/A0_${$$}/A1_${$$}/A2_${$$}/A3_${$A}/A4_${$$}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$$}/A3_${$A}`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.1_${$$}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.2_${$$}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.3_${$$}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.4_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.5_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6_${$A}.txt`,
-  `/A0_${$$}/A1_${$$}/A2_${$A}`]
+  `/ExpectedRk_16_/D0_${$$}/D1_${$$}/D2_${$$}/D3_${$A}/D4_${$$}.txt`,
+  `/ExpectedRk_12_/D0_${$$}/D1_${$$}/D2_${$A}/D3.1_${$$}.txt`,
+  `/ExpectedRk_13_/D0_${$$}/D1_${$$}/D2_${$A}/D3.2_${$$}.txt`,
+  `/ExpectedRk_14_/D0_${$$}/D1_${$$}/D2_${$A}/D3.3_${$$}.txt`,
+  `/ExpectedRk_09_/D0_${$$}/D1_${$$}/D2_${$A}/D3.4_${$A}.txt`,
+  `/ExpectedRk_10_/D0_${$$}/D1_${$$}/D2_${$A}/D3.5_${$A}.txt`,
+  `/ExpectedRk_11_/D0_${$$}/D1_${$$}/D2_${$A}/D3.6_${$A}.txt`,
+  `/ExpectedRk_15_/D0_${$A}/D1_${$$}/D2_${$A}.txt`,
+  `/ExpectedRk_08_/D0_${$$}/D1_${$A}but relevance diluted.txt`,
+  `/ExpectedRk_07_/D0_${$A}7.txt`,
+  `/ExpectedRk_06_/D0_${$$}/D1_${$$}/D2_${$$}/D3_${$$}/D4_${$A}.txt`,
+  `/ExpectedRk_05_/D0_${$$}/D1_${$A}.txt`,
+  `/ExpectedRk_04_/D0_${$A}.txt`,
+  `/ExpectedRk_03_/D0_${$$}/D1_${$$}/D2_${$$}/D3_${$A}`,
+  `/ExpectedRk_02_/D0_${$$}/D1_${$$}/D2_${$A}`,
+  `/ExpectedRk_01_/D0_${$A}`
+]
 lists.push({name:'test 2', id:'test_2', defaultSearch:'A66', items:_format(items)})
 
 items = [
@@ -4158,15 +4157,16 @@ items = [
   `/B0_${$A}/B1_${$A}/B2_${$A}/B3_${$A}.txt`,
   `/B0_${$A}/B1_${$A}/B2_${$A}/B3_${$A}/B4_${$A}.txt`,
   `/C0_${$A}.txt`,
-  `/C0_${$A}/C1_`,
-  `/C0_${$A}/C1_/C2_${$A}.txt`,
-  `/C0_${$A}/C1_/C2_${$A}/C3_`,
-  `/C0_${$A}/C1_/C2_${$A}/C3_/C4_${$A}.txt`,
+  `/C0_${$A}/C1_${$$}/C2_${$A}/C3_${$$}/C4_${$A}.txt`,
+  `/C0_${$A}/C1_${$$}/C2_${$A}/C3_${$$}`,
+  `/C0_${$A}/C1_${$$}/C2_${$A}.txt`,
+  `/C0_${$A}/C1_${$$}`,
+  `/C0_${$A}`,
   `/D0_${$D}.txt`,
-  `/D0_${$D}/D1_`,
-  `/D0_${$D}/D1_/D2_${$D}.txt`,
-  `/D0_${$D}/D1_/D2_${$D}/D3_`,
-  `/D0_${$D}/D1_/D2_${$D}/D3_/D4_${$D}.txt`
+  `/D0_${$D}/D1_${$$}`,
+  `/D0_${$D}/D1_${$$}/D2_${$D}`,
+  `/D0_${$D}/D1_${$$}/D2_${$D}/D3_${$$}`,
+  `/D0_${$D}/D1_${$$}/D2_${$D}/D3_${$$}/D4_${$D}.txt`
 ]
 lists.push({name:'test 3', id:'test_3', defaultSearch:'A66', items:_format(items)})
 
@@ -7088,13 +7088,12 @@ where :
 
 */
 
-
 // ------------------------------------------------------------------
 // Main public object, two methods : init() and search()
 
 /* BLOCK:START */
 /* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
-const forDebugPackage = function(){
+const forDebugPackage = function () {
   /* devblock:start */
   // just for debug
   const numeral = __webpack_require__(0)
@@ -7110,9 +7109,7 @@ const forDebugPackage = function(){
     console.log('%c'+ strBlack + Array(spacesNb).join(' ') +'%c' + strBlue  + '%c' + strRed +'%c'+ strGreen, cssBlack,cssBlue,cssRed,cssGreen )
   }
   /* devblock:end */
-
   const removeDiacritics = __webpack_require__(3).remove
-
   let list
   let previousQuery = []
   let previousSuggestions = []
@@ -7203,6 +7200,78 @@ const forDebugPackage = function(){
     return suggestions
   }
   /* devblock:end */
+  // SAVE THE SEARCH WITH 1RST LOGIC
+  // // returns a ranked array of [suggestions].
+  // // suggestion items are objects : {score:[number], ... (all the properties
+  // //   of an item given in init(newItemsList))}
+  // const _filterAndScore = function (listItems, words) {
+  //   _logQuery('_filterAndScore with : ', words,'') // devline
+  //   const suggestions = []
+  //   // eslint-disable-next-line
+  //   itemLoop:
+  //   for (let item of listItems) {
+  //     let itemScore = 0
+  //     console.log('') // devline
+  //     console.log('%cscoring-->%c' + item.path + '/' + item.name, 'color:black;font-weight: bold', 'color:red') // devline
+  //     for (let w of words) {
+  //       let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+  //       let wScore = 0
+  //       let distance = 0  // devline
+  //       for (let dirName of item.pathArray) {
+  //         if (dirName.includes(w.w)) {
+  //           let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
+  //           // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
+  //           wScore += delta
+  //           let str1 = 'D'+distance+'- '                // devline
+  //           let str2 = numeral(delta).format('+0,0.')   // devline
+  //           scoreLogger(27, str1,str2,' - '+dirName,'') // devline
+  //         } else {
+  //           let str1 = 'D'+distance+'- '                 // devline
+  //           let str2 = numeral(-10000).format('+0,0.')   // devline
+  //           scoreLogger(27, str1,str2,' - '+dirName,'')  // devline
+  //           wScore -= 10000
+  //         }
+  //         // the score of the occurence of a word decreases with distance from the leaf
+  //         distance++ // devline
+  //         wordOccurenceValue = wordOccurenceValue / 2
+  //       }
+  //
+  //       /* devblock:start */
+  //       scoreLogger(27,
+  //                   'word score',
+  //                   numeral(wScore).format('+0,0.'),
+  //                   '',
+  //                   ' - '+w.w
+  //                 )
+  //       /* devblock:end */
+  //
+  //       if (wScore < 0) {
+  //         // w is not in the path : reject the item
+  //         // eslint-disable-next-line
+  //         continue itemLoop
+  //       }
+  //       itemScore += wScore // increase the score
+  //     }
+  //
+  //     /* devblock:start */
+  //     scoreLogger(27,
+  //                 'path score =',
+  //                 numeral(itemScore).format('+0,0.'),
+  //                 '',
+  //                 ''
+  //               )
+  //     /* devblock:end */
+  //
+  //     if (0 < itemScore) {
+  //       item.score = itemScore
+  //       suggestions.push(item)
+  //     }
+  //   }
+  //   suggestions.sort((s1, s2) => {
+  //       return s2.score - s1.score
+  //   })
+  //   return suggestions
+  // }
 
   // returns a ranked array of [suggestions].
   // suggestion items are objects : {score:[number], ... (all the properties
@@ -7217,14 +7286,26 @@ const forDebugPackage = function(){
       console.log('') // devline
       console.log('%cscoring-->%c' + item.path + '/' + item.name, 'color:black;font-weight: bold', 'color:red') // devline
       for (let w of words) {
-        let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+        let wordOccurenceValue = 10000 // 52 428 800 === 2^19 * 100
         let wScore = 0
         let distance = 0  // devline
-        for (let dirName of item.pathArray) {
+        let hasAlreadyOccured = false
+        let depth = item.pathArray.length
+        for (let d =0; d < depth; d++) {
+          let dirName = item.pathArray[d]
           if (dirName.includes(w.w)) {
-            let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
-            // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
-            wScore += delta
+            let delta
+            if (hasAlreadyOccured) {
+              delta = wordOccurenceValue * (1 - w.w.length / dirName.length)
+              wScore -= delta
+              wordOccurenceValue = wordOccurenceValue / 2
+            } else {
+              wordOccurenceValue = 52428800  // 52 428 800 === 2^19 * 100
+              delta = wordOccurenceValue / 2 * (1 + w.w.length / dirName.length)
+              wScore += delta
+              wordOccurenceValue = wordOccurenceValue / 2
+              hasAlreadyOccured = true
+            }
             let str1 = 'D'+distance+'- '                // devline
             let str2 = numeral(delta).format('+0,0.')   // devline
             scoreLogger(27, str1,str2,' - '+dirName,'') // devline
@@ -7232,9 +7313,15 @@ const forDebugPackage = function(){
             let str1 = 'D'+distance+'- '                 // devline
             let str2 = numeral(-10000).format('+0,0.')   // devline
             scoreLogger(27, str1,str2,' - '+dirName,'')  // devline
-            wScore -= 10000
+            wScore -= wordOccurenceValue
+            wordOccurenceValue = wordOccurenceValue / 2
+            if (d === depth - 1) {
+              // if on the leaf there is no occuernce of word : apply a big penalty
+              // TODO : the penalty could be depending on the number of parents without occurence before the leaf.
+              wScore = wScore / 2
+            }
           }
-          // the score of the occurence of a word decreases with distance from the leaf
+
           distance++ // devline
           wordOccurenceValue = wordOccurenceValue / 2
         }
@@ -7247,7 +7334,6 @@ const forDebugPackage = function(){
                     ' - '+w.w
                   )
         /* devblock:end */
-
         if (wScore < 0) {
           // w is not in the path : reject the item
           // eslint-disable-next-line
@@ -7264,14 +7350,19 @@ const forDebugPackage = function(){
                   ''
                 )
       /* devblock:end */
-
-      if (0 < itemScore) {
+      if (itemScore > 0) {
         item.score = itemScore
         suggestions.push(item)
       }
     }
     suggestions.sort((s1, s2) => {
-        return s2.score - s1.score
+      let score = s2.score - s1.score
+      if (score === 0) {
+        return s1.path.localeCompare(s2.path)
+      } else {
+        return score
+      }
+      return
     })
     return suggestions
   }
@@ -7358,9 +7449,6 @@ const forDebugPackage = function(){
     console.log.apply(null,csss)
   }
   /* devblock:end */
-
-
-
   return {
 
     init: (newItemsList) => {
@@ -7368,7 +7456,8 @@ const forDebugPackage = function(){
       previousQuery = []
       previousSuggestions = newItemsList
       for (let file of list) {
-        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        // file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean)
       }
     },
 
@@ -7383,17 +7472,13 @@ const forDebugPackage = function(){
     }
     /* devblock:end */
   }
-
 }
 /* BLOCK:END */
-
 exports.forDebugPackage = forDebugPackage()
 /* BLOCK:START */
 /* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
-const forPerfPackage = function(){
-
+const forPerfPackage = function () {
   const removeDiacritics = __webpack_require__(3).remove
-
   let list
   let previousQuery = []
   let previousSuggestions = []
@@ -7436,6 +7521,51 @@ const forPerfPackage = function(){
     return Query
   }
 
+  // SAVE THE SEARCH WITH 1RST LOGIC
+  // // returns a ranked array of [suggestions].
+  // // suggestion items are objects : {score:[number], ... (all the properties
+  // //   of an item given in init(newItemsList))}
+  // const _filterAndScore = function (listItems, words) {
+  //   const suggestions = []
+  //   // eslint-disable-next-line
+  //   itemLoop:
+  //   for (let item of listItems) {
+  //     let itemScore = 0
+  //     for (let w of words) {
+  //       let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+  //       let wScore = 0
+  //       for (let dirName of item.pathArray) {
+  //         if (dirName.includes(w.w)) {
+  //           let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
+  //           // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
+  //           wScore += delta
+  //         } else {
+  //           wScore -= 10000
+  //         }
+  //         // the score of the occurence of a word decreases with distance from the leaf
+  //         wordOccurenceValue = wordOccurenceValue / 2
+  //       }
+  //
+  //  //
+  //       if (wScore < 0) {
+  //         // w is not in the path : reject the item
+  //         // eslint-disable-next-line
+  //         continue itemLoop
+  //       }
+  //       itemScore += wScore // increase the score
+  //     }
+  //
+  //  //
+  //     if (0 < itemScore) {
+  //       item.score = itemScore
+  //       suggestions.push(item)
+  //     }
+  //   }
+  //   suggestions.sort((s1, s2) => {
+  //       return s2.score - s1.score
+  //   })
+  //   return suggestions
+  // }
 
   // returns a ranked array of [suggestions].
   // suggestion items are objects : {score:[number], ... (all the properties
@@ -7447,20 +7577,37 @@ const forPerfPackage = function(){
     for (let item of listItems) {
       let itemScore = 0
       for (let w of words) {
-        let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+        let wordOccurenceValue = 10000 // 52 428 800 === 2^19 * 100
         let wScore = 0
-        for (let dirName of item.pathArray) {
+        let hasAlreadyOccured = false
+        let depth = item.pathArray.length
+        for (let d =0; d < depth; d++) {
+          let dirName = item.pathArray[d]
           if (dirName.includes(w.w)) {
-            let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
-            // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
-            wScore += delta
+            let delta
+            if (hasAlreadyOccured) {
+              delta = wordOccurenceValue * (1 - w.w.length / dirName.length)
+              wScore -= delta
+              wordOccurenceValue = wordOccurenceValue / 2
+            } else {
+              wordOccurenceValue = 52428800  // 52 428 800 === 2^19 * 100
+              delta = wordOccurenceValue / 2 * (1 + w.w.length / dirName.length)
+              wScore += delta
+              wordOccurenceValue = wordOccurenceValue / 2
+              hasAlreadyOccured = true
+            }
           } else {
-            wScore -= 10000
+            wScore -= wordOccurenceValue
+            wordOccurenceValue = wordOccurenceValue / 2
+            if (d === depth - 1) {
+              // if on the leaf there is no occuernce of word : apply a big penalty
+              // TODO : the penalty could be depending on the number of parents without occurence before the leaf.
+              wScore = wScore / 2
+            }
           }
-          // the score of the occurence of a word decreases with distance from the leaf
+
           wordOccurenceValue = wordOccurenceValue / 2
         }
-
 
         if (wScore < 0) {
           // w is not in the path : reject the item
@@ -7470,14 +7617,19 @@ const forPerfPackage = function(){
         itemScore += wScore // increase the score
       }
 
-
-      if (0 < itemScore) {
+      if (itemScore > 0) {
         item.score = itemScore
         suggestions.push(item)
       }
     }
     suggestions.sort((s1, s2) => {
-        return s2.score - s1.score
+      let score = s2.score - s1.score
+      if (score === 0) {
+        return s1.path.localeCompare(s2.path)
+      } else {
+        return score
+      }
+      return
     })
     return suggestions
   }
@@ -7535,9 +7687,6 @@ const forPerfPackage = function(){
     return query
   }
 
-
-
-
   return {
 
     init: (newItemsList) => {
@@ -7545,7 +7694,8 @@ const forPerfPackage = function(){
       previousQuery = []
       previousSuggestions = newItemsList
       for (let file of list) {
-        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        // file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean)
       }
     },
 
@@ -7554,7 +7704,6 @@ const forPerfPackage = function(){
     }
 
   }
-
 }
 /* BLOCK:END */
 exports.forPerfPackage = forPerfPackage()

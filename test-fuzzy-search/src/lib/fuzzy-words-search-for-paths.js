@@ -44,13 +44,12 @@ where :
 
 */
 
-
 // ------------------------------------------------------------------
 // Main public object, two methods : init() and search()
 
 /* BLOCK:START */
 /* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
-const forDebugPackage = function(){
+const forDebugPackage = function () {
   /* devblock:start */
   // just for debug
   const numeral = require('numeral')
@@ -66,9 +65,7 @@ const forDebugPackage = function(){
     console.log('%c'+ strBlack + Array(spacesNb).join(' ') +'%c' + strBlue  + '%c' + strRed +'%c'+ strGreen, cssBlack,cssBlue,cssRed,cssGreen )
   }
   /* devblock:end */
-
   const removeDiacritics = require('diacritics').remove
-
   let list
   let previousQuery = []
   let previousSuggestions = []
@@ -159,6 +156,78 @@ const forDebugPackage = function(){
     return suggestions
   }
   /* devblock:end */
+  // SAVE THE SEARCH WITH 1RST LOGIC
+  // // returns a ranked array of [suggestions].
+  // // suggestion items are objects : {score:[number], ... (all the properties
+  // //   of an item given in init(newItemsList))}
+  // const _filterAndScore = function (listItems, words) {
+  //   _logQuery('_filterAndScore with : ', words,'') // devline
+  //   const suggestions = []
+  //   // eslint-disable-next-line
+  //   itemLoop:
+  //   for (let item of listItems) {
+  //     let itemScore = 0
+  //     console.log('') // devline
+  //     console.log('%cscoring-->%c' + item.path + '/' + item.name, 'color:black;font-weight: bold', 'color:red') // devline
+  //     for (let w of words) {
+  //       let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+  //       let wScore = 0
+  //       let distance = 0  // devline
+  //       for (let dirName of item.pathArray) {
+  //         if (dirName.includes(w.w)) {
+  //           let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
+  //           // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
+  //           wScore += delta
+  //           let str1 = 'D'+distance+'- '                // devline
+  //           let str2 = numeral(delta).format('+0,0.')   // devline
+  //           scoreLogger(27, str1,str2,' - '+dirName,'') // devline
+  //         } else {
+  //           let str1 = 'D'+distance+'- '                 // devline
+  //           let str2 = numeral(-10000).format('+0,0.')   // devline
+  //           scoreLogger(27, str1,str2,' - '+dirName,'')  // devline
+  //           wScore -= 10000
+  //         }
+  //         // the score of the occurence of a word decreases with distance from the leaf
+  //         distance++ // devline
+  //         wordOccurenceValue = wordOccurenceValue / 2
+  //       }
+  //
+  //       /* devblock:start */
+  //       scoreLogger(27,
+  //                   'word score',
+  //                   numeral(wScore).format('+0,0.'),
+  //                   '',
+  //                   ' - '+w.w
+  //                 )
+  //       /* devblock:end */
+  //
+  //       if (wScore < 0) {
+  //         // w is not in the path : reject the item
+  //         // eslint-disable-next-line
+  //         continue itemLoop
+  //       }
+  //       itemScore += wScore // increase the score
+  //     }
+  //
+  //     /* devblock:start */
+  //     scoreLogger(27,
+  //                 'path score =',
+  //                 numeral(itemScore).format('+0,0.'),
+  //                 '',
+  //                 ''
+  //               )
+  //     /* devblock:end */
+  //
+  //     if (0 < itemScore) {
+  //       item.score = itemScore
+  //       suggestions.push(item)
+  //     }
+  //   }
+  //   suggestions.sort((s1, s2) => {
+  //       return s2.score - s1.score
+  //   })
+  //   return suggestions
+  // }
 
   // returns a ranked array of [suggestions].
   // suggestion items are objects : {score:[number], ... (all the properties
@@ -173,14 +242,26 @@ const forDebugPackage = function(){
       console.log('') // devline
       console.log('%cscoring-->%c' + item.path + '/' + item.name, 'color:black;font-weight: bold', 'color:red') // devline
       for (let w of words) {
-        let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+        let wordOccurenceValue = 10000 // 52 428 800 === 2^19 * 100
         let wScore = 0
         let distance = 0  // devline
-        for (let dirName of item.pathArray) {
+        let hasAlreadyOccured = false
+        let depth = item.pathArray.length
+        for (let d =0; d < depth; d++) {
+          let dirName = item.pathArray[d]
           if (dirName.includes(w.w)) {
-            let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
-            // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
-            wScore += delta
+            let delta
+            if (hasAlreadyOccured) {
+              delta = wordOccurenceValue * (1 - w.w.length / dirName.length)
+              wScore -= delta
+              wordOccurenceValue = wordOccurenceValue / 2
+            } else {
+              wordOccurenceValue = 52428800  // 52 428 800 === 2^19 * 100
+              delta = wordOccurenceValue / 2 * (1 + w.w.length / dirName.length)
+              wScore += delta
+              wordOccurenceValue = wordOccurenceValue / 2
+              hasAlreadyOccured = true
+            }
             let str1 = 'D'+distance+'- '                // devline
             let str2 = numeral(delta).format('+0,0.')   // devline
             scoreLogger(27, str1,str2,' - '+dirName,'') // devline
@@ -188,9 +269,15 @@ const forDebugPackage = function(){
             let str1 = 'D'+distance+'- '                 // devline
             let str2 = numeral(-10000).format('+0,0.')   // devline
             scoreLogger(27, str1,str2,' - '+dirName,'')  // devline
-            wScore -= 10000
+            wScore -= wordOccurenceValue
+            wordOccurenceValue = wordOccurenceValue / 2
+            if (d === depth - 1) {
+              // if on the leaf there is no occuernce of word : apply a big penalty
+              // TODO : the penalty could be depending on the number of parents without occurence before the leaf.
+              wScore = wScore / 2
+            }
           }
-          // the score of the occurence of a word decreases with distance from the leaf
+
           distance++ // devline
           wordOccurenceValue = wordOccurenceValue / 2
         }
@@ -203,7 +290,6 @@ const forDebugPackage = function(){
                     ' - '+w.w
                   )
         /* devblock:end */
-
         if (wScore < 0) {
           // w is not in the path : reject the item
           // eslint-disable-next-line
@@ -220,14 +306,19 @@ const forDebugPackage = function(){
                   ''
                 )
       /* devblock:end */
-
-      if (0 < itemScore) {
+      if (itemScore > 0) {
         item.score = itemScore
         suggestions.push(item)
       }
     }
     suggestions.sort((s1, s2) => {
-        return s2.score - s1.score
+      let score = s2.score - s1.score
+      if (score === 0) {
+        return s1.path.localeCompare(s2.path)
+      } else {
+        return score
+      }
+      return
     })
     return suggestions
   }
@@ -314,9 +405,6 @@ const forDebugPackage = function(){
     console.log.apply(null,csss)
   }
   /* devblock:end */
-
-
-
   return {
 
     init: (newItemsList) => {
@@ -324,7 +412,8 @@ const forDebugPackage = function(){
       previousQuery = []
       previousSuggestions = newItemsList
       for (let file of list) {
-        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        // file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean)
       }
     },
 
@@ -339,8 +428,6 @@ const forDebugPackage = function(){
     }
     /* devblock:end */
   }
-
 }
 /* BLOCK:END */
-
 exports.forDebugPackage = forDebugPackage()

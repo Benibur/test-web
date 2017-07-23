@@ -44,16 +44,13 @@ where :
 
 */
 
-
 // ------------------------------------------------------------------
 // Main public object, two methods : init() and search()
 
 /* BLOCK:START */
 /* FOR DUPLICATION FOR DEBUG AND PERFORMANCE TESTS */
-const forDebugPackage = function(){
-
+const forDebugPackage = function () {
   const removeDiacritics = require('diacritics').remove
-
   let list
   let previousQuery = []
   let previousSuggestions = []
@@ -96,6 +93,51 @@ const forDebugPackage = function(){
     return Query
   }
 
+  // SAVE THE SEARCH WITH 1RST LOGIC
+  // // returns a ranked array of [suggestions].
+  // // suggestion items are objects : {score:[number], ... (all the properties
+  // //   of an item given in init(newItemsList))}
+  // const _filterAndScore = function (listItems, words) {
+  //   const suggestions = []
+  //   // eslint-disable-next-line
+  //   itemLoop:
+  //   for (let item of listItems) {
+  //     let itemScore = 0
+  //     for (let w of words) {
+  //       let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+  //       let wScore = 0
+  //       for (let dirName of item.pathArray) {
+  //         if (dirName.includes(w.w)) {
+  //           let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
+  //           // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
+  //           wScore += delta
+  //         } else {
+  //           wScore -= 10000
+  //         }
+  //         // the score of the occurence of a word decreases with distance from the leaf
+  //         wordOccurenceValue = wordOccurenceValue / 2
+  //       }
+  //
+  //  //
+  //       if (wScore < 0) {
+  //         // w is not in the path : reject the item
+  //         // eslint-disable-next-line
+  //         continue itemLoop
+  //       }
+  //       itemScore += wScore // increase the score
+  //     }
+  //
+  //  //
+  //     if (0 < itemScore) {
+  //       item.score = itemScore
+  //       suggestions.push(item)
+  //     }
+  //   }
+  //   suggestions.sort((s1, s2) => {
+  //       return s2.score - s1.score
+  //   })
+  //   return suggestions
+  // }
 
   // returns a ranked array of [suggestions].
   // suggestion items are objects : {score:[number], ... (all the properties
@@ -107,20 +149,31 @@ const forDebugPackage = function(){
     for (let item of listItems) {
       let itemScore = 0
       for (let w of words) {
-        let wordOccurenceValue = 52428800 // 52 428 800 === 2^19 * 100
+        let wordOccurenceValue = 0 // 52 428 800 === 2^19 * 100
         let wScore = 0
+        let hasAlreadyOccured = false
         for (let dirName of item.pathArray) {
           if (dirName.includes(w.w)) {
-            let delta = wordOccurenceValue / 5 * (1 + 5 * Math.pow(w.w.length / dirName.length, 2))
             // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
-            wScore += delta
+            let delta
+            if (hasAlreadyOccured) {
+              delta = wordOccurenceValue * w.w.length / dirName.length
+              wScore += delta
+              wordOccurenceValue = wordOccurenceValue / 2
+            } else {
+              wordOccurenceValue = 52428800  // 52 428 800 === 2^19 * 100
+              delta = wordOccurenceValue / 2 * (1 + w.w.length / dirName.length)
+              wScore += delta
+              wordOccurenceValue = wordOccurenceValue / 2
+              hasAlreadyOccured = true
+            }
           } else {
-            wScore -= 10000
+            wScore -= wordOccurenceValue
+            wordOccurenceValue = wordOccurenceValue / 2
           }
           // the score of the occurence of a word decreases with distance from the leaf
           wordOccurenceValue = wordOccurenceValue / 2
         }
-
 
         if (wScore < 0) {
           // w is not in the path : reject the item
@@ -130,14 +183,13 @@ const forDebugPackage = function(){
         itemScore += wScore // increase the score
       }
 
-
-      if (0 < itemScore) {
+      if (itemScore > 0) {
         item.score = itemScore
         suggestions.push(item)
       }
     }
     suggestions.sort((s1, s2) => {
-        return s2.score - s1.score
+      return s2.score - s1.score
     })
     return suggestions
   }
@@ -195,9 +247,6 @@ const forDebugPackage = function(){
     return query
   }
 
-
-
-
   return {
 
     init: (newItemsList) => {
@@ -205,7 +254,8 @@ const forDebugPackage = function(){
       previousQuery = []
       previousSuggestions = newItemsList
       for (let file of list) {
-        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        // file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean).reverse()
+        file.pathArray = removeDiacritics((file.path + '/' + file.name).toLowerCase()).split('/').filter(Boolean)
       }
     },
 
@@ -214,8 +264,6 @@ const forDebugPackage = function(){
     }
 
   }
-
 }
 /* BLOCK:END */
-
 module.exports = forDebugPackage()

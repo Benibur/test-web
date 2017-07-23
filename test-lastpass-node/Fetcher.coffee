@@ -1,6 +1,6 @@
 crypto = require('crypto')
 Blob   = require('./Blob')
-request = require("request")
+request = require('request')
 
 request_iteration_count = (username, cb) ->
     options =
@@ -15,7 +15,7 @@ request_iteration_count = (username, cb) ->
 create_session = (body_response, key_iteration_count) ->
     tagRegExp = /<([\w]*) /i
     tag = tagRegExp.exec(body_response)[1]
-    sessionidRegExp = new RegExp(" sessionid=\"([^\"]*)\"",'i')
+    sessionidRegExp = new RegExp("sessionid=\"([^\"]*)\"",'i')
     sessionid = sessionidRegExp.exec(body_response)[1]
     return {id: sessionid, key_iteration_count: key_iteration_count}
 
