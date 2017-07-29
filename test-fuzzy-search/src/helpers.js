@@ -3,7 +3,7 @@ const RangeList = require('./lib/range-list')
 
 const wordBolderify = function (query, path){
   const normalizedPath = removeDiacritics(path.toLowerCase())
-  const words = removeDiacritics(query.toLowerCase()).split(' ').filter(Boolean)
+  const words = removeDiacritics(query.replace(/\//g, " ").toLowerCase()).split(' ').filter(Boolean)
   var boldRanges = new RangeList()
   for (let word of words) {
     let i = 0

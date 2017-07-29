@@ -24,7 +24,7 @@ Perfomances :
 where :
 - itemList : an array of item of the form of : \`{"path":"/Administratif/Bank statements", "name":"bank-statement-01-2017.pdf"}\` (can include ofther properties, only path and name are required)
 - max_results : optionnal : an integer to limit the number of returned suggestions
-- query : the string with words to search for.
+- query : the string with words to search for. Words' separators are ' ' (space) and '/'
 
 ### Principles :
 - the query string is divided intor "words", separator is space
@@ -107,7 +107,7 @@ const forDebugPackage = function () {
   // cut the query string into an array of words
   const _prepareQuery = function (query) {
     const Query = []
-    for (let w of removeDiacritics(query.trim().toLowerCase()).split(' ').filter(Boolean)) {
+    for (let w of removeDiacritics(query.replace(/\//g, " ").trim().toLowerCase()).split(' ').filter(Boolean)) {
       Query.push({ w: w, isAugmentedWord: false, isNewWord: true })
     }
     return Query

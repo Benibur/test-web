@@ -9,11 +9,13 @@ Prérequis :
 
 Utilisation :
     . npm install
-    . puis :
-        . npm run w      : lance le serveur en watch sur http://localhost:3000/ avec du hotreloading
-    . les sources sont dans src, le point d'entrée est main.js
-    . sait compiler du js6 et coffee-script
-    . l'output dans bin
+    . Developpement :
+      . npm run w      : lance le serveur en watch sur http://localhost:3000/ avec du hotreloading
+      . les sources sont dans src, le point d'entrée est main.js
+      . l'output dans bin
+    . Build :
+      . npm run build
+      . build : (removes all the logs) ./build/fuzzy-words-search-for-paths.build.js
 
 RUNNING TESTS
     . npm run test

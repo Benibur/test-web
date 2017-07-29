@@ -24,7 +24,7 @@ Perfomances :
 where :
 - itemList : an array of item of the form of : \`{"path":"/Administratif/Bank statements", "name":"bank-statement-01-2017.pdf"}\` (can include ofther properties, only path and name are required)
 - max_results : optionnal : an integer to limit the number of returned suggestions
-- query : the string with words to search for.
+- query : the string with words to search for. Words' separators are ' ' (space) and '/'
 
 ### Principles :
 - the query string is divided intor "words", separator is space
@@ -87,7 +87,7 @@ const forDebugPackage = function () {
   // cut the query string into an array of words
   const _prepareQuery = function (query) {
     const Query = []
-    for (let w of removeDiacritics(query.trim().toLowerCase()).split(' ').filter(Boolean)) {
+    for (let w of removeDiacritics(query.replace(/\//g, " ").trim().toLowerCase()).split(' ').filter(Boolean)) {
       Query.push({ w: w, isAugmentedWord: false, isNewWord: true })
     }
     return Query
@@ -149,16 +149,17 @@ const forDebugPackage = function () {
     for (let item of listItems) {
       let itemScore = 0
       for (let w of words) {
-        let wordOccurenceValue = 0 // 52 428 800 === 2^19 * 100
+        let wordOccurenceValue = 10000 // 52 428 800 === 2^19 * 100
         let wScore = 0
         let hasAlreadyOccured = false
-        for (let dirName of item.pathArray) {
+        let depth = item.pathArray.length
+        for (let d =0; d < depth; d++) {
+          let dirName = item.pathArray[d]
           if (dirName.includes(w.w)) {
-            // let delta = wordOccurenceValue  * Math.pow(w.w.length / dirName.length, 2)
             let delta
             if (hasAlreadyOccured) {
-              delta = wordOccurenceValue * w.w.length / dirName.length
-              wScore += delta
+              delta = wordOccurenceValue * (1 - w.w.length / dirName.length)
+              wScore -= delta
               wordOccurenceValue = wordOccurenceValue / 2
             } else {
               wordOccurenceValue = 52428800  // 52 428 800 === 2^19 * 100
@@ -170,8 +171,13 @@ const forDebugPackage = function () {
           } else {
             wScore -= wordOccurenceValue
             wordOccurenceValue = wordOccurenceValue / 2
+            if (d === depth - 1) {
+              // if on the leaf there is no occuernce of word : apply a big penalty
+              // TODO : the penalty could be depending on the number of parents without occurence before the leaf.
+              wScore = wScore / 2
+            }
           }
-          // the score of the occurence of a word decreases with distance from the leaf
+
           wordOccurenceValue = wordOccurenceValue / 2
         }
 
@@ -189,7 +195,13 @@ const forDebugPackage = function () {
       }
     }
     suggestions.sort((s1, s2) => {
-      return s2.score - s1.score
+      let score = s2.score - s1.score
+      if (score === 0) {
+        return s1.path.localeCompare(s2.path)
+      } else {
+        return score
+      }
+      return
     })
     return suggestions
   }
