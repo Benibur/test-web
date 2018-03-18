@@ -79,7 +79,7 @@ const input2El = document.getElementById('input2')
 // get form data
 const username = input1El.value
 const password = input2El.value
-console.log('trotrotro')
+console.log('trotro')
 
 // put focus on button
 btnEl.focus()

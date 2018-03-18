@@ -20,7 +20,7 @@ Utilisation :
 RUNNING TESTS
     . npm run test
 
-DEBUG
+DEBUG ET GÉNÉRATION DES LISTS D'ITEMS
     . les données pour faire des tests sont générées par /src/get-lists-of-paths.js
     . la liste pour les tests de perf est générée en amont via /tools/path-extractor.js
         . modifier les paramètres en fonction du tests

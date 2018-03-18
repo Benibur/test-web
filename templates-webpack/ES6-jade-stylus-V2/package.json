@@ -1,7 +1,7 @@
 {
     "dependencies": {
         "browser-sync": "*",
-        "browser-sync-webpack-plugin": "*",
+        "browser-sync-webpack-plugin": "2.0.1",
         "coffee-loader": "*",
         "coffee-script": "*",
         "copy-webpack-plugin": "^4.5.0",
@@ -12,8 +12,7 @@
         "style-loader": "*",
         "stylus": "*",
         "stylus-loader": "*",
-        "webpack": "^3.0.0",
-        "webpack-hot-middleware": "*"
+        "webpack": "^3.0.0"
     },
     "scripts": {
         "build": "webpack --config webpack.config.js",

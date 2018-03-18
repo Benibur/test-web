@@ -4,7 +4,7 @@
 
 var CopyWebpackPlugin  = require('copy-webpack-plugin')
 var ExtractTextPlugin  = require('extract-text-webpack-plugin')
-var BrowserSyncWebpack = require('browser-sync-webpack-plugin')
+// var BrowserSyncWebpack = require('browser-sync-webpack-plugin')
 
 module.exports = {
     entry: "./src/main.js",
@@ -14,8 +14,8 @@ module.exports = {
     },
     module: {
         loaders: [
-            { test: /\.coffee$/, loader: "coffee-loader" },
             { test: /\.css$/   , loader: "style!css" },
+            { test: /\.coffee$/, loader: "coffee-loader" },
             { test: /\.styl$/  , loader: 'style-loader!css-loader!stylus-loader' },
             { test: /\.jade$/  , loader: "jade-loader" }
         ]
@@ -26,10 +26,10 @@ module.exports = {
         // copy ressources in the output directory
         new ExtractTextPlugin('bundle.css', {allChunks:true}),
         // BrowserSync
-        new BrowserSyncWebpack({
-            open: false,
-            server: { baseDir: ['./bin'] }
-        })
+        // new BrowserSyncWebpack({
+        //     open: false,
+        //     server: { baseDir: ['./bin'] }
+        // })
     ],
     devtool: 'source-map'
 };

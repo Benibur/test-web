@@ -28,7 +28,7 @@ const realTimeSearchChkbx = document.getElementById('search-realtime-chckbox')
 searchInput.select()
 searchInput.focus()
 
-  
+
 // ------------------------------------------------------------------
 // manage checkboxes states and actions
 var defaultActivatedSearches = Cookies.getJSON('defaultActivatedSearches')
@@ -140,8 +140,8 @@ finalizeRadio = function () {
 // deal all triggers to run searches
 runAllSearches = function (forced) {
   query = searchInput.value
-  if ( query.length < 3 && !forced ) {
-    return
+  if ( query.length < 1 && !forced ) {
+    query = ''
   }
   if (defaultActivatedSearches['fuse-checkbox']) {
     fuseSearch(query)
@@ -176,6 +176,10 @@ searchInput.addEventListener('keypress', (e)=>{
 // prepare the Search for fuse.js
 const fuseOutputEl = document.getElementById('fuse-results')
 fuseSearch = function fuseSearch(query) {
+  if ( query.length === 0 ) {
+    fuseOutputEl.innerHTML = ''
+    return
+  }
   fuseOutputEl.innerHTML = myFuse.search(query)
 }
 
@@ -184,6 +188,10 @@ fuseSearch = function fuseSearch(query) {
 // prepare the Search for fuzzaldrin
 const fuzzaldrinOutputEl = document.getElementById('fuzzaldrin-results')
 const fuzzaldrinSearch = function (query) {
+  if ( query.length === 0 ) {
+    fuzzaldrinOutputEl.innerHTML = ''
+    return
+  }
   fuzzaldrinOutputEl.innerHTML = myFuzzaldrin.search(query)
 }
 
@@ -192,6 +200,10 @@ const fuzzaldrinSearch = function (query) {
 // prepare the Search for fuzzaldrin-plus
 const fuzzaldrinPlusOutputEl = document.getElementById('fuzzaldrin-plus-results')
 const fuzzaldrinPlusSearch = function (query) {
+  if ( query.length === 0 ) {
+    fuzzaldrinPlusOutputEl.innerHTML = ''
+    return
+  }
   fuzzaldrinPlusOutputEl.innerHTML = myFuzzaldrinPlus.search(query)
 }
 
@@ -199,6 +211,10 @@ const fuzzaldrinPlusSearch = function (query) {
 // prepare the Search for fuzzy-words
 const fuzzyWordsOutputEl = document.getElementById('fuzzy-words-results')
 const fuzzyWordsSearch = function (query) {
+  if ( query.length === 0 ) {
+    fuzzyWordsOutputEl.innerHTML = ''
+    return
+  }
   fuzzyWordsOutputEl.innerHTML = myFuzzyWords.search(query)
 }
 

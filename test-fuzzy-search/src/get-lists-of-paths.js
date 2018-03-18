@@ -1,15 +1,26 @@
+/*
+
+  Will call the cb with as a parameter an array of lists on wich searches can be run.
+  Each list of items corresponds to a relevant use case to test (relevance or performances)
+  Usage :
+    const prepareLists = require('this-file')
+    const prepareLists((lists)=>{ `do what you want with the list of lists (of items)`})
+  The long list is in the file /tools/path-list.json wich you must prepare yourself with path-extractor.js (cf readme)
+
+*/
+
 const lists = []
 let   items
 
 const prepareLists  = function (cb) {
-  // get data from the the json file (/tools/path-list.json)
+  // get data from the the json file (/tools/path-list.json)  for the long list (last list)
   let url = 'path-list.json';
   fetch(url)
   .then(res => {
     return res.json()
   })
   .then((out) => {
-    lists.push({name:'long list', id:'longList', defaultSearch:'banque pret', items:out})
+    lists.push({name:`long list (${out.length} items)`, id:'longList', defaultSearch:'banque pret', items:out})
     cb(lists)
   })
   .catch(err => console.error(err));
@@ -25,12 +36,14 @@ const _format = function (items) {
   return path_list
 }
 
+/* list 1 */
 items =
 [
   '/Comptabilité/Fiscal/2015 12 30 - Controle fiscal/Documents clé USB/Banque'
 ]
 lists.push({name:'1 item for test', id:'1_items', defaultSearch:'banque pret', items:_format(items)})
 
+/* list 2 */
 items =
 [
   '/Administratif/test-filesname.txt',
@@ -71,6 +84,7 @@ items =
 ]
 lists.push({name:'23 items', id:'23_items', defaultSearch:'admin', items:_format(items)})
 
+/* list 3 */
 $A='A666'
 $B='B666'
 $C='C666'
@@ -88,6 +102,7 @@ items = [
   `/ExpectedRk:_01_/D0_${$A}`]
 lists.push({name:'test 1', id:'test_1', defaultSearch:'A66', items:_format(items)})
 
+/* list 4 */
 items = [
   `/ExpectedRk_16_/D0_${$$}/D1_${$$}/D2_${$$}/D3_${$A}/D4_${$$}.txt`,
   `/ExpectedRk_12_/D0_${$$}/D1_${$$}/D2_${$A}/D3.1_${$$}.txt`,
@@ -108,6 +123,7 @@ items = [
 ]
 lists.push({name:'test 2', id:'test_2', defaultSearch:'A66', items:_format(items)})
 
+/* list 5 */
 items = [
   `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6_${$A}.txt`,
   `/A0_${$$}/A1_${$$}/A2_${$A}/A3.6a_${$A}.txt`,
