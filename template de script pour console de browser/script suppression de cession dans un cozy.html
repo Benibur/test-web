@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head></head>
+    <body>
+        <main>
+            <button>btn1</button>
+            <button>btn2</button>
+            <button>btn3</button>
+            <button>btn4</button>
+            <button>btn5</button>
+            <button>btn6</button>
+        </main>
+    </body>
+    <script>
+        
+/*
+
+/* ------------------ */
+/* Solution 1 : à base de settimeout ou setinterval */
+/*
+const newLoop = () => {
+    const btn = document.querySelector("main button")
+    if (!btn) return
+    // btn.click()
+    console.log("premier click :", btn.textContent)
+    btn.parentElement.removeChild(btn)
+    m = 0
+    const intervId = setInterval(() => {
+        // document.querySelector(".dialogContentInner button").click()
+        m += 1;
+        console.log("simulation second click", m)
+        if (m>3) { // tests à adapter
+          clearInterval(intervId)
+          newLoop()
+        }
+    }, 300);
+
+}
+newLoop();
+*/
+/* ------------------ */
+
+/* -------------------------------------------------------------------------------------- */
+/* suppression de toute les cessions d'un cozy depuis la page settings/connected devices  */
+n=0;
+const newLoop = () => {
+    const btn = document.querySelector("main button")
+    if (!btn) return
+    btn.click()
+    n+=1
+    console.log("suppression session ", n)
+    const intervId = setInterval(() => {
+      btn2 = document.querySelector(".dialogContentInner button")
+      console.log("test fermeture modale")
+      if (btn2) { // tests à adapter
+        btn2.click()
+        clearInterval(intervId)
+        const interv2Id = setInterval(() => {
+          btn3 = document.querySelector(".dialogContentInner button")
+          if (!btn3) { // la modale s'est refermée, on peut relancer une boucle
+            clearInterval(interv2Id)
+            newLoop()
+          }
+        }, 100);
+      }
+    }, 100);
+
+}
+newLoop();
+
+    </script>
+</html>
